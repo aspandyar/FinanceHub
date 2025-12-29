@@ -1,0 +1,64 @@
+name: Test
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: financehub_user
+          POSTGRES_PASSWORD: financehub_password
+          POSTGRES_DB: financehub_db
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    env:
+      NODE_ENV: test
+      PORT: 3000
+      DB_HOST: localhost
+      DB_PORT: 5432
+      DB_USER: financehub_user
+      DB_PASSWORD: financehub_password
+      DB_NAME: financehub_db
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '25'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Wait for PostgreSQL
+        run: |
+          until pg_isready -h localhost -p 5432 -U financehub_user; do
+            echo "Waiting for PostgreSQL..."
+            sleep 1
+          done
+
+      - name: Run migrations
+        run: npm run migrate:up
+
+      - name: Run tests
+        run: npm test
+
