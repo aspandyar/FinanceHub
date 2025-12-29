@@ -10,5 +10,21 @@ export default {
     '^(\\.{1,2}/.*)\\.js$': '$1',
     '^supertest$': 'supertest/index.js'
   },
-  setupFilesAfterEnv: ['./jest.setup.ts'],
+  collectCoverageFrom: [
+    'src/**/*.ts',
+    '!src/**/*.d.ts',
+    '!src/server.ts',
+    '!src/migrations/**',
+    '!src/tests/**',
+  ],
+  coverageDirectory: 'coverage',
+  coverageReporters: ['text', 'lcov', 'html'],
+  coverageThreshold: {
+    global: {
+      branches: 80,
+      functions: 80,
+      lines: 80,
+      statements: 80,
+    },
+  },
 };
