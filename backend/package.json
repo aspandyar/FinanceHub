@@ -1,0 +1,45 @@
+{
+  "name": "financehub-backend",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "dev": "tsx watch src/server.ts",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "test:coverage": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage",
+    "lint": "eslint 'src/**/*.ts'",
+    "migrate": "tsx src/migrations/cli.ts",
+    "migrate:up": "tsx src/migrations/cli.ts up",
+    "migrate:down": "tsx src/migrations/cli.ts down",
+    "migrate:down:all": "tsx src/migrations/cli.ts down:all",
+    "migrate:drop": "tsx src/migrations/cli.ts drop",
+    "migrate:status": "tsx src/migrations/cli.ts status"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "pg": "^8.13.1"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^25.0.3",
+    "@types/pg": "^8.11.10",
+    "@types/supertest": "^6.0.3",
+    "eslint": "^9.39.2",
+    "jest": "^30.2.0",
+    "jest-environment-jsdom": "^30.2.0",
+    "nodemon": "^3.1.11",
+    "prettier": "^3.7.4",
+    "supertest": "^7.1.4",
+    "ts-jest": "^29.4.6",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  }
+}
