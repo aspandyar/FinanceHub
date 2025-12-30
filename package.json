@@ -8,6 +8,7 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc && npm run copy:migrations",
+    "heroku-postbuild": "npm run build",
     "copy:migrations": "cpy \"src/migrations/files/**/*\" dist/migrations/files",
     "start": "node dist/server.js",
     "dev": "tsx watch src/server.ts",
