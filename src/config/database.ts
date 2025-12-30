@@ -43,17 +43,6 @@ export const getClient = async (): Promise<PoolClient> => {
   return client;
 };
 
-// Initialize database - run migrations
-export const initializeDatabase = async () => {
-  try {
-    const { migrate } = await import('../migrations/migrate.js');
-    await migrate();
-  } catch (error) {
-    console.error('Error initializing database:', error);
-    throw error;
-  }
-};
-
 // Close the pool (useful for graceful shutdown)
 export const closePool = async () => {
   await pool.end();
