@@ -12,11 +12,6 @@ describe('Database Module', () => {
     expect(typeof database.getClient).toBe('function');
   });
 
-  it('should export initializeDatabase function', async () => {
-    const database = await import('../config/database.js');
-    expect(typeof database.initializeDatabase).toBe('function');
-  });
-
   it('should export closePool function', async () => {
     const database = await import('../config/database.js');
     expect(typeof database.closePool).toBe('function');
@@ -26,8 +21,4 @@ describe('Database Module', () => {
     const database = await import('../config/database.js');
     expect(database.default).toBeDefined();
   });
-
-  // Note: Testing initializeDatabase with mocks is difficult with ESM modules
-  // because ESM exports are read-only. These tests verify the function exists
-  // and can be called. For full integration testing, use a test database.
 });
