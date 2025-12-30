@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from 'express';
-import { CategoryModel } from '../models/categoryProxy.js';
+import { CategoryModel } from '../models/models.js';
 import type { CategoryType } from '../models/category.js';
 
 // UUID validation regex

@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from 'express';
-import { UserModel } from '../models/userProxy.js';
+import { UserModel } from '../models/models.js';
 
 // Create a user
 export const createUser = async (

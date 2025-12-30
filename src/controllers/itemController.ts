@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from 'express';
-import { ItemModel } from '../models/itemProxy.js';
+import { ItemModel } from '../models/models.js';
 
 // Create an item
 export const createItem = async (

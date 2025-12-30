@@ -1,5 +1,5 @@
 import { jest } from '@jest/globals';
-import { ItemModel } from '../models/itemProxy.js';
+import { ItemModel } from '../models/models.js';
 import request from 'supertest';
 import app from '../app.js';
 import * as itemController from '../controllers/itemController.js';
