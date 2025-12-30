@@ -1,14 +1,5 @@
-import * as itemModel from './item.js';
 import * as userModel from './user.js';
 import * as categoryModel from './category.js';
-
-export const ItemModel = {
-  getAllItems: itemModel.getAllItems,
-  createItem: itemModel.createItem,
-  getItemById: itemModel.getItemById,
-  updateItem: itemModel.updateItem,
-  deleteItem: itemModel.deleteItem,
-};
 
 export const UserModel = {
   getAllUsers: userModel.getAllUsers,
