@@ -11,6 +11,8 @@ interface Config {
     user: string;
     password: string;
     database: string;
+    url: string;
+    ssl: boolean | { rejectUnauthorized: boolean };
   };
 }
 
@@ -21,8 +23,10 @@ const config: Config = {
     host: process.env.DB_HOST || 'localhost',
     port: Number(process.env.DB_PORT) || 5432,
     user: process.env.DB_USER || 'financehub_user',
-    password: process.env.DB_PASSWORD || '',
+    password: process.env.DB_PASSWORD || 'financehub_password',
     database: process.env.DB_NAME || 'financehub_db',
+    url: process.env.DATABASE_URL || 'postgresql://financehub_user:financehub_password@localhost:5432/financehub_db',
+    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
   },
 };
 

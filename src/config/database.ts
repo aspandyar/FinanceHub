@@ -1,16 +1,11 @@
-import { Pool, type PoolClient } from 'pg';
+import pg from 'pg';
+import type { PoolClient } from 'pg';
 import config from './config.js';
 
 // Create a connection pool
-const pool = new Pool({
-  host: config.db.host,
-  port: config.db.port,
-  user: config.db.user,
-  password: config.db.password,
-  database: config.db.database,
-  max: 20, // Maximum number of clients in the pool
-  idleTimeoutMillis: 30000, // Close idle clients after 30 seconds
-  connectionTimeoutMillis: 2000, // Return an error after 2 seconds if connection cannot be established
+const pool = new pg.Pool({
+  connectionString: config.db.url,
+  ssl: config.db.ssl,
 });
 
 // Test the connection
