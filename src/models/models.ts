@@ -2,6 +2,7 @@ import * as userModel from './user.js';
 import * as categoryModel from './category.js';
 import * as transactionModel from './transaction.js';
 import * as budgetModel from './budget.js';
+import * as recurringTransactionModel from './recurringTransaction.js';
 
 export const UserModel = {
   getAllUsers: userModel.getAllUsers,
@@ -38,5 +39,15 @@ export const BudgetModel = {
   createBudget: budgetModel.createBudget,
   updateBudget: budgetModel.updateBudget,
   deleteBudget: budgetModel.deleteBudget,
+};
+
+export const RecurringTransactionModel = {
+  getAllRecurringTransactions: recurringTransactionModel.getAllRecurringTransactions,
+  getRecurringTransactionById: recurringTransactionModel.getRecurringTransactionById,
+  getRecurringTransactionsByUserId: recurringTransactionModel.getRecurringTransactionsByUserId,
+  getDueRecurringTransactions: recurringTransactionModel.getDueRecurringTransactions,
+  createRecurringTransaction: recurringTransactionModel.createRecurringTransaction,
+  updateRecurringTransaction: recurringTransactionModel.updateRecurringTransaction,
+  deleteRecurringTransaction: recurringTransactionModel.deleteRecurringTransaction,
 };
 
