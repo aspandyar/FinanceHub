@@ -1,0 +1,174 @@
+import type { Request, Response, NextFunction } from 'express';
+import { UserModel } from '../models/models.js';
+import { hashPassword, comparePassword, validatePassword } from '../utils/password.js';
+import { generateToken } from '../utils/jwt.js';
+
+// Email validation regex
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// Register a new user
+export const register = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { email, password, full_name, currency } = req.body;
+
+    // Validate email
+    if (!email || typeof email !== 'string' || !EMAIL_REGEX.test(email)) {
+      return res.status(400).json({ error: 'Valid email is required' });
+    }
+
+    // Validate password
+    if (!password || typeof password !== 'string') {
+      return res.status(400).json({ error: 'Password is required' });
+    }
+
+    const passwordValidation = validatePassword(password);
+    if (!passwordValidation.isValid) {
+      return res.status(400).json({
+        error: 'Password does not meet requirements',
+        details: passwordValidation.errors,
+      });
+    }
+
+    // Validate full_name
+    if (!full_name || typeof full_name !== 'string' || full_name.trim().length === 0) {
+      return res.status(400).json({ error: 'Full name is required' });
+    }
+    if (full_name.trim().length > 100) {
+      return res.status(400).json({ error: 'Full name must be 100 characters or less' });
+    }
+
+    // Check if user already exists
+    const existingUser = await UserModel.getUserByEmail(email.toLowerCase().trim());
+    if (existingUser) {
+      return res.status(409).json({ error: 'Email already registered' });
+    }
+
+    // Hash password
+    const password_hash = await hashPassword(password);
+
+    // Create user (default role is 'user')
+    const user = await UserModel.createUser({
+      email: email.toLowerCase().trim(),
+      password_hash,
+      full_name: full_name.trim(),
+      currency: currency || 'USD',
+      role: 'user', // New users always get 'user' role
+    });
+
+    // Generate JWT token
+    const token = generateToken({
+      userId: user.id,
+      email: user.email,
+      role: user.role,
+    });
+
+    // Return user without password_hash
+    const { password_hash: _, ...userWithoutPassword } = user;
+
+    res.status(201).json({
+      user: userWithoutPassword,
+      token,
+    });
+  } catch (error: any) {
+    // Handle unique constraint violation
+    if (error.code === '23505') {
+      return res.status(409).json({ error: 'Email already registered' });
+    }
+    next(error);
+  }
+};
+
+// Login user
+export const login = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { email, password } = req.body;
+
+    // Validate email
+    if (!email || typeof email !== 'string') {
+      return res.status(400).json({ error: 'Email is required' });
+    }
+
+    // Validate password
+    if (!password || typeof password !== 'string') {
+      return res.status(400).json({ error: 'Password is required' });
+    }
+
+    // Find user by email
+    const user = await UserModel.getUserByEmail(email.toLowerCase().trim());
+    if (!user) {
+      return res.status(401).json({ error: 'Invalid email or password' });
+    }
+
+    // Compare password
+    const isPasswordValid = await comparePassword(password, user.password_hash);
+    if (!isPasswordValid) {
+      return res.status(401).json({ error: 'Invalid email or password' });
+    }
+
+    // Generate JWT token
+    const token = generateToken({
+      userId: user.id,
+      email: user.email,
+      role: user.role,
+    });
+
+    // Return user without password_hash
+    const { password_hash: _, ...userWithoutPassword } = user;
+
+    res.json({
+      user: userWithoutPassword,
+      token,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Logout user (client-side token removal, but we can add token blacklisting here if needed)
+export const logout = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    // In a stateless JWT system, logout is typically handled client-side
+    // by removing the token. If you need server-side logout, implement token blacklisting
+    res.json({ message: 'Logged out successfully' });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Get current user profile
+export const getCurrentUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
+
+    const user = await UserModel.getUserById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Return user without password_hash
+    const { password_hash: _, ...userWithoutPassword } = user;
+
+    res.json(userWithoutPassword);
+  } catch (error) {
+    next(error);
+  }
+};
+

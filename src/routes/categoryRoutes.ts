@@ -7,8 +7,12 @@ import {
   updateCategory,
   deleteCategory,
 } from '../controllers/categoryController.js';
+import { authenticate } from '../middlewares/auth.js';
 
 const router = Router();
+
+// All category routes require authentication
+router.use(authenticate);
 
 // Get all categories (with optional query params: user_id, type)
 router.get('/', getCategories);

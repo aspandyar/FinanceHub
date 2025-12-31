@@ -6,8 +6,12 @@ import {
   updateUser,
   deleteUser,
 } from '../controllers/userController.js';
+import { authenticate } from '../middlewares/auth.js';
 
 const router = Router();
+
+// All user routes require authentication
+router.use(authenticate);
 
 router.get('/', getUsers);
 router.get('/:id', getUserById);

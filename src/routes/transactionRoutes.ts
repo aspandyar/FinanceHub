@@ -7,8 +7,12 @@ import {
   updateTransaction,
   deleteTransaction,
 } from '../controllers/transactionController.js';
+import { authenticate } from '../middlewares/auth.js';
 
 const router = Router();
+
+// All transaction routes require authentication
+router.use(authenticate);
 
 // Get all transactions (with optional query params: user_id, type, category_id, start_date, end_date)
 router.get('/', getTransactions);

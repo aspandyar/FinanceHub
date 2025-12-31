@@ -8,8 +8,12 @@ import {
   updateBudget,
   deleteBudget,
 } from '../controllers/budgetController.js';
+import { authenticate } from '../middlewares/auth.js';
 
 const router = Router();
+
+// All budget routes require authentication
+router.use(authenticate);
 
 // Get all budgets (with optional query params: user_id, category_id, month)
 router.get('/', getBudgets);

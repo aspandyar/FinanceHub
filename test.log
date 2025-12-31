@@ -1,0 +1,1810 @@
+
+> financehub-backend@1.0.0 test
+> node --experimental-vm-modules node_modules/jest/bin/jest.js
+
+(node:21425) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+FAIL src/tests/authController.test.ts
+  ● Auth Controller › register › should register a new user successfully
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: "TestPass123!"
+
+    Number of calls: 0
+
+      102 |       );
+      103 |
+    > 104 |       expect(mockValidatePassword).toHaveBeenCalledWith('TestPass123!');
+          |                                    ^
+      105 |       expect(mockGetUserByEmail).toHaveBeenCalledWith('test@example.com');
+      106 |       expect(mockHashPassword).toHaveBeenCalledWith('TestPass123!');
+      107 |       expect(mockCreateUser).toHaveBeenCalledWith({
+
+      at Object.<anonymous> (src/tests/authController.test.ts:104:36)
+
+  ● Auth Controller › register › should return 400 for weak password
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    - Expected
+    + Received
+
+      Object {
+        "details": Array [
+          "Password must be at least 8 characters long",
+    +     "Password must contain at least one uppercase letter",
+    +     "Password must contain at least one number",
+    +     "Password must contain at least one special character",
+        ],
+        "error": "Password does not meet requirements",
+      },
+
+    Number of calls: 1
+
+      175 |
+      176 |       expect(responseStatus).toHaveBeenCalledWith(400);
+    > 177 |       expect(responseJson).toHaveBeenCalledWith({
+          |                            ^
+      178 |         error: 'Password does not meet requirements',
+      179 |         details: ['Password must be at least 8 characters long'],
+      180 |       });
+
+      at Object.<anonymous> (src/tests/authController.test.ts:177:28)
+
+  ● Auth Controller › register › should return 409 when email already exists
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: 409
+
+    Number of calls: 0
+
+      243 |       );
+      244 |
+    > 245 |       expect(responseStatus).toHaveBeenCalledWith(409);
+          |                              ^
+      246 |       expect(responseJson).toHaveBeenCalledWith({ error: 'Email already registered' });
+      247 |     });
+      248 |
+
+      at Object.<anonymous> (src/tests/authController.test.ts:245:30)
+
+  ● Auth Controller › register › should handle unique constraint violation
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: 409
+
+    Number of calls: 0
+
+      268 |       );
+      269 |
+    > 270 |       expect(responseStatus).toHaveBeenCalledWith(409);
+          |                              ^
+      271 |       expect(responseJson).toHaveBeenCalledWith({ error: 'Email already registered' });
+      272 |     });
+      273 |
+
+      at Object.<anonymous> (src/tests/authController.test.ts:270:30)
+
+  ● Auth Controller › register › should use default currency USD when not provided
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: ObjectContaining {"currency": "USD"}
+
+    Number of calls: 0
+
+      303 |       );
+      304 |
+    > 305 |       expect(mockCreateUser).toHaveBeenCalledWith(
+          |                              ^
+      306 |         expect.objectContaining({ currency: 'USD' })
+      307 |       );
+      308 |     });
+
+      at Object.<anonymous> (src/tests/authController.test.ts:305:30)
+
+  ● Auth Controller › login › should login user successfully
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: "test@example.com"
+
+    Number of calls: 0
+
+      338 |       );
+      339 |
+    > 340 |       expect(mockGetUserByEmail).toHaveBeenCalledWith('test@example.com');
+          |                                  ^
+      341 |       expect(mockComparePassword).toHaveBeenCalledWith('TestPass123!', 'hashed-password');
+      342 |       expect(responseJson).toHaveBeenCalledWith({
+      343 |         user: expect.objectContaining({
+
+      at Object.<anonymous> (src/tests/authController.test.ts:340:34)
+
+  ● Auth Controller › login › should return 401 for non-existent user
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: 401
+
+    Number of calls: 0
+
+      389 |       );
+      390 |
+    > 391 |       expect(responseStatus).toHaveBeenCalledWith(401);
+          |                              ^
+      392 |       expect(responseJson).toHaveBeenCalledWith({ error: 'Invalid email or password' });
+      393 |     });
+      394 |
+
+      at Object.<anonymous> (src/tests/authController.test.ts:391:30)
+
+  ● Auth Controller › login › should return 401 for incorrect password
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: 401
+
+    Number of calls: 0
+
+      419 |       );
+      420 |
+    > 421 |       expect(responseStatus).toHaveBeenCalledWith(401);
+          |                              ^
+      422 |       expect(responseJson).toHaveBeenCalledWith({ error: 'Invalid email or password' });
+      423 |     });
+      424 |   });
+
+      at Object.<anonymous> (src/tests/authController.test.ts:421:30)
+
+  ● Auth Controller › getCurrentUser › should return current user profile
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: "user-123"
+
+    Number of calls: 0
+
+      463 |       );
+      464 |
+    > 465 |       expect(mockGetUserById).toHaveBeenCalledWith('user-123');
+          |                               ^
+      466 |       expect(responseJson).toHaveBeenCalledWith(
+      467 |         expect.objectContaining({
+      468 |           id: 'user-123',
+
+      at Object.<anonymous> (src/tests/authController.test.ts:465:31)
+
+  ● Auth Controller › getCurrentUser › should return 404 when user not found
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: 404
+
+    Number of calls: 0
+
+      501 |       );
+      502 |
+    > 503 |       expect(responseStatus).toHaveBeenCalledWith(404);
+          |                              ^
+      504 |       expect(responseJson).toHaveBeenCalledWith({ error: 'User not found' });
+      505 |     });
+      506 |   });
+
+      at Object.<anonymous> (src/tests/authController.test.ts:503:30)
+
+FAIL src/tests/password.test.ts
+  ● Password Utils › hashPassword › should hash password with bcrypt
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: "hashed-password"
+    Received: "$2b$10$uSeOunfC8KEGZDAXlxOJLeQmeg6ROH.XRN5BD10QFRVq2LuR0QctO"
+
+      94 |       const result = await hashPassword(password);
+      95 |
+    > 96 |       expect(result).toBe(hashedPassword);
+         |                      ^
+      97 |       expect(mockHash).toHaveBeenCalledWith(password, 10);
+      98 |     });
+      99 |
+
+      at Object.<anonymous> (src/tests/password.test.ts:96:22)
+
+  ● Password Utils › hashPassword › should use salt rounds of 10
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: "TestPassword123!", 10
+
+    Number of calls: 0
+
+      105 |       await hashPassword(password);
+      106 |
+    > 107 |       expect(mockHash).toHaveBeenCalledWith(password, 10);
+          |                        ^
+      108 |     });
+      109 |   });
+      110 |
+
+      at Object.<anonymous> (src/tests/password.test.ts:107:24)
+
+  ● Password Utils › comparePassword › should return true for matching password and hash
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      117 |       const result = await comparePassword(password, hash);
+      118 |
+    > 119 |       expect(result).toBe(true);
+          |                      ^
+      120 |       expect(mockCompare).toHaveBeenCalledWith(password, hash);
+      121 |     });
+      122 |
+
+      at Object.<anonymous> (src/tests/password.test.ts:119:22)
+
+  ● Password Utils › comparePassword › should return false for non-matching password and hash
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: "TestPassword123!", "hashed-password"
+
+    Number of calls: 0
+
+      129 |
+      130 |       expect(result).toBe(false);
+    > 131 |       expect(mockCompare).toHaveBeenCalledWith(password, hash);
+          |                           ^
+      132 |     });
+      133 |   });
+      134 | });
+
+      at Object.<anonymous> (src/tests/password.test.ts:131:27)
+
+FAIL src/tests/userController.test.ts
+  ● User Controller › createUser › should create user successfully as admin
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: {"currency": "USD", "email": "newuser@example.com", "full_name": "New User", "password_hash": "hashed-password", "role": "user"}
+
+    Number of calls: 0
+
+      91 |       );
+      92 |
+    > 93 |       expect(mockCreateUser).toHaveBeenCalledWith({
+         |                              ^
+      94 |         email: 'newuser@example.com',
+      95 |         password_hash: 'hashed-password',
+      96 |         full_name: 'New User',
+
+      at Object.<anonymous> (src/tests/userController.test.ts:93:30)
+
+  ● User Controller › createUser › should return 409 when email already exists
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: 409
+
+    Number of calls: 0
+
+      181 |       );
+      182 |
+    > 183 |       expect(responseStatus).toHaveBeenCalledWith(409);
+          |                              ^
+      184 |       expect(responseJson).toHaveBeenCalledWith({ error: 'Email already exists' });
+      185 |     });
+      186 |   });
+
+      at Object.<anonymous> (src/tests/userController.test.ts:183:30)
+
+  ● User Controller › getUsers › should return all users for admin
+
+    expect(jest.fn()).toHaveBeenCalled()
+
+    Expected number of calls: >= 1
+    Received number of calls:    0
+
+      224 |       );
+      225 |
+    > 226 |       expect(mockGetAllUsers).toHaveBeenCalled();
+          |                               ^
+      227 |       expect(responseJson).toHaveBeenCalledWith([
+      228 |         expect.not.objectContaining({ password_hash: expect.anything() }),
+      229 |         expect.not.objectContaining({ password_hash: expect.anything() }),
+
+      at Object.<anonymous> (src/tests/userController.test.ts:226:31)
+
+  ● User Controller › getUserById › should return user for admin
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: "user-123"
+
+    Number of calls: 0
+
+      275 |       );
+      276 |
+    > 277 |       expect(mockGetUserById).toHaveBeenCalledWith('user-123');
+          |                               ^
+      278 |       expect(responseJson).toHaveBeenCalledWith(
+      279 |         expect.not.objectContaining({ password_hash: expect.anything() })
+      280 |       );
+
+      at Object.<anonymous> (src/tests/userController.test.ts:277:31)
+
+  ● User Controller › getUserById › should allow users to view their own profile
+
+    expect(jest.fn()).toHaveBeenCalled()
+
+    Expected number of calls: >= 1
+    Received number of calls:    0
+
+      307 |       );
+      308 |
+    > 309 |       expect(responseJson).toHaveBeenCalled();
+          |                            ^
+      310 |     });
+      311 |
+      312 |     it('should return 403 when user tries to view another user', async () => {
+
+      at Object.<anonymous> (src/tests/userController.test.ts:309:28)
+
+  ● User Controller › getUserById › should return 404 when user not found
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: 404
+
+    Number of calls: 0
+
+      346 |       );
+      347 |
+    > 348 |       expect(responseStatus).toHaveBeenCalledWith(404);
+          |                              ^
+      349 |       expect(responseJson).toHaveBeenCalledWith({ message: 'User not found' });
+      350 |     });
+      351 |   });
+
+      at Object.<anonymous> (src/tests/userController.test.ts:348:30)
+
+  ● User Controller › updateUser › should update user successfully
+
+    expect(jest.fn()).toHaveBeenCalled()
+
+    Expected number of calls: >= 1
+    Received number of calls:    0
+
+      393 |       );
+      394 |
+    > 395 |       expect(mockUpdateUser).toHaveBeenCalled();
+          |                              ^
+      396 |       expect(responseJson).toHaveBeenCalledWith(
+      397 |         expect.not.objectContaining({ password_hash: expect.anything() })
+      398 |       );
+
+      at Object.<anonymous> (src/tests/userController.test.ts:395:30)
+
+  ● User Controller › updateUser › should allow admin to change role
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: "user-123", ObjectContaining {"role": "manager"}
+
+    Number of calls: 0
+
+      468 |       );
+      469 |
+    > 470 |       expect(mockUpdateUser).toHaveBeenCalledWith('user-123', expect.objectContaining({ role: 'manager' }));
+          |                              ^
+      471 |     });
+      472 |   });
+      473 |
+
+      at Object.<anonymous> (src/tests/userController.test.ts:470:30)
+
+  ● User Controller › deleteUser › should delete user successfully as admin
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: "user-123"
+
+    Number of calls: 0
+
+      488 |       );
+      489 |
+    > 490 |       expect(mockDeleteUser).toHaveBeenCalledWith('user-123');
+          |                              ^
+      491 |       expect(responseStatus).toHaveBeenCalledWith(204);
+      492 |     });
+      493 |
+
+      at Object.<anonymous> (src/tests/userController.test.ts:490:30)
+
+  ● User Controller › deleteUser › should return 404 when user not found
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: 404
+
+    Number of calls: 0
+
+      548 |       );
+      549 |
+    > 550 |       expect(responseStatus).toHaveBeenCalledWith(404);
+          |                              ^
+      551 |       expect(responseJson).toHaveBeenCalledWith({ message: 'User not found' });
+      552 |     });
+      553 |   });
+
+      at Object.<anonymous> (src/tests/userController.test.ts:550:30)
+
+FAIL src/tests/transactionController.test.ts
+  ● Transaction Controller › createTransaction › should create transaction successfully
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: {"amount": 100.5, "category_id": "550e8400-e29b-41d4-a716-446655440000", "date": "2024-01-15", "description": "Grocery shopping", "type": "expense", "user_id": "user-123"}
+
+    Number of calls: 0
+
+      100 |       );
+      101 |
+    > 102 |       expect(mockCreateTransaction).toHaveBeenCalledWith({
+          |                                     ^
+      103 |         user_id: 'user-123',
+      104 |         ...transactionData,
+      105 |       });
+
+      at Object.<anonymous> (src/tests/transactionController.test.ts:102:37)
+
+  ● Transaction Controller › createTransaction › should handle foreign key constraint violation
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: 400
+
+    Number of calls: 0
+
+      265 |       );
+      266 |
+    > 267 |       expect(responseStatus).toHaveBeenCalledWith(400);
+          |                              ^
+      268 |       expect(responseJson).toHaveBeenCalledWith({
+      269 |         error: 'Invalid user_id or category_id',
+      270 |       });
+
+      at Object.<anonymous> (src/tests/transactionController.test.ts:267:30)
+
+  ● Transaction Controller › getTransactions › should return transactions for authenticated user
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: "user-123", undefined, undefined, undefined, undefined
+
+    Number of calls: 0
+
+      301 |       );
+      302 |
+    > 303 |       expect(mockGetAllTransactions).toHaveBeenCalledWith('user-123', undefined, undefined, undefined, undefined);
+          |                                      ^
+      304 |       expect(responseJson).toHaveBeenCalledWith(transactions);
+      305 |     });
+      306 |
+
+      at Object.<anonymous> (src/tests/transactionController.test.ts:303:38)
+
+  ● Transaction Controller › getTransactions › should allow admin to filter by user_id
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: "other-user-123", "expense", undefined, undefined, undefined
+
+    Number of calls: 0
+
+      322 |       );
+      323 |
+    > 324 |       expect(mockGetAllTransactions).toHaveBeenCalledWith(
+          |                                      ^
+      325 |         'other-user-123',
+      326 |         'expense',
+      327 |         undefined,
+
+      at Object.<anonymous> (src/tests/transactionController.test.ts:324:38)
+
+  ● Transaction Controller › getTransactions › should filter by date range
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: "user-123", undefined, undefined, "2024-01-01", "2024-01-31"
+
+    Number of calls: 0
+
+      348 |       );
+      349 |
+    > 350 |       expect(mockGetAllTransactions).toHaveBeenCalledWith(
+          |                                      ^
+      351 |         'user-123',
+      352 |         undefined,
+      353 |         undefined,
+
+      at Object.<anonymous> (src/tests/transactionController.test.ts:350:38)
+
+  ● Transaction Controller › getTransactionById › should return transaction by id
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: "transaction-123"
+
+    Number of calls: 0
+
+      381 |       );
+      382 |
+    > 383 |       expect(mockGetTransactionById).toHaveBeenCalledWith('transaction-123');
+          |                                      ^
+      384 |       expect(responseJson).toHaveBeenCalledWith(transaction);
+      385 |     });
+      386 |
+
+      at Object.<anonymous> (src/tests/transactionController.test.ts:383:38)
+
+  ● Transaction Controller › getTransactionById › should return 404 when transaction not found
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: 404
+    Received: 400
+
+    Number of calls: 1
+
+      395 |       );
+      396 |
+    > 397 |       expect(responseStatus).toHaveBeenCalledWith(404);
+          |                              ^
+      398 |       expect(responseJson).toHaveBeenCalledWith({ message: 'Transaction not found' });
+      399 |     });
+      400 |   });
+
+      at Object.<anonymous> (src/tests/transactionController.test.ts:397:30)
+
+  ● Transaction Controller › getTransactionsByUserId › should return transactions for user
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: "user-123"
+
+    Number of calls: 0
+
+      425 |       );
+      426 |
+    > 427 |       expect(mockGetTransactionsByUserId).toHaveBeenCalledWith('user-123');
+          |                                           ^
+      428 |       expect(responseJson).toHaveBeenCalledWith(transactions);
+      429 |     });
+      430 |
+
+      at Object.<anonymous> (src/tests/transactionController.test.ts:427:43)
+
+  ● Transaction Controller › updateTransaction › should update transaction successfully
+
+    expect(jest.fn()).toHaveBeenCalled()
+
+    Expected number of calls: >= 1
+    Received number of calls:    0
+
+      478 |       );
+      479 |
+    > 480 |       expect(mockUpdateTransaction).toHaveBeenCalled();
+          |                                     ^
+      481 |       expect(responseJson).toHaveBeenCalledWith(updatedTransaction);
+      482 |     });
+      483 |
+
+      at Object.<anonymous> (src/tests/transactionController.test.ts:480:37)
+
+  ● Transaction Controller › updateTransaction › should return 403 when user does not own transaction
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: 403
+    Received: 400
+
+    Number of calls: 1
+
+      509 |       );
+      510 |
+    > 511 |       expect(responseStatus).toHaveBeenCalledWith(403);
+          |                              ^
+      512 |       expect(responseJson).toHaveBeenCalledWith({
+      513 |         error: 'Access denied',
+      514 |         message: 'You can only update your own transactions',
+
+      at Object.<anonymous> (src/tests/transactionController.test.ts:511:30)
+
+  ● Transaction Controller › updateTransaction › should return 404 when transaction not found
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: 404
+    Received: 400
+
+    Number of calls: 1
+
+      531 |       );
+      532 |
+    > 533 |       expect(responseStatus).toHaveBeenCalledWith(404);
+          |                              ^
+      534 |       expect(responseJson).toHaveBeenCalledWith({ message: 'Transaction not found' });
+      535 |     });
+      536 |   });
+
+      at Object.<anonymous> (src/tests/transactionController.test.ts:533:30)
+
+  ● Transaction Controller › deleteTransaction › should delete transaction successfully
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: "transaction-123"
+
+    Number of calls: 0
+
+      565 |       );
+      566 |
+    > 567 |       expect(mockDeleteTransaction).toHaveBeenCalledWith('transaction-123');
+          |                                     ^
+      568 |       expect(responseStatus).toHaveBeenCalledWith(204);
+      569 |     });
+      570 |
+
+      at Object.<anonymous> (src/tests/transactionController.test.ts:567:37)
+
+  ● Transaction Controller › deleteTransaction › should return 403 when user does not own transaction
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: 403
+    Received: 400
+
+    Number of calls: 1
+
+      596 |       );
+      597 |
+    > 598 |       expect(responseStatus).toHaveBeenCalledWith(403);
+          |                              ^
+      599 |     });
+      600 |   });
+      601 | });
+
+      at Object.<anonymous> (src/tests/transactionController.test.ts:598:30)
+
+FAIL src/tests/recurringTransactionController.test.ts
+  ● Recurring Transaction Controller › createRecurringTransaction › should create recurring transaction successfully
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: {"amount": 100.5, "category_id": "550e8400-e29b-41d4-a716-446655440000", "description": "Monthly subscription", "end_date": null, "frequency": "monthly", "is_active": true, "next_occurrence": "2024-02-01", "start_date": "2024-01-01", "type": "expense", "user_id": "user-123"}
+
+    Number of calls: 0
+
+      110 |       );
+      111 |
+    > 112 |       expect(mockCreateRecurringTransaction).toHaveBeenCalledWith({
+          |                                              ^
+      113 |         user_id: 'user-123',
+      114 |         ...transactionData,
+      115 |       });
+
+      at Object.<anonymous> (src/tests/recurringTransactionController.test.ts:112:46)
+
+  ● Recurring Transaction Controller › getRecurringTransactions › should return recurring transactions for authenticated user
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: "user-123", undefined
+
+    Number of calls: 0
+
+      263 |       );
+      264 |
+    > 265 |       expect(mockGetAllRecurringTransactions).toHaveBeenCalledWith('user-123', undefined);
+          |                                               ^
+      266 |       expect(responseJson).toHaveBeenCalledWith(transactions);
+      267 |     });
+      268 |
+
+      at Object.<anonymous> (src/tests/recurringTransactionController.test.ts:265:47)
+
+  ● Recurring Transaction Controller › getRecurringTransactions › should filter by is_active when provided
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: "user-123", true
+
+    Number of calls: 0
+
+      281 |       );
+      282 |
+    > 283 |       expect(mockGetAllRecurringTransactions).toHaveBeenCalledWith('user-123', true);
+          |                                               ^
+      284 |     });
+      285 |   });
+      286 |
+
+      at Object.<anonymous> (src/tests/recurringTransactionController.test.ts:283:47)
+
+  ● Recurring Transaction Controller › getRecurringTransactionById › should return recurring transaction by id
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: "recurring-123"
+
+    Number of calls: 0
+
+      311 |       );
+      312 |
+    > 313 |       expect(mockGetRecurringTransactionById).toHaveBeenCalledWith('recurring-123');
+          |                                               ^
+      314 |       expect(responseJson).toHaveBeenCalledWith(transaction);
+      315 |     });
+      316 |
+
+      at Object.<anonymous> (src/tests/recurringTransactionController.test.ts:313:47)
+
+  ● Recurring Transaction Controller › getRecurringTransactionById › should return 404 when transaction not found
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: 404
+    Received: 400
+
+    Number of calls: 1
+
+      325 |       );
+      326 |
+    > 327 |       expect(responseStatus).toHaveBeenCalledWith(404);
+          |                              ^
+      328 |     });
+      329 |   });
+      330 |
+
+      at Object.<anonymous> (src/tests/recurringTransactionController.test.ts:327:30)
+
+  ● Recurring Transaction Controller › getDueRecurringTransactions › should return due transactions for specified date
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: "2024-02-01"
+
+    Number of calls: 0
+
+      357 |       );
+      358 |
+    > 359 |       expect(mockGetDueRecurringTransactions).toHaveBeenCalledWith('2024-02-01');
+          |                                               ^
+      360 |       expect(responseJson).toHaveBeenCalledWith(transactions);
+      361 |     });
+      362 |
+
+      at Object.<anonymous> (src/tests/recurringTransactionController.test.ts:359:47)
+
+  ● Recurring Transaction Controller › getDueRecurringTransactions › should use today as default when date not provided
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: "2025-12-31"
+
+    Number of calls: 0
+
+      371 |       );
+      372 |
+    > 373 |       expect(mockGetDueRecurringTransactions).toHaveBeenCalledWith(today);
+          |                                               ^
+      374 |     });
+      375 |   });
+      376 |
+
+      at Object.<anonymous> (src/tests/recurringTransactionController.test.ts:373:47)
+
+  ● Recurring Transaction Controller › updateRecurringTransaction › should update recurring transaction successfully
+
+    expect(jest.fn()).toHaveBeenCalled()
+
+    Expected number of calls: >= 1
+    Received number of calls:    0
+
+      413 |       );
+      414 |
+    > 415 |       expect(mockUpdateRecurringTransaction).toHaveBeenCalled();
+          |                                              ^
+      416 |       expect(responseJson).toHaveBeenCalledWith(updatedTransaction);
+      417 |     });
+      418 |
+
+      at Object.<anonymous> (src/tests/recurringTransactionController.test.ts:415:46)
+
+  ● Recurring Transaction Controller › updateRecurringTransaction › should return 403 when user does not own transaction
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: 403
+    Received: 400
+
+    Number of calls: 1
+
+      447 |       );
+      448 |
+    > 449 |       expect(responseStatus).toHaveBeenCalledWith(403);
+          |                              ^
+      450 |     });
+      451 |   });
+      452 |
+
+      at Object.<anonymous> (src/tests/recurringTransactionController.test.ts:449:30)
+
+  ● Recurring Transaction Controller › deleteRecurringTransaction › should delete recurring transaction successfully
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: "recurring-123"
+
+    Number of calls: 0
+
+      483 |       );
+      484 |
+    > 485 |       expect(mockDeleteRecurringTransaction).toHaveBeenCalledWith('recurring-123');
+          |                                              ^
+      486 |       expect(responseStatus).toHaveBeenCalledWith(204);
+      487 |     });
+      488 |   });
+
+      at Object.<anonymous> (src/tests/recurringTransactionController.test.ts:485:46)
+
+FAIL src/tests/categoryController.test.ts
+  ● Category Controller › createCategory › should create category successfully
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: {"color": "#6B7280", "icon": "shopping-cart", "is_system": false, "name": "Groceries", "type": "expense", "user_id": "user-123"}
+
+    Number of calls: 0
+
+       96 |       );
+       97 |
+    >  98 |       expect(mockCreateCategory).toHaveBeenCalledWith({
+          |                                  ^
+       99 |         user_id: 'user-123',
+      100 |         name: 'Groceries',
+      101 |         type: 'expense',
+
+      at Object.<anonymous> (src/tests/categoryController.test.ts:98:34)
+
+  ● Category Controller › createCategory › should return 409 when category already exists
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: 409
+
+    Number of calls: 0
+
+      209 |       );
+      210 |
+    > 211 |       expect(responseStatus).toHaveBeenCalledWith(409);
+          |                              ^
+      212 |     });
+      213 |   });
+      214 |
+
+      at Object.<anonymous> (src/tests/categoryController.test.ts:211:30)
+
+  ● Category Controller › getCategories › should return categories for authenticated user
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: "user-123", undefined
+
+    Number of calls: 0
+
+      242 |       );
+      243 |
+    > 244 |       expect(mockGetAllCategories).toHaveBeenCalledWith('user-123', undefined);
+          |                                    ^
+      245 |       expect(responseJson).toHaveBeenCalledWith(categories);
+      246 |     });
+      247 |
+
+      at Object.<anonymous> (src/tests/categoryController.test.ts:244:36)
+
+  ● Category Controller › getCategories › should allow admin to filter by user_id
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: "other-user-123", undefined
+
+    Number of calls: 0
+
+      262 |       );
+      263 |
+    > 264 |       expect(mockGetAllCategories).toHaveBeenCalledWith('other-user-123', undefined);
+          |                                    ^
+      265 |     });
+      266 |   });
+      267 |
+
+      at Object.<anonymous> (src/tests/categoryController.test.ts:264:36)
+
+  ● Category Controller › getCategoryById › should return category by id
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: "cat-123"
+
+    Number of calls: 0
+
+      289 |       );
+      290 |
+    > 291 |       expect(mockGetCategoryById).toHaveBeenCalledWith('cat-123');
+          |                                   ^
+      292 |       expect(responseJson).toHaveBeenCalledWith(category);
+      293 |     });
+      294 |
+
+      at Object.<anonymous> (src/tests/categoryController.test.ts:291:35)
+
+  ● Category Controller › getCategoryById › should return 404 when category not found
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: 404
+    Received: 400
+
+    Number of calls: 1
+
+      303 |       );
+      304 |
+    > 305 |       expect(responseStatus).toHaveBeenCalledWith(404);
+          |                              ^
+      306 |     });
+      307 |   });
+      308 |
+
+      at Object.<anonymous> (src/tests/categoryController.test.ts:305:30)
+
+  ● Category Controller › updateCategory › should update category successfully
+
+    expect(jest.fn()).toHaveBeenCalled()
+
+    Expected number of calls: >= 1
+    Received number of calls:    0
+
+      342 |       );
+      343 |
+    > 344 |       expect(mockUpdateCategory).toHaveBeenCalled();
+          |                                  ^
+      345 |       expect(responseJson).toHaveBeenCalledWith(updatedCategory);
+      346 |     });
+      347 |
+
+      at Object.<anonymous> (src/tests/categoryController.test.ts:344:34)
+
+  ● Category Controller › updateCategory › should return 403 when trying to update system category
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: 403
+    Received: 400
+
+    Number of calls: 1
+
+      373 |       );
+      374 |
+    > 375 |       expect(responseStatus).toHaveBeenCalledWith(403);
+          |                              ^
+      376 |       expect(responseJson).toHaveBeenCalledWith({ error: 'Cannot update system categories' });
+      377 |     });
+      378 |
+
+      at Object.<anonymous> (src/tests/categoryController.test.ts:375:30)
+
+  ● Category Controller › updateCategory › should return 403 when user does not own category
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: 403
+    Received: 400
+
+    Number of calls: 1
+
+      404 |       );
+      405 |
+    > 406 |       expect(responseStatus).toHaveBeenCalledWith(403);
+          |                              ^
+      407 |     });
+      408 |   });
+      409 |
+
+      at Object.<anonymous> (src/tests/categoryController.test.ts:406:30)
+
+  ● Category Controller › deleteCategory › should delete category successfully
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: "cat-123"
+
+    Number of calls: 0
+
+      437 |       );
+      438 |
+    > 439 |       expect(mockDeleteCategory).toHaveBeenCalledWith('cat-123');
+          |                                  ^
+      440 |       expect(responseStatus).toHaveBeenCalledWith(204);
+      441 |     });
+      442 |
+
+      at Object.<anonymous> (src/tests/categoryController.test.ts:439:34)
+
+  ● Category Controller › deleteCategory › should return 403 when trying to delete system category
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: 403
+    Received: 400
+
+    Number of calls: 1
+
+      468 |       );
+      469 |
+    > 470 |       expect(responseStatus).toHaveBeenCalledWith(403);
+          |                              ^
+      471 |       expect(responseJson).toHaveBeenCalledWith({ error: 'Cannot delete system categories' });
+      472 |     });
+      473 |   });
+
+      at Object.<anonymous> (src/tests/categoryController.test.ts:470:30)
+
+FAIL src/tests/auth.test.ts
+  ● Auth Middleware › authenticate › should authenticate user with valid token
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: "valid-token"
+
+    Number of calls: 0
+
+      103 |       );
+      104 |
+    > 105 |       expect(mockVerifyToken).toHaveBeenCalledWith(token);
+          |                               ^
+      106 |       expect(mockGetUserById).toHaveBeenCalledWith('user-123');
+      107 |       expect(mockRequest.user).toEqual({
+      108 |         id: 'user-123',
+
+      at Object.<anonymous> (src/tests/auth.test.ts:105:31)
+
+  ● Auth Middleware › authenticate › should return 401 when user not found
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    - Expected
+    + Received
+
+      Object {
+    -   "error": "User not found",
+    +   "error": "Invalid or expired token",
+      },
+
+    Number of calls: 1
+
+      150 |
+      151 |       expect(responseStatus).toHaveBeenCalledWith(401);
+    > 152 |       expect(responseJson).toHaveBeenCalledWith({ error: 'User not found' });
+          |                            ^
+      153 |       expect(mockNext).not.toHaveBeenCalled();
+      154 |     });
+      155 |
+
+      at Object.<anonymous> (src/tests/auth.test.ts:152:28)
+
+FAIL src/tests/budgetController.test.ts
+  ● Budget Controller › createBudget › should create budget successfully
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: {"amount": 1000.5, "category_id": "550e8400-e29b-41d4-a716-446655440000", "month": "2024-01-01", "user_id": "user-123"}
+
+    Number of calls: 0
+
+      100 |       );
+      101 |
+    > 102 |       expect(mockCreateBudget).toHaveBeenCalledWith({
+          |                                ^
+      103 |         user_id: 'user-123',
+      104 |         category_id: budgetData.category_id,
+      105 |         amount: budgetData.amount,
+
+      at Object.<anonymous> (src/tests/budgetController.test.ts:102:32)
+
+  ● Budget Controller › createBudget › should return 409 when budget already exists
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: 409
+
+    Number of calls: 0
+
+      209 |       );
+      210 |
+    > 211 |       expect(responseStatus).toHaveBeenCalledWith(409);
+          |                              ^
+      212 |     });
+      213 |   });
+      214 |
+
+      at Object.<anonymous> (src/tests/budgetController.test.ts:211:30)
+
+  ● Budget Controller › getBudgets › should return budgets for authenticated user
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: "user-123", undefined, undefined
+
+    Number of calls: 0
+
+      240 |       );
+      241 |
+    > 242 |       expect(mockGetAllBudgets).toHaveBeenCalledWith('user-123', undefined, undefined);
+          |                                 ^
+      243 |       expect(responseJson).toHaveBeenCalledWith(budgets);
+      244 |     });
+      245 |
+
+      at Object.<anonymous> (src/tests/budgetController.test.ts:242:33)
+
+  ● Budget Controller › getBudgets › should allow admin to filter by user_id
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: "other-user-123", undefined, undefined
+
+    Number of calls: 0
+
+      260 |       );
+      261 |
+    > 262 |       expect(mockGetAllBudgets).toHaveBeenCalledWith('other-user-123', undefined, undefined);
+          |                                 ^
+      263 |     });
+      264 |   });
+      265 |
+
+      at Object.<anonymous> (src/tests/budgetController.test.ts:262:33)
+
+  ● Budget Controller › getBudgetById › should return budget by id
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: "budget-123"
+
+    Number of calls: 0
+
+      285 |       );
+      286 |
+    > 287 |       expect(mockGetBudgetById).toHaveBeenCalledWith('budget-123');
+          |                                 ^
+      288 |       expect(responseJson).toHaveBeenCalledWith(budget);
+      289 |     });
+      290 |
+
+      at Object.<anonymous> (src/tests/budgetController.test.ts:287:33)
+
+  ● Budget Controller › getBudgetById › should return 404 when budget not found
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: 404
+    Received: 400
+
+    Number of calls: 1
+
+      299 |       );
+      300 |
+    > 301 |       expect(responseStatus).toHaveBeenCalledWith(404);
+          |                              ^
+      302 |     });
+      303 |   });
+      304 |
+
+      at Object.<anonymous> (src/tests/budgetController.test.ts:301:30)
+
+  ● Budget Controller › updateBudget › should update budget successfully
+
+    expect(jest.fn()).toHaveBeenCalled()
+
+    Expected number of calls: >= 1
+    Received number of calls:    0
+
+      336 |       );
+      337 |
+    > 338 |       expect(mockUpdateBudget).toHaveBeenCalled();
+          |                                ^
+      339 |       expect(responseJson).toHaveBeenCalledWith(updatedBudget);
+      340 |     });
+      341 |
+
+      at Object.<anonymous> (src/tests/budgetController.test.ts:338:32)
+
+  ● Budget Controller › updateBudget › should return 403 when user does not own budget
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: 403
+    Received: 400
+
+    Number of calls: 1
+
+      365 |       );
+      366 |
+    > 367 |       expect(responseStatus).toHaveBeenCalledWith(403);
+          |                              ^
+      368 |     });
+      369 |   });
+      370 |
+
+      at Object.<anonymous> (src/tests/budgetController.test.ts:367:30)
+
+  ● Budget Controller › deleteBudget › should delete budget successfully
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: "budget-123"
+
+    Number of calls: 0
+
+      396 |       );
+      397 |
+    > 398 |       expect(mockDeleteBudget).toHaveBeenCalledWith('budget-123');
+          |                                ^
+      399 |       expect(responseStatus).toHaveBeenCalledWith(204);
+      400 |     });
+      401 |   });
+
+      at Object.<anonymous> (src/tests/budgetController.test.ts:398:32)
+
+FAIL src/tests/jwt.test.ts
+  ● JWT Utils › generateToken › should generate a JWT token with correct payload
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: "generated-token"
+    Received: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJ1c2VyLTEyMyIsImVtYWlsIjoidGVzdEBleGFtcGxlLmNvbSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzY3MTQ4MDEyLCJleHAiOjE3Njc3NTI4MTJ9.YwaLKe9PesY_LPdYpNtZ-hroTRF0GfDKOb4e3r2mn_s"
+
+      45 |       const result = generateToken(mockPayload);
+      46 |
+    > 47 |       expect(result).toBe(expectedToken);
+         |                      ^
+      48 |       expect(mockSign).toHaveBeenCalledWith(
+      49 |         mockPayload,
+      50 |         'test-secret',
+
+      at Object.<anonymous> (src/tests/jwt.test.ts:47:22)
+
+  ● JWT Utils › verifyToken › should verify and return decoded token
+
+    Invalid or expired token
+
+      23 |     return jwt.verify(token, config.jwtSecret) as JWTPayload;
+      24 |   } catch (error) {
+    > 25 |     throw new Error('Invalid or expired token');
+         |           ^
+      26 |   }
+      27 | };
+      28 |
+
+      at verifyToken (src/utils/jwt.ts:25:11)
+      at Object.<anonymous> (src/tests/jwt.test.ts:70:22)
+
+  ● JWT Utils › decodeToken › should decode token without verification
+
+    expect(received).toEqual(expected) // deep equality
+
+    Expected: {"email": "test@example.com", "role": "user", "userId": "user-123"}
+    Received: null
+
+      100 |       const result = decodeToken(token);
+      101 |
+    > 102 |       expect(result).toEqual(mockPayload);
+          |                      ^
+      103 |       expect(mockDecode).toHaveBeenCalledWith(token);
+      104 |     });
+      105 |
+
+      at Object.<anonymous> (src/tests/jwt.test.ts:102:22)
+
+FAIL src/tests/initAdmin.test.ts
+  ● initializeAdmin › should skip admin creation when admin user already exists
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: "admin@example.com"
+
+    Number of calls: 0
+
+      94 |     await initializeAdmin();
+      95 |
+    > 96 |     expect(mockGetUserByEmail).toHaveBeenCalledWith('admin@example.com');
+         |                                ^
+      97 |     expect(mockCreateUser).not.toHaveBeenCalled();
+      98 |   });
+      99 |
+
+      at Object.<anonymous> (src/tests/initAdmin.test.ts:96:32)
+
+  ● initializeAdmin › should create admin user when it does not exist
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: "admin@example.com"
+
+    Number of calls: 0
+
+      120 |     await initializeAdmin();
+      121 |
+    > 122 |     expect(mockGetUserByEmail).toHaveBeenCalledWith('admin@example.com');
+          |                                ^
+      123 |     expect(mockHashPassword).toHaveBeenCalledWith('password123');
+      124 |     expect(mockCreateUser).toHaveBeenCalledWith({
+      125 |       email: 'admin@example.com',
+
+      at Object.<anonymous> (src/tests/initAdmin.test.ts:122:32)
+
+  ● initializeAdmin › should normalize email to lowercase and trim
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: "admin@example.com"
+
+    Number of calls: 0
+
+      153 |     await initializeAdmin();
+      154 |
+    > 155 |     expect(mockGetUserByEmail).toHaveBeenCalledWith('admin@example.com');
+          |                                ^
+      156 |     expect(mockCreateUser).toHaveBeenCalledWith(
+      157 |       expect.objectContaining({
+      158 |         email: 'admin@example.com',
+
+      at Object.<anonymous> (src/tests/initAdmin.test.ts:155:32)
+
+  ● initializeAdmin › should handle unique constraint violation gracefully
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: "Admin user already exists"
+
+    Number of calls: 0
+
+      173 |
+      174 |     await expect(initializeAdmin()).resolves.not.toThrow();
+    > 175 |     expect(console.log).toHaveBeenCalledWith('Admin user already exists');
+          |                         ^
+      176 |   });
+      177 |
+      178 |   it('should handle other errors gracefully without throwing', async () => {
+
+      at Object.<anonymous> (src/tests/initAdmin.test.ts:175:25)
+
+  ● initializeAdmin › should handle other errors gracefully without throwing
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: "Error initializing admin user:", [Error: Database error]
+    Received
+           1
+              "Database query error",
+            - [Error: Database error]
+            + Object {
+            +   "error": [TypeError: Cannot read properties of undefined (reading 'rowCount')],
+            +   "text": "SELECT * FROM users WHERE email = $1",
+            + },
+           2: "Error initializing admin user:", [TypeError: Cannot read properties of undefined (reading 'rowCount')]
+
+    Number of calls: 2
+
+      184 |
+      185 |     await expect(initializeAdmin()).resolves.not.toThrow();
+    > 186 |     expect(console.error).toHaveBeenCalledWith('Error initializing admin user:', error);
+          |                           ^
+      187 |   });
+      188 | });
+      189 |
+
+      at Object.<anonymous> (src/tests/initAdmin.test.ts:186:27)
+
+PASS dist/tests/itemController.test.js
+  ● Console
+
+    console.error
+      Error: Database connection failed
+          at Object.<anonymous> (/Users/aspandyar/Projects/finance-hub-backend/src/tests/itemController.test.ts:35:21)
+          at Promise.finally.completed (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
+          at new Promise (<anonymous>)
+          at callAsyncCircusFn (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
+          at _callCircusTest (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:1007:40)
+          at processTicksAndRejections (node:internal/process/task_queues:103:5)
+          at _runTest (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:947:3)
+          at /Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:849:7
+          at _runTestsForDescribeBlock (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:862:11)
+          at _runTestsForDescribeBlock (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:857:11)
+          at _runTestsForDescribeBlock (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:857:11)
+          at run (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:761:3)
+          at runAndTransformResultsToJestFormat (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:1918:21)
+          at jestAdapter (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/runner.js:101:19)
+          at runTestInternal (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-runner/build/index.js:275:16)
+          at runTest (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-runner/build/index.js:343:7)
+
+      11 |   next: NextFunction
+      12 | ) => {
+    > 13 |   console.error(err);
+         |           ^
+      14 |   res.status(err.status || 500).json({
+      15 |     message: err.message || 'Internal Server Error',
+      16 |   });
+
+      at errorHandler (src/middlewares/errorHandler.ts:13:11)
+      at Layer.handleError (node_modules/router/lib/layer.js:116:17)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at node_modules/router/index.js:688:15
+      at next (node_modules/router/index.js:276:14)
+      at next (node_modules/router/lib/route.js:132:14)
+      at getItems (src/controllers/itemController.ts:34:5)
+
+    console.error
+      Error: Database connection failed
+          at Object.<anonymous> (/Users/aspandyar/Projects/finance-hub-backend/src/tests/itemController.test.ts:74:21)
+          at Promise.finally.completed (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
+          at new Promise (<anonymous>)
+          at callAsyncCircusFn (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
+          at _callCircusTest (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:1007:40)
+          at processTicksAndRejections (node:internal/process/task_queues:103:5)
+          at _runTest (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:947:3)
+          at /Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:849:7
+          at _runTestsForDescribeBlock (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:862:11)
+          at _runTestsForDescribeBlock (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:857:11)
+          at _runTestsForDescribeBlock (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:857:11)
+          at run (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:761:3)
+          at runAndTransformResultsToJestFormat (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:1918:21)
+          at jestAdapter (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/runner.js:101:19)
+          at runTestInternal (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-runner/build/index.js:275:16)
+          at runTest (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-runner/build/index.js:343:7)
+
+      11 |   next: NextFunction
+      12 | ) => {
+    > 13 |   console.error(err);
+         |           ^
+      14 |   res.status(err.status || 500).json({
+      15 |     message: err.message || 'Internal Server Error',
+      16 |   });
+
+      at errorHandler (src/middlewares/errorHandler.ts:13:11)
+      at Layer.handleError (node_modules/router/lib/layer.js:116:17)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at node_modules/router/index.js:688:15
+      at next (node_modules/router/index.js:276:14)
+      at next (node_modules/router/lib/route.js:132:14)
+      at getItemById (src/controllers/itemController.ts:57:5)
+
+    console.error
+      Error: Database connection failed
+          at Object.<anonymous> (/Users/aspandyar/Projects/finance-hub-backend/src/tests/itemController.test.ts:151:21)
+          at Promise.finally.completed (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
+          at new Promise (<anonymous>)
+          at callAsyncCircusFn (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
+          at _callCircusTest (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:1007:40)
+          at processTicksAndRejections (node:internal/process/task_queues:103:5)
+          at _runTest (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:947:3)
+          at /Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:849:7
+          at _runTestsForDescribeBlock (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:862:11)
+          at _runTestsForDescribeBlock (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:857:11)
+          at _runTestsForDescribeBlock (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:857:11)
+          at run (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:761:3)
+          at runAndTransformResultsToJestFormat (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:1918:21)
+          at jestAdapter (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/runner.js:101:19)
+          at runTestInternal (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-runner/build/index.js:275:16)
+          at runTest (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-runner/build/index.js:343:7)
+
+      11 |   next: NextFunction
+      12 | ) => {
+    > 13 |   console.error(err);
+         |           ^
+      14 |   res.status(err.status || 500).json({
+      15 |     message: err.message || 'Internal Server Error',
+      16 |   });
+
+      at errorHandler (src/middlewares/errorHandler.ts:13:11)
+      at Layer.handleError (node_modules/router/lib/layer.js:116:17)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at node_modules/router/index.js:688:15
+      at next (node_modules/router/index.js:276:14)
+      at next (node_modules/router/lib/route.js:132:14)
+      at createItem (src/controllers/itemController.ts:20:5)
+
+    console.error
+      Error: Database connection failed
+          at Object.<anonymous> (/Users/aspandyar/Projects/finance-hub-backend/src/tests/itemController.test.ts:200:21)
+          at Promise.finally.completed (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
+          at new Promise (<anonymous>)
+          at callAsyncCircusFn (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
+          at _callCircusTest (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:1007:40)
+          at processTicksAndRejections (node:internal/process/task_queues:103:5)
+          at _runTest (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:947:3)
+          at /Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:849:7
+          at _runTestsForDescribeBlock (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:862:11)
+          at _runTestsForDescribeBlock (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:857:11)
+          at _runTestsForDescribeBlock (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:857:11)
+          at run (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:761:3)
+          at runAndTransformResultsToJestFormat (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:1918:21)
+          at jestAdapter (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/runner.js:101:19)
+          at runTestInternal (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-runner/build/index.js:275:16)
+          at runTest (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-runner/build/index.js:343:7)
+
+      11 |   next: NextFunction
+      12 | ) => {
+    > 13 |   console.error(err);
+         |           ^
+      14 |   res.status(err.status || 500).json({
+      15 |     message: err.message || 'Internal Server Error',
+      16 |   });
+
+      at errorHandler (src/middlewares/errorHandler.ts:13:11)
+      at Layer.handleError (node_modules/router/lib/layer.js:116:17)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at node_modules/router/index.js:688:15
+      at next (node_modules/router/index.js:276:14)
+      at next (node_modules/router/lib/route.js:132:14)
+      at updateItem (src/controllers/itemController.ts:82:5)
+
+    console.error
+      Error: Database connection failed
+          at Object.<anonymous> (/Users/aspandyar/Projects/finance-hub-backend/src/tests/itemController.test.ts:239:21)
+          at Promise.finally.completed (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
+          at new Promise (<anonymous>)
+          at callAsyncCircusFn (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
+          at _callCircusTest (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:1007:40)
+          at processTicksAndRejections (node:internal/process/task_queues:103:5)
+          at _runTest (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:947:3)
+          at /Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:849:7
+          at _runTestsForDescribeBlock (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:862:11)
+          at _runTestsForDescribeBlock (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:857:11)
+          at _runTestsForDescribeBlock (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:857:11)
+          at run (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:761:3)
+          at runAndTransformResultsToJestFormat (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:1918:21)
+          at jestAdapter (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/runner.js:101:19)
+          at runTestInternal (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-runner/build/index.js:275:16)
+          at runTest (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-runner/build/index.js:343:7)
+
+      11 |   next: NextFunction
+      12 | ) => {
+    > 13 |   console.error(err);
+         |           ^
+      14 |   res.status(err.status || 500).json({
+      15 |     message: err.message || 'Internal Server Error',
+      16 |   });
+
+      at errorHandler (src/middlewares/errorHandler.ts:13:11)
+      at Layer.handleError (node_modules/router/lib/layer.js:116:17)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at node_modules/router/index.js:688:15
+      at Timeout.task [as _onTimeout] (node_modules/jsdom/lib/jsdom/browser/Window.js:579:19)
+
+PASS src/tests/config.test.ts
+PASS dist/tests/config.test.js
+PASS src/tests/errorHandler.test.ts
+  ● Console
+
+    console.error
+      Error: Internal Server Error
+          at Object.<anonymous> (/Users/aspandyar/Projects/finance-hub-backend/src/tests/errorHandler.test.ts:46:19)
+          at Promise.finally.completed (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
+          at new Promise (<anonymous>)
+          at callAsyncCircusFn (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
+          at _callCircusTest (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:1007:40)
+          at _runTest (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:947:3)
+          at /Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:849:7
+          at _runTestsForDescribeBlock (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:862:11)
+          at _runTestsForDescribeBlock (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:857:11)
+          at run (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:761:3)
+          at runAndTransformResultsToJestFormat (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:1918:21)
+          at jestAdapter (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/runner.js:101:19)
+          at runTestInternal (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-runner/build/index.js:275:16)
+          at runTest (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-runner/build/index.js:343:7)
+
+      11 |   next: NextFunction
+      12 | ) => {
+    > 13 |   console.error(err);
+         |           ^
+      14 |   res.status(err.status || 500).json({
+      15 |     message: err.message || 'Internal Server Error',
+      16 |   });
+
+      at errorHandler (src/middlewares/errorHandler.ts:13:11)
+      at Object.<anonymous> (src/tests/errorHandler.test.ts:48:5)
+
+    console.error
+      Error: 
+          at Object.<anonymous> (/Users/aspandyar/Projects/finance-hub-backend/src/tests/errorHandler.test.ts:62:19)
+          at Promise.finally.completed (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
+          at new Promise (<anonymous>)
+          at callAsyncCircusFn (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
+          at _callCircusTest (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:1007:40)
+          at _runTest (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:947:3)
+          at /Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:849:7
+          at _runTestsForDescribeBlock (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:862:11)
+          at _runTestsForDescribeBlock (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:857:11)
+          at run (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:761:3)
+          at runAndTransformResultsToJestFormat (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:1918:21)
+          at jestAdapter (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/runner.js:101:19)
+          at runTestInternal (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-runner/build/index.js:275:16)
+          at runTest (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-runner/build/index.js:343:7) {
+        status: 500
+      }
+
+      11 |   next: NextFunction
+      12 | ) => {
+    > 13 |   console.error(err);
+         |           ^
+      14 |   res.status(err.status || 500).json({
+      15 |     message: err.message || 'Internal Server Error',
+      16 |   });
+
+      at errorHandler (src/middlewares/errorHandler.ts:13:11)
+      at Object.<anonymous> (src/tests/errorHandler.test.ts:65:5)
+
+    console.error
+      Error: Bad Request
+          at Object.<anonymous> (/Users/aspandyar/Projects/finance-hub-backend/src/tests/errorHandler.test.ts:79:29)
+          at Promise.finally.completed (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
+          at new Promise (<anonymous>)
+          at callAsyncCircusFn (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
+          at _callCircusTest (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:1007:40)
+          at _runTest (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:947:3)
+          at /Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:849:7
+          at _runTestsForDescribeBlock (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:862:11)
+          at _runTestsForDescribeBlock (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:857:11)
+          at run (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:761:3)
+          at runAndTransformResultsToJestFormat (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:1918:21)
+          at jestAdapter (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/runner.js:101:19)
+          at runTestInternal (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-runner/build/index.js:275:16)
+          at runTest (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-runner/build/index.js:343:7) {
+        status: 400
+      }
+
+      11 |   next: NextFunction
+      12 | ) => {
+    > 13 |   console.error(err);
+         |           ^
+      14 |   res.status(err.status || 500).json({
+      15 |     message: err.message || 'Internal Server Error',
+      16 |   });
+
+      at errorHandler (src/middlewares/errorHandler.ts:13:11)
+      at Object.<anonymous> (src/tests/errorHandler.test.ts:82:5)
+
+PASS dist/tests/errorHandler.test.js
+  ● Console
+
+    console.error
+      Error: Internal Server Error
+          at Object.<anonymous> (/Users/aspandyar/Projects/finance-hub-backend/src/tests/errorHandler.test.ts:46:19)
+          at Promise.finally.completed (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
+          at new Promise (<anonymous>)
+          at callAsyncCircusFn (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
+          at _callCircusTest (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:1007:40)
+          at _runTest (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:947:3)
+          at /Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:849:7
+          at _runTestsForDescribeBlock (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:862:11)
+          at _runTestsForDescribeBlock (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:857:11)
+          at run (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:761:3)
+          at runAndTransformResultsToJestFormat (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:1918:21)
+          at jestAdapter (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/runner.js:101:19)
+          at runTestInternal (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-runner/build/index.js:275:16)
+          at runTest (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-runner/build/index.js:343:7)
+
+      11 |   next: NextFunction
+      12 | ) => {
+    > 13 |   console.error(err);
+         |           ^
+      14 |   res.status(err.status || 500).json({
+      15 |     message: err.message || 'Internal Server Error',
+      16 |   });
+
+      at errorHandler (src/middlewares/errorHandler.ts:13:11)
+      at Object.<anonymous> (src/tests/errorHandler.test.ts:48:5)
+
+    console.error
+      Error: 
+          at Object.<anonymous> (/Users/aspandyar/Projects/finance-hub-backend/src/tests/errorHandler.test.ts:62:19)
+          at Promise.finally.completed (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
+          at new Promise (<anonymous>)
+          at callAsyncCircusFn (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
+          at _callCircusTest (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:1007:40)
+          at _runTest (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:947:3)
+          at /Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:849:7
+          at _runTestsForDescribeBlock (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:862:11)
+          at _runTestsForDescribeBlock (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:857:11)
+          at run (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:761:3)
+          at runAndTransformResultsToJestFormat (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:1918:21)
+          at jestAdapter (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/runner.js:101:19)
+          at runTestInternal (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-runner/build/index.js:275:16)
+          at runTest (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-runner/build/index.js:343:7) {
+        status: 500
+      }
+
+      11 |   next: NextFunction
+      12 | ) => {
+    > 13 |   console.error(err);
+         |           ^
+      14 |   res.status(err.status || 500).json({
+      15 |     message: err.message || 'Internal Server Error',
+      16 |   });
+
+      at errorHandler (src/middlewares/errorHandler.ts:13:11)
+      at Object.<anonymous> (src/tests/errorHandler.test.ts:65:5)
+
+    console.error
+      Error: Bad Request
+          at Object.<anonymous> (/Users/aspandyar/Projects/finance-hub-backend/src/tests/errorHandler.test.ts:79:29)
+          at Promise.finally.completed (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
+          at new Promise (<anonymous>)
+          at callAsyncCircusFn (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
+          at _callCircusTest (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:1007:40)
+          at _runTest (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:947:3)
+          at /Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:849:7
+          at _runTestsForDescribeBlock (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:862:11)
+          at _runTestsForDescribeBlock (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:857:11)
+          at run (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:761:3)
+          at runAndTransformResultsToJestFormat (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/jestAdapterInit.js:1918:21)
+          at jestAdapter (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-circus/build/runner.js:101:19)
+          at runTestInternal (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-runner/build/index.js:275:16)
+          at runTest (/Users/aspandyar/Projects/finance-hub-backend/node_modules/jest-runner/build/index.js:343:7) {
+        status: 400
+      }
+
+      11 |   next: NextFunction
+      12 | ) => {
+    > 13 |   console.error(err);
+         |           ^
+      14 |   res.status(err.status || 500).json({
+      15 |     message: err.message || 'Internal Server Error',
+      16 |   });
+
+      at errorHandler (src/middlewares/errorHandler.ts:13:11)
+      at Object.<anonymous> (src/tests/errorHandler.test.ts:82:5)
+
+PASS dist/tests/item.test.js
+PASS dist/tests/database.test.js
+PASS src/tests/database.test.ts
+
+Test Suites: 10 failed, 8 passed, 18 total
+Tests:       77 failed, 149 passed, 226 total
+Snapshots:   0 total
+Time:        1.753 s
+Ran all test suites.

@@ -45,12 +45,14 @@ export const createTransaction = async (
   next: NextFunction
 ) => {
   try {
-    const { user_id, category_id, amount, type, description, date } = req.body;
-
-    // Validate user_id
-    if (!user_id || typeof user_id !== 'string' || !isValidUUID(user_id)) {
-      return res.status(400).json({ error: 'Valid user ID is required' });
+    if (!req.user) {
+      return res.status(401).json({ error: 'Authentication required' });
     }
+
+    const { category_id, amount, type, description, date } = req.body;
+
+    // Use authenticated user's ID (users can only create transactions for themselves)
+    const user_id = req.user.id;
 
     // Validate category_id
     if (
@@ -122,15 +124,28 @@ export const getTransactions = async (
   next: NextFunction
 ) => {
   try {
-    const { user_id, type, category_id, start_date, end_date } = req.query;
+    if (!req.user) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
 
+    const { type, category_id, start_date, end_date } = req.query;
+
+    // Regular users can only see their own transactions
+    // Admin and manager can see all transactions
     let parsedUserId: string | undefined = undefined;
-    if (user_id !== undefined) {
-      if (typeof user_id === 'string' && isValidUUID(user_id)) {
-        parsedUserId = user_id;
-      } else {
-        return res.status(400).json({ error: 'Invalid user ID format' });
+    if (req.user.role === 'admin' || req.user.role === 'manager') {
+      // Admin/manager can filter by any user_id or see all
+      const { user_id } = req.query;
+      if (user_id !== undefined) {
+        if (typeof user_id === 'string' && isValidUUID(user_id)) {
+          parsedUserId = user_id;
+        } else {
+          return res.status(400).json({ error: 'Invalid user ID format' });
+        }
       }
+    } else {
+      // Regular users can only see their own transactions
+      parsedUserId = req.user.id;
     }
 
     let parsedType: TransactionType | undefined = undefined;
@@ -239,10 +254,30 @@ export const updateTransaction = async (
   next: NextFunction
 ) => {
   try {
+    if (!req.user) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
+
     const { id } = req.params;
 
     if (!id || !isValidUUID(id)) {
       return res.status(400).json({ error: 'Invalid transaction ID format' });
+    }
+
+    // Check ownership or role
+    const existingTransaction = await TransactionModel.getTransactionById(id);
+    if (!existingTransaction) {
+      return res.status(404).json({ message: 'Transaction not found' });
+    }
+
+    // Check if user owns the transaction or is admin/manager
+    if (req.user.role !== 'admin' && req.user.role !== 'manager') {
+      if (existingTransaction.user_id !== req.user.id) {
+        return res.status(403).json({
+          error: 'Access denied',
+          message: 'You can only update your own transactions',
+        });
+      }
     }
 
     const { category_id, amount, type, description, date } = req.body;
@@ -320,10 +355,30 @@ export const deleteTransaction = async (
   next: NextFunction
 ) => {
   try {
+    if (!req.user) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
+
     const { id } = req.params;
 
     if (!id || !isValidUUID(id)) {
       return res.status(400).json({ error: 'Invalid transaction ID format' });
+    }
+
+    // Check ownership or role
+    const existingTransaction = await TransactionModel.getTransactionById(id);
+    if (!existingTransaction) {
+      return res.status(404).json({ message: 'Transaction not found' });
+    }
+
+    // Check if user owns the transaction or is admin/manager
+    if (req.user.role !== 'admin' && req.user.role !== 'manager') {
+      if (existingTransaction.user_id !== req.user.id) {
+        return res.status(403).json({
+          error: 'Access denied',
+          message: 'You can only delete your own transactions',
+        });
+      }
     }
 
     const deleted = await TransactionModel.deleteTransaction(id);

@@ -58,8 +58,11 @@ export const createRecurringTransaction = async (
   next: NextFunction
 ) => {
   try {
+    if (!req.user) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
+
     const {
-      user_id,
       category_id,
       amount,
       type,
@@ -71,10 +74,8 @@ export const createRecurringTransaction = async (
       is_active,
     } = req.body;
 
-    // Validate user_id
-    if (!user_id || typeof user_id !== 'string' || !isValidUUID(user_id)) {
-      return res.status(400).json({ error: 'Valid user ID is required' });
-    }
+    // Use authenticated user's ID (users can only create recurring transactions for themselves)
+    const user_id = req.user.id;
 
     // Validate category_id
     if (
@@ -187,15 +188,28 @@ export const getRecurringTransactions = async (
   next: NextFunction
 ) => {
   try {
-    const { user_id, is_active } = req.query;
+    if (!req.user) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
 
+    const { is_active } = req.query;
+
+    // Regular users can only see their own recurring transactions
+    // Admin and manager can see all recurring transactions
     let parsedUserId: string | undefined = undefined;
-    if (user_id !== undefined) {
-      if (typeof user_id === 'string' && isValidUUID(user_id)) {
-        parsedUserId = user_id;
-      } else {
-        return res.status(400).json({ error: 'Invalid user ID format' });
+    if (req.user.role === 'admin' || req.user.role === 'manager') {
+      // Admin/manager can filter by any user_id or see all
+      const { user_id } = req.query;
+      if (user_id !== undefined) {
+        if (typeof user_id === 'string' && isValidUUID(user_id)) {
+          parsedUserId = user_id;
+        } else {
+          return res.status(400).json({ error: 'Invalid user ID format' });
+        }
       }
+    } else {
+      // Regular users can only see their own recurring transactions
+      parsedUserId = req.user.id;
     }
 
     let parsedIsActive: boolean | undefined = undefined;
@@ -260,10 +274,25 @@ export const getRecurringTransactionsByUserId = async (
   next: NextFunction
 ) => {
   try {
+    if (!req.user) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
+
     const { user_id } = req.params;
 
     if (!user_id || !isValidUUID(user_id)) {
       return res.status(400).json({ error: 'Invalid user ID format' });
+    }
+
+    // Regular users can only see their own recurring transactions
+    // Admin and manager can see any user's recurring transactions
+    if (req.user.role !== 'admin' && req.user.role !== 'manager') {
+      if (user_id !== req.user.id) {
+        return res.status(403).json({
+          error: 'Access denied',
+          message: 'You can only view your own recurring transactions',
+        });
+      }
     }
 
     const recurringTransactions =
@@ -313,12 +342,35 @@ export const updateRecurringTransaction = async (
   next: NextFunction
 ) => {
   try {
+    if (!req.user) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
+
     const { id } = req.params;
 
     if (!id || !isValidUUID(id)) {
       return res
         .status(400)
         .json({ error: 'Invalid recurring transaction ID format' });
+    }
+
+    // Check ownership or role
+    const existingRecurringTransaction =
+      await RecurringTransactionModel.getRecurringTransactionById(id);
+    if (!existingRecurringTransaction) {
+      return res
+        .status(404)
+        .json({ message: 'Recurring transaction not found' });
+    }
+
+    // Check if user owns the recurring transaction or is admin/manager
+    if (req.user.role !== 'admin' && req.user.role !== 'manager') {
+      if (existingRecurringTransaction.user_id !== req.user.id) {
+        return res.status(403).json({
+          error: 'Access denied',
+          message: 'You can only update your own recurring transactions',
+        });
+      }
     }
 
     const {
@@ -474,12 +526,35 @@ export const deleteRecurringTransaction = async (
   next: NextFunction
 ) => {
   try {
+    if (!req.user) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
+
     const { id } = req.params;
 
     if (!id || !isValidUUID(id)) {
       return res
         .status(400)
         .json({ error: 'Invalid recurring transaction ID format' });
+    }
+
+    // Check ownership or role
+    const existingRecurringTransaction =
+      await RecurringTransactionModel.getRecurringTransactionById(id);
+    if (!existingRecurringTransaction) {
+      return res
+        .status(404)
+        .json({ message: 'Recurring transaction not found' });
+    }
+
+    // Check if user owns the recurring transaction or is admin/manager
+    if (req.user.role !== 'admin' && req.user.role !== 'manager') {
+      if (existingRecurringTransaction.user_id !== req.user.id) {
+        return res.status(403).json({
+          error: 'Access denied',
+          message: 'You can only delete your own recurring transactions',
+        });
+      }
     }
 
     const deleted =

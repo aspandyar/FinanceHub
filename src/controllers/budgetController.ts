@@ -47,12 +47,14 @@ export const createBudget = async (
   next: NextFunction
 ) => {
   try {
-    const { user_id, category_id, amount, month } = req.body;
-
-    // Validate user_id
-    if (!user_id || typeof user_id !== 'string' || !isValidUUID(user_id)) {
-      return res.status(400).json({ error: 'Valid user ID is required' });
+    if (!req.user) {
+      return res.status(401).json({ error: 'Authentication required' });
     }
+
+    const { category_id, amount, month } = req.body;
+
+    // Use authenticated user's ID (users can only create budgets for themselves)
+    const user_id = req.user.id;
 
     // Validate category_id
     if (
@@ -116,15 +118,28 @@ export const getBudgets = async (
   next: NextFunction
 ) => {
   try {
-    const { user_id, category_id, month } = req.query;
+    if (!req.user) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
 
+    const { category_id, month } = req.query;
+
+    // Regular users can only see their own budgets
+    // Admin and manager can see all budgets
     let parsedUserId: string | undefined = undefined;
-    if (user_id !== undefined) {
-      if (typeof user_id === 'string' && isValidUUID(user_id)) {
-        parsedUserId = user_id;
-      } else {
-        return res.status(400).json({ error: 'Invalid user ID format' });
+    if (req.user.role === 'admin' || req.user.role === 'manager') {
+      // Admin/manager can filter by any user_id or see all
+      const { user_id } = req.query;
+      if (user_id !== undefined) {
+        if (typeof user_id === 'string' && isValidUUID(user_id)) {
+          parsedUserId = user_id;
+        } else {
+          return res.status(400).json({ error: 'Invalid user ID format' });
+        }
       }
+    } else {
+      // Regular users can only see their own budgets
+      parsedUserId = req.user.id;
     }
 
     let parsedCategoryId: string | undefined = undefined;
@@ -189,10 +204,25 @@ export const getBudgetsByUserId = async (
   next: NextFunction
 ) => {
   try {
+    if (!req.user) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
+
     const { user_id } = req.params;
 
     if (!user_id || !isValidUUID(user_id)) {
       return res.status(400).json({ error: 'Invalid user ID format' });
+    }
+
+    // Regular users can only see their own budgets
+    // Admin and manager can see any user's budgets
+    if (req.user.role !== 'admin' && req.user.role !== 'manager') {
+      if (user_id !== req.user.id) {
+        return res.status(403).json({
+          error: 'Access denied',
+          message: 'You can only view your own budgets',
+        });
+      }
     }
 
     const budgets = await BudgetModel.getBudgetsByUserId(user_id);
@@ -209,10 +239,25 @@ export const getBudgetsByUserIdAndMonth = async (
   next: NextFunction
 ) => {
   try {
+    if (!req.user) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
+
     const { user_id, month } = req.params;
 
     if (!user_id || !isValidUUID(user_id)) {
       return res.status(400).json({ error: 'Invalid user ID format' });
+    }
+
+    // Regular users can only see their own budgets
+    // Admin and manager can see any user's budgets
+    if (req.user.role !== 'admin' && req.user.role !== 'manager') {
+      if (user_id !== req.user.id) {
+        return res.status(403).json({
+          error: 'Access denied',
+          message: 'You can only view your own budgets',
+        });
+      }
     }
 
     if (!month || typeof month !== 'string' || !isValidDate(month)) {
@@ -239,10 +284,30 @@ export const updateBudget = async (
   next: NextFunction
 ) => {
   try {
+    if (!req.user) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
+
     const { id } = req.params;
 
     if (!id || !isValidUUID(id)) {
       return res.status(400).json({ error: 'Invalid budget ID format' });
+    }
+
+    // Check ownership or role
+    const existingBudget = await BudgetModel.getBudgetById(id);
+    if (!existingBudget) {
+      return res.status(404).json({ message: 'Budget not found' });
+    }
+
+    // Check if user owns the budget or is admin/manager
+    if (req.user.role !== 'admin' && req.user.role !== 'manager') {
+      if (existingBudget.user_id !== req.user.id) {
+        return res.status(403).json({
+          error: 'Access denied',
+          message: 'You can only update your own budgets',
+        });
+      }
     }
 
     const { category_id, amount, month } = req.body;
@@ -324,10 +389,30 @@ export const deleteBudget = async (
   next: NextFunction
 ) => {
   try {
+    if (!req.user) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
+
     const { id } = req.params;
 
     if (!id || !isValidUUID(id)) {
       return res.status(400).json({ error: 'Invalid budget ID format' });
+    }
+
+    // Check ownership or role
+    const existingBudget = await BudgetModel.getBudgetById(id);
+    if (!existingBudget) {
+      return res.status(404).json({ message: 'Budget not found' });
+    }
+
+    // Check if user owns the budget or is admin/manager
+    if (req.user.role !== 'admin' && req.user.role !== 'manager') {
+      if (existingBudget.user_id !== req.user.id) {
+        return res.status(403).json({
+          error: 'Access denied',
+          message: 'You can only delete your own budgets',
+        });
+      }
     }
 
     const deleted = await BudgetModel.deleteBudget(id);

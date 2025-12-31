@@ -1,4 +1,5 @@
 import express from 'express';
+import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import categoryRoutes from './routes/categoryRoutes.js';
 import transactionRoutes from './routes/transactionRoutes.js';
@@ -10,7 +11,10 @@ const app = express();
 
 app.use(express.json());
 
-// Routes
+// Public routes
+app.use('/api/auth', authRoutes);
+
+// Protected routes (require authentication)
 app.use('/api/users', userRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/transactions', transactionRoutes);

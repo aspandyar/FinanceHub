@@ -1,14 +1,26 @@
 import type { Request, Response, NextFunction } from 'express';
 import { UserModel } from '../models/models.js';
 
-// Create a user
+// Create a user (admin/manager only - regular users should use /api/auth/register)
 export const createUser = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const { email, password_hash, full_name, currency } = req.body;
+    if (!req.user) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
+
+    // Only admin and manager can create users directly
+    if (req.user.role !== 'admin' && req.user.role !== 'manager') {
+      return res.status(403).json({
+        error: 'Insufficient permissions',
+        message: 'Only admin and manager can create users',
+      });
+    }
+
+    const { email, password_hash, full_name, currency, role } = req.body;
 
     if (!email || typeof email !== 'string' || email.trim().length === 0) {
       return res.status(400).json({ error: 'Email is required' });
@@ -43,11 +55,21 @@ export const createUser = async (
       });
     }
 
+    // Validate role if provided
+    if (role !== undefined) {
+      if (!['admin', 'manager', 'user'].includes(role)) {
+        return res.status(400).json({
+          error: 'Role must be admin, manager, or user',
+        });
+      }
+    }
+
     const user = await UserModel.createUser({
       email: email.trim().toLowerCase(),
       password_hash: password_hash.trim(),
       full_name: full_name.trim(),
       currency: currency?.trim().toUpperCase() || 'USD',
+      role: role || 'user',
     });
     res.status(201).json(user);
   } catch (error: any) {
@@ -59,15 +81,29 @@ export const createUser = async (
   }
 };
 
-// Read all users
+// Read all users (admin/manager only)
 export const getUsers = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
+    if (!req.user) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
+
+    // Only admin and manager can see all users
+    if (req.user.role !== 'admin' && req.user.role !== 'manager') {
+      return res.status(403).json({
+        error: 'Insufficient permissions',
+        message: 'Only admin and manager can view all users',
+      });
+    }
+
     const users = await UserModel.getAllUsers();
-    res.json(users);
+    // Remove password_hash from response
+    const usersWithoutPassword = users.map(({ password_hash, ...user }) => user);
+    res.json(usersWithoutPassword);
   } catch (error) {
     next(error);
   }
@@ -80,9 +116,23 @@ export const getUserById = async (
   next: NextFunction
 ) => {
   try {
+    if (!req.user) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
+
     const { id } = req.params;
     if (!id || typeof id !== 'string') {
       return res.status(400).json({ error: 'Invalid user ID' });
+    }
+
+    // Regular users can only see their own profile
+    if (req.user.role !== 'admin' && req.user.role !== 'manager') {
+      if (id !== req.user.id) {
+        return res.status(403).json({
+          error: 'Access denied',
+          message: 'You can only view your own profile',
+        });
+      }
     }
 
     const user = await UserModel.getUserById(id);
@@ -90,7 +140,9 @@ export const getUserById = async (
       return res.status(404).json({ message: 'User not found' });
     }
 
-    res.json(user);
+    // Remove password_hash from response
+    const { password_hash, ...userWithoutPassword } = user;
+    res.json(userWithoutPassword);
   } catch (error) {
     next(error);
   }
@@ -103,12 +155,26 @@ export const updateUser = async (
   next: NextFunction
 ) => {
   try {
+    if (!req.user) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
+
     const { id } = req.params;
     if (!id || typeof id !== 'string') {
       return res.status(400).json({ error: 'Invalid user ID' });
     }
 
-    const { email, password_hash, full_name, currency } = req.body;
+    // Regular users can only update their own profile
+    if (req.user.role !== 'admin' && req.user.role !== 'manager') {
+      if (id !== req.user.id) {
+        return res.status(403).json({
+          error: 'Access denied',
+          message: 'You can only update your own profile',
+        });
+      }
+    }
+
+    const { email, password_hash, full_name, currency, role } = req.body;
 
     // Validate email format if provided
     if (email !== undefined) {
@@ -150,6 +216,21 @@ export const updateUser = async (
       }
     }
 
+    // Only admin can change roles
+    if (role !== undefined) {
+      if (req.user.role !== 'admin') {
+        return res.status(403).json({
+          error: 'Insufficient permissions',
+          message: 'Only admin can change user roles',
+        });
+      }
+      if (!['admin', 'manager', 'user'].includes(role)) {
+        return res.status(400).json({
+          error: 'Role must be admin, manager, or user',
+        });
+      }
+    }
+
     const updateData: any = {};
     if (email !== undefined) {
       updateData.email = email.trim().toLowerCase();
@@ -163,13 +244,18 @@ export const updateUser = async (
     if (currency !== undefined) {
       updateData.currency = currency.trim().toUpperCase();
     }
+    if (role !== undefined) {
+      updateData.role = role;
+    }
 
     const user = await UserModel.updateUser(id, updateData);
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    res.json(user);
+    // Remove password_hash from response
+    const { password_hash: _, ...userWithoutPassword } = user;
+    res.json(userWithoutPassword);
   } catch (error: any) {
     // Handle unique constraint violation
     if (error.code === '23505' && error.constraint === 'users_email_key') {
@@ -179,16 +265,35 @@ export const updateUser = async (
   }
 };
 
-// Delete a user
+// Delete a user (admin only)
 export const deleteUser = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
+    if (!req.user) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
+
+    // Only admin can delete users
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({
+        error: 'Insufficient permissions',
+        message: 'Only admin can delete users',
+      });
+    }
+
     const { id } = req.params;
     if (!id || typeof id !== 'string') {
       return res.status(400).json({ error: 'Invalid user ID' });
+    }
+
+    // Prevent self-deletion
+    if (id === req.user.id) {
+      return res.status(400).json({
+        error: 'Cannot delete your own account',
+      });
     }
 
     const deleted = await UserModel.deleteUser(id);

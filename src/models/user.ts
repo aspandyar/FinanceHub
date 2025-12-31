@@ -1,11 +1,14 @@
 import { query } from '../config/database.js';
 
+export type UserRole = 'admin' | 'manager' | 'user';
+
 export interface User {
   id: string;
   email: string;
   password_hash: string;
   full_name: string;
   currency: string;
+  role: UserRole;
   created_at?: Date;
   updated_at?: Date;
 }
@@ -15,6 +18,7 @@ export interface CreateUserInput {
   password_hash: string;
   full_name: string;
   currency?: string;
+  role?: UserRole;
 }
 
 export interface UpdateUserInput {
@@ -22,6 +26,7 @@ export interface UpdateUserInput {
   password_hash?: string;
   full_name?: string;
   currency?: string;
+  role?: UserRole;
 }
 
 // Get all users
@@ -45,10 +50,16 @@ export const getUserByEmail = async (email: string): Promise<User | null> => {
 // Create a new user
 export const createUser = async (input: CreateUserInput): Promise<User> => {
   const result = await query(
-    `INSERT INTO users (email, password_hash, full_name, currency) 
-     VALUES ($1, $2, $3, $4) 
+    `INSERT INTO users (email, password_hash, full_name, currency, role) 
+     VALUES ($1, $2, $3, $4, $5) 
      RETURNING *`,
-    [input.email, input.password_hash, input.full_name, input.currency || 'USD']
+    [
+      input.email,
+      input.password_hash,
+      input.full_name,
+      input.currency || 'USD',
+      input.role || 'user',
+    ]
   );
   return result.rows[0];
 };
@@ -77,6 +88,10 @@ export const updateUser = async (
   if (input.currency !== undefined) {
     updates.push(`currency = $${paramCount++}`);
     values.push(input.currency);
+  }
+  if (input.role !== undefined) {
+    updates.push(`role = $${paramCount++}`);
+    values.push(input.role);
   }
 
   if (updates.length === 0) {

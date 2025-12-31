@@ -19,3 +19,31 @@ if (typeof setImmediate === 'undefined') {
 beforeAll(() => {
   jest.spyOn(console, 'error').mockImplementation(() => {});
 });
+
+
+// Mock the database module GLOBALLY before any tests run
+jest.mock('./src/config/database.js', () => ({
+  default: {
+    query: jest.fn(),
+  },
+  query: jest.fn(),
+}));
+
+// Prevent real database connections
+jest.mock('pg', () => ({
+  Pool: jest.fn(() => ({
+    connect: jest.fn(),
+    query: jest.fn(),
+    end: jest.fn(),
+    on: jest.fn(),
+  })),
+}));
+
+// Mock console methods to reduce noise in tests (optional)
+global.console = {
+  ...console,
+  log: jest.fn(),
+  debug: jest.fn(),
+  info: jest.fn(),
+  // Keep error and warn for actual test failures
+};

@@ -8,8 +8,12 @@ import {
   updateRecurringTransaction,
   deleteRecurringTransaction,
 } from '../controllers/recurringTransactionController.js';
+import { authenticate } from '../middlewares/auth.js';
 
 const router = Router();
+
+// All recurring transaction routes require authentication
+router.use(authenticate);
 
 // Get all recurring transactions (with optional query params: user_id, is_active)
 router.get('/', getRecurringTransactions);
