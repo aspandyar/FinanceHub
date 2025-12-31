@@ -7,8 +7,8 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "build": "tsc && npm run copy:migrations",
-    "heroku-postbuild": "npm run build && npm run migrate:up",
+    "build": "npm run prisma:generate && tsc",
+    "heroku-postbuild": "npm run build && npm run prisma:migrate:deploy",
     "copy:migrations": "cpy \"src/migrations/files/**/*\" dist/migrations/files",
     "start": "node dist/server.js",
     "dev": "tsx watch src/server.ts",
