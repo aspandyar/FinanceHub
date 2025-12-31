@@ -66,8 +66,8 @@ export const register = async (
       role: user.role,
     });
 
-    // Return user without password_hash
-    const { password_hash: _, ...userWithoutPassword } = user;
+    // Return user without passwordHash
+    const { passwordHash: _, ...userWithoutPassword } = user;
 
     res.status(201).json({
       user: userWithoutPassword,
@@ -108,7 +108,7 @@ export const login = async (
     }
 
     // Compare password
-    const isPasswordValid = await comparePassword(password, user.password_hash);
+    const isPasswordValid = await comparePassword(password, user.passwordHash);
     if (!isPasswordValid) {
       return res.status(401).json({ error: 'Invalid email or password' });
     }
@@ -120,8 +120,8 @@ export const login = async (
       role: user.role,
     });
 
-    // Return user without password_hash
-    const { password_hash: _, ...userWithoutPassword } = user;
+    // Return user without passwordHash
+    const { passwordHash: _, ...userWithoutPassword } = user;
 
     res.json({
       user: userWithoutPassword,
@@ -163,8 +163,8 @@ export const getCurrentUser = async (
       return res.status(404).json({ error: 'User not found' });
     }
 
-    // Return user without password_hash
-    const { password_hash: _, ...userWithoutPassword } = user;
+    // Return user without passwordHash
+    const { passwordHash: _, ...userWithoutPassword } = user;
 
     res.json(userWithoutPassword);
   } catch (error) {

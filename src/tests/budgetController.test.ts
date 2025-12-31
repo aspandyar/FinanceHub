@@ -1,5 +1,7 @@
 import { jest } from '@jest/globals';
 import type { Request, Response, NextFunction } from 'express';
+import { Prisma } from '@prisma/client';
+const { Decimal } = Prisma;
 
 // Mock database FIRST to prevent real DB calls
 jest.mock('../config/database.js', () => ({
@@ -77,12 +79,12 @@ describe('Budget Controller', () => {
 
       const createdBudget: Budget = {
         id: 'budget-123',
-        user_id: 'user-123',
-        category_id: budgetData.category_id,
-        amount: '1000.50', // DECIMAL returned as string
-        month: '2024-01-01',
-        created_at: new Date(),
-        updated_at: new Date(),
+        userId: 'user-123',
+        categoryId: budgetData.category_id,
+        amount: new Decimal('1000.50'),
+        month: new Date('2024-01-01'),
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
       mockRequest.user = {
@@ -217,12 +219,12 @@ describe('Budget Controller', () => {
       const budgets: Budget[] = [
         {
           id: 'budget-1',
-          user_id: 'user-123',
-          category_id: 'cat-1',
-          amount: '1000',
-          month: '2024-01-01',
-          created_at: new Date(),
-          updated_at: new Date(),
+          userId: 'user-123',
+          categoryId: 'cat-1',
+          amount: new Decimal('1000'),
+          month: new Date('2024-01-01'),
+          createdAt: new Date(),
+          updatedAt: new Date(),
         },
       ];
 
@@ -267,12 +269,12 @@ describe('Budget Controller', () => {
     it('should return budget by id', async () => {
       const budget: Budget = {
         id: 'budget-123',
-        user_id: 'user-123',
-        category_id: 'cat-1',
-        amount: '1000',
-        month: '2024-01-01',
-        created_at: new Date(),
-        updated_at: new Date(),
+        userId: 'user-123',
+        categoryId: 'cat-1',
+        amount: new Decimal('1000'),
+        month: new Date('2024-01-01'),
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
       mockRequest.params = { id: 'budget-123' };
@@ -306,17 +308,17 @@ describe('Budget Controller', () => {
     it('should update budget successfully', async () => {
       const existingBudget: Budget = {
         id: 'budget-123',
-        user_id: 'user-123',
-        category_id: 'cat-1',
-        amount: '1000',
-        month: '2024-01-01',
-        created_at: new Date(),
-        updated_at: new Date(),
+        userId: 'user-123',
+        categoryId: 'cat-1',
+        amount: new Decimal('1000'),
+        month: new Date('2024-01-01'),
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
       const updatedBudget: Budget = {
         ...existingBudget,
-        amount: '1500',
+        amount: new Decimal('1500'),
       };
 
       mockRequest.user = {
@@ -342,12 +344,12 @@ describe('Budget Controller', () => {
     it('should return 403 when user does not own budget', async () => {
       const existingBudget: Budget = {
         id: 'budget-123',
-        user_id: 'other-user-123',
-        category_id: 'cat-1',
-        amount: '1000',
-        month: '2024-01-01',
-        created_at: new Date(),
-        updated_at: new Date(),
+        userId: 'other-user-123',
+        categoryId: 'cat-1',
+        amount: new Decimal('1000'),
+        month: new Date('2024-01-01'),
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
       mockRequest.user = {
@@ -372,12 +374,12 @@ describe('Budget Controller', () => {
     it('should delete budget successfully', async () => {
       const existingBudget: Budget = {
         id: 'budget-123',
-        user_id: 'user-123',
-        category_id: 'cat-1',
-        amount: '1000',
-        month: '2024-01-01',
-        created_at: new Date(),
-        updated_at: new Date(),
+        userId: 'user-123',
+        categoryId: 'cat-1',
+        amount: new Decimal('1000'),
+        month: new Date('2024-01-01'),
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
       mockRequest.user = {

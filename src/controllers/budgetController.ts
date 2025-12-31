@@ -302,7 +302,7 @@ export const updateBudget = async (
 
     // Check if user owns the budget or is admin/manager
     if (req.user.role !== 'admin' && req.user.role !== 'manager') {
-      if (existingBudget.user_id !== req.user.id) {
+      if (existingBudget.userId !== req.user.id) {
         return res.status(403).json({
           error: 'Access denied',
           message: 'You can only update your own budgets',
@@ -407,7 +407,7 @@ export const deleteBudget = async (
 
     // Check if user owns the budget or is admin/manager
     if (req.user.role !== 'admin' && req.user.role !== 'manager') {
-      if (existingBudget.user_id !== req.user.id) {
+      if (existingBudget.userId !== req.user.id) {
         return res.status(403).json({
           error: 'Access denied',
           message: 'You can only delete your own budgets',

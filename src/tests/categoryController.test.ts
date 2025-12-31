@@ -74,10 +74,10 @@ describe('Category Controller', () => {
 
       const createdCategory = {
         id: 'cat-123',
-        user_id: 'user-123',
+        userId: 'user-123',
         ...categoryData,
-        is_system: false,
-        created_at: new Date(),
+        isSystem: false,
+        createdAt: new Date(),
         updated_at: new Date(),
       };
 
@@ -96,12 +96,12 @@ describe('Category Controller', () => {
       );
 
       expect(mockCreateCategory).toHaveBeenCalledWith({
-        user_id: 'user-123',
+        userId: 'user-123',
         name: 'Groceries',
         type: 'expense',
         color: '#6B7280',
         icon: 'shopping-cart',
-        is_system: false,
+        isSystem: false,
       });
       expect(responseStatus).toHaveBeenCalledWith(201);
       expect(responseJson).toHaveBeenCalledWith(createdCategory);
@@ -217,13 +217,13 @@ describe('Category Controller', () => {
       const categories = [
         {
           id: 'cat-1',
-          user_id: 'user-123',
+          userId: 'user-123',
           name: 'Category 1',
           type: 'expense' as const,
           color: '#6B7280',
           icon: null,
-          is_system: false,
-          created_at: new Date(),
+          isSystem: false,
+          createdAt: new Date(),
           updated_at: new Date(),
         },
       ];
@@ -269,13 +269,13 @@ describe('Category Controller', () => {
     it('should return category by id', async () => {
       const category = {
         id: 'cat-123',
-        user_id: 'user-123',
+        userId: 'user-123',
         name: 'Category',
         type: 'expense' as const,
         color: '#6B7280',
         icon: null,
-        is_system: false,
-        created_at: new Date(),
+        isSystem: false,
+        createdAt: new Date(),
         updated_at: new Date(),
       };
 
@@ -310,13 +310,13 @@ describe('Category Controller', () => {
     it('should update category successfully', async () => {
       const existingCategory = {
         id: 'cat-123',
-        user_id: 'user-123',
+        userId: 'user-123',
         name: 'Old Name',
         type: 'expense' as const,
         color: '#6B7280',
         icon: null,
-        is_system: false,
-        created_at: new Date(),
+        isSystem: false,
+        createdAt: new Date(),
         updated_at: new Date(),
       };
 
@@ -353,8 +353,8 @@ describe('Category Controller', () => {
         type: 'expense' as const,
         color: '#6B7280',
         icon: null,
-        is_system: true,
-        created_at: new Date(),
+        isSystem: true,
+        createdAt: new Date(),
         updated_at: new Date(),
       };
 
@@ -384,8 +384,8 @@ describe('Category Controller', () => {
         type: 'expense' as const,
         color: '#6B7280',
         icon: null,
-        is_system: false,
-        created_at: new Date(),
+        isSystem: false,
+        createdAt: new Date(),
         updated_at: new Date(),
       };
 
@@ -411,13 +411,13 @@ describe('Category Controller', () => {
     it('should delete category successfully', async () => {
       const existingCategory = {
         id: 'cat-123',
-        user_id: 'user-123',
+        userId: 'user-123',
         name: 'Category',
         type: 'expense' as const,
         color: '#6B7280',
         icon: null,
-        is_system: false,
-        created_at: new Date(),
+        isSystem: false,
+        createdAt: new Date(),
         updated_at: new Date(),
       };
 
@@ -448,8 +448,8 @@ describe('Category Controller', () => {
         type: 'expense' as const,
         color: '#6B7280',
         icon: null,
-        is_system: true,
-        created_at: new Date(),
+        isSystem: true,
+        createdAt: new Date(),
         updated_at: new Date(),
       };
 

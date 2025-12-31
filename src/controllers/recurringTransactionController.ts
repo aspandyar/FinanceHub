@@ -365,7 +365,7 @@ export const updateRecurringTransaction = async (
 
     // Check if user owns the recurring transaction or is admin/manager
     if (req.user.role !== 'admin' && req.user.role !== 'manager') {
-      if (existingRecurringTransaction.user_id !== req.user.id) {
+      if (existingRecurringTransaction.userId !== req.user.id) {
         return res.status(403).json({
           error: 'Access denied',
           message: 'You can only update your own recurring transactions',
@@ -549,7 +549,7 @@ export const deleteRecurringTransaction = async (
 
     // Check if user owns the recurring transaction or is admin/manager
     if (req.user.role !== 'admin' && req.user.role !== 'manager') {
-      if (existingRecurringTransaction.user_id !== req.user.id) {
+      if (existingRecurringTransaction.userId !== req.user.id) {
         return res.status(403).json({
           error: 'Access denied',
           message: 'You can only delete your own recurring transactions',

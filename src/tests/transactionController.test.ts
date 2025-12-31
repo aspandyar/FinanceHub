@@ -1,5 +1,7 @@
 import { jest } from '@jest/globals';
 import type { Request, Response, NextFunction } from 'express';
+import { Prisma } from '@prisma/client';
+const { Decimal } = Prisma;
 
 // Mock database FIRST to prevent real DB calls
 jest.mock('../config/database.js', () => ({
@@ -75,14 +77,14 @@ describe('Transaction Controller', () => {
 
       const createdTransaction: Transaction = {
         id: 'transaction-123',
-        user_id: 'user-123',
-        category_id: transactionData.category_id,
-        amount: transactionData.amount.toString(), // DECIMAL returned as string
+        userId: 'user-123',
+        categoryId: transactionData.category_id,
+        amount: new Decimal(transactionData.amount),
         type: transactionData.type,
         description: transactionData.description,
-        date: transactionData.date,
-        created_at: new Date(),
-        updated_at: new Date(),
+        date: new Date(transactionData.date),
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
       mockRequest.user = {
@@ -276,14 +278,14 @@ describe('Transaction Controller', () => {
       const transactions: Transaction[] = [
         {
           id: 'transaction-1',
-          user_id: 'user-123',
-          category_id: 'cat-1',
-          amount: '100',
+          userId: 'user-123',
+          categoryId: 'cat-1',
+          amount: new Decimal('100'),
           type: 'expense' as const,
           description: null,
-          date: '2024-01-15',
-          created_at: new Date(),
-          updated_at: new Date(),
+          date: new Date('2024-01-15'),
+          createdAt: new Date(),
+          updatedAt: new Date(),
         },
       ];
 
@@ -361,14 +363,14 @@ describe('Transaction Controller', () => {
     it('should return transaction by id', async () => {
       const transaction: Transaction = {
         id: 'transaction-123',
-        user_id: 'user-123',
-        category_id: 'cat-1',
-        amount: '100',
+        userId: 'user-123',
+        categoryId: 'cat-1',
+        amount: new Decimal('100'),
         type: 'expense' as const,
         description: null,
-        date: '2024-01-15',
-        created_at: new Date(),
-        updated_at: new Date(),
+        date: new Date('2024-01-15'),
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
       mockRequest.params = { id: 'transaction-123' };
@@ -404,14 +406,14 @@ describe('Transaction Controller', () => {
       const transactions: Transaction[] = [
         {
           id: 'transaction-1',
-          user_id: 'user-123',
-          category_id: 'cat-1',
-          amount: '100',
+          userId: 'user-123',
+          categoryId: 'cat-1',
+          amount: new Decimal('100'),
           type: 'expense' as const,
           description: null,
-          date: '2024-01-15',
-          created_at: new Date(),
-          updated_at: new Date(),
+          date: new Date('2024-01-15'),
+          createdAt: new Date(),
+          updatedAt: new Date(),
         },
       ];
 
@@ -446,19 +448,19 @@ describe('Transaction Controller', () => {
     it('should update transaction successfully', async () => {
       const existingTransaction: Transaction = {
         id: 'transaction-123',
-        user_id: 'user-123',
-        category_id: 'cat-1',
-        amount: '100',
+        userId: 'user-123',
+        categoryId: 'cat-1',
+        amount: new Decimal('100'),
         type: 'expense' as const,
         description: null,
-        date: '2024-01-15',
-        created_at: new Date(),
-        updated_at: new Date(),
+        date: new Date('2024-01-15'),
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
       const updatedTransaction: Transaction = {
         ...existingTransaction,
-        amount: '150',
+        amount: new Decimal('150'),
       };
 
       mockRequest.user = {
@@ -484,14 +486,14 @@ describe('Transaction Controller', () => {
     it('should return 403 when user does not own transaction', async () => {
       const existingTransaction: Transaction = {
         id: 'transaction-123',
-        user_id: 'other-user-123',
-        category_id: 'cat-1',
-        amount: '100',
+        userId: 'other-user-123',
+        categoryId: 'cat-1',
+        amount: new Decimal('100'),
         type: 'expense' as const,
         description: null,
-        date: '2024-01-15',
-        created_at: new Date(),
-        updated_at: new Date(),
+        date: new Date('2024-01-15'),
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
       mockRequest.user = {
@@ -539,14 +541,14 @@ describe('Transaction Controller', () => {
     it('should delete transaction successfully', async () => {
       const existingTransaction: Transaction = {
         id: 'transaction-123',
-        user_id: 'user-123',
-        category_id: 'cat-1',
-        amount: '100',
+        userId: 'user-123',
+        categoryId: 'cat-1',
+        amount: new Decimal('100'),
         type: 'expense' as const,
         description: null,
-        date: '2024-01-15',
-        created_at: new Date(),
-        updated_at: new Date(),
+        date: new Date('2024-01-15'),
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
       mockRequest.user = {
@@ -571,14 +573,14 @@ describe('Transaction Controller', () => {
     it('should return 403 when user does not own transaction', async () => {
       const existingTransaction: Transaction = {
         id: 'transaction-123',
-        user_id: 'other-user-123',
-        category_id: 'cat-1',
-        amount: '100',
+        userId: 'other-user-123',
+        categoryId: 'cat-1',
+        amount: new Decimal('100'),
         type: 'expense' as const,
         description: null,
-        date: '2024-01-15',
-        created_at: new Date(),
-        updated_at: new Date(),
+        date: new Date('2024-01-15'),
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
       mockRequest.user = {

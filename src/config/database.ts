@@ -32,15 +32,7 @@ const defaultUserCategories = [
 ];
 
 // Prisma middleware to automatically create default categories when a user is created
-type MiddlewareParams = {
-  model?: string;
-  action: string;
-  args: any;
-  dataPath: string[];
-  runInTransaction: boolean;
-};
-
-prisma.$use(async (params: MiddlewareParams, next: (params: MiddlewareParams) => Promise<any>) => {
+prisma.$use(async (params: any, next: any) => {
   const result = await next(params);
 
   // After a user is created, automatically create default categories for them

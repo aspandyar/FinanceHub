@@ -272,7 +272,7 @@ export const updateTransaction = async (
 
     // Check if user owns the transaction or is admin/manager
     if (req.user.role !== 'admin' && req.user.role !== 'manager') {
-      if (existingTransaction.user_id !== req.user.id) {
+      if (existingTransaction.userId !== req.user.id) {
         return res.status(403).json({
           error: 'Access denied',
           message: 'You can only update your own transactions',
@@ -373,7 +373,7 @@ export const deleteTransaction = async (
 
     // Check if user owns the transaction or is admin/manager
     if (req.user.role !== 'admin' && req.user.role !== 'manager') {
-      if (existingTransaction.user_id !== req.user.id) {
+      if (existingTransaction.userId !== req.user.id) {
         return res.status(403).json({
           error: 'Access denied',
           message: 'You can only delete your own transactions',

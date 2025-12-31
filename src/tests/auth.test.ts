@@ -85,11 +85,11 @@ describe('Auth Middleware', () => {
         id: 'user-123',
         email: 'test@example.com',
         role: 'user',
-        full_name: 'Test User',
+        fullName: 'Test User',
         currency: 'USD',
-        password_hash: 'hash',
-        created_at: new Date(),
-        updated_at: new Date(),
+        passwordHash: 'hash',
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
       mockRequest.headers = { authorization: `Bearer ${token}` };

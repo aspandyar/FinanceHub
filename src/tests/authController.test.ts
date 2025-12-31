@@ -79,12 +79,12 @@ describe('Auth Controller', () => {
       const createdUser: User = {
         id: 'user-123',
         email: 'test@example.com',
-        full_name: 'Test User',
+        fullName: 'Test User',
         currency: 'USD',
         role: 'user',
-        password_hash: hashedPassword,
-        created_at: new Date(),
-        updated_at: new Date(),
+        passwordHash: hashedPassword,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
       const token = 'jwt-token';
 
@@ -116,7 +116,7 @@ describe('Auth Controller', () => {
         user: expect.objectContaining({
           id: 'user-123',
           email: 'test@example.com',
-          full_name: 'Test User',
+          fullName: 'Test User',
         }),
         token,
       });
@@ -219,12 +219,12 @@ describe('Auth Controller', () => {
       const existingUser: User = {
         id: 'user-123',
         email: 'test@example.com',
-        full_name: 'Existing User',
+        fullName: 'Existing User',
         currency: 'USD',
         role: 'user',
-        password_hash: 'hash',
-        created_at: new Date(),
-        updated_at: new Date(),
+        passwordHash: 'hash',
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
       mockRequest.body = {
@@ -281,12 +281,12 @@ describe('Auth Controller', () => {
       const createdUser: User = {
         id: 'user-123',
         email: 'test@example.com',
-        full_name: 'Test User',
+        fullName: 'Test User',
         currency: 'USD',
         role: 'user',
-        password_hash: 'hash',
-        created_at: new Date(),
-        updated_at: new Date(),
+        passwordHash: 'hash',
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
       mockRequest.body = userData;
@@ -313,12 +313,12 @@ describe('Auth Controller', () => {
       const user: User = {
         id: 'user-123',
         email: 'test@example.com',
-        full_name: 'Test User',
+        fullName: 'Test User',
         currency: 'USD',
         role: 'user',
-        password_hash: 'hashed-password',
-        created_at: new Date(),
-        updated_at: new Date(),
+        passwordHash: 'hashed-password',
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
       const token = 'jwt-token';
 
@@ -396,12 +396,12 @@ describe('Auth Controller', () => {
       const user: User = {
         id: 'user-123',
         email: 'test@example.com',
-        full_name: 'Test User',
+        fullName: 'Test User',
         currency: 'USD',
         role: 'user',
-        password_hash: 'hashed-password',
-        created_at: new Date(),
-        updated_at: new Date(),
+        passwordHash: 'hashed-password',
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
       mockRequest.body = {
@@ -440,12 +440,12 @@ describe('Auth Controller', () => {
       const user: User = {
         id: 'user-123',
         email: 'test@example.com',
-        full_name: 'Test User',
+        fullName: 'Test User',
         currency: 'USD',
         role: 'user',
-        password_hash: 'hashed-password',
-        created_at: new Date(),
-        updated_at: new Date(),
+        passwordHash: 'hashed-password',
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
       mockRequest.user = {
@@ -469,7 +469,7 @@ describe('Auth Controller', () => {
           email: 'test@example.com',
         })
       );
-      expect(responseJson.mock.calls[0]![0]).not.toHaveProperty('password_hash');
+      expect(responseJson.mock.calls[0]![0]).not.toHaveProperty('passwordHash');
     });
 
     it('should return 401 when user is not authenticated', async () => {

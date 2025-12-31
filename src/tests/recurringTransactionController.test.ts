@@ -1,5 +1,7 @@
 import { jest } from '@jest/globals';
 import type { Request, Response, NextFunction } from 'express';
+import { Prisma } from '@prisma/client';
+const { Decimal } = Prisma;
 
 // Mock database FIRST to prevent real DB calls
 jest.mock('../config/database.js', () => ({
@@ -82,17 +84,17 @@ describe('Recurring Transaction Controller', () => {
 
       const createdTransaction: RecurringTransaction = {
         id: 'recurring-123',
-        user_id: 'user-123',
-        category_id: transactionData.category_id,
-        amount: transactionData.amount.toString(), // DECIMAL returned as string
+        userId: 'user-123',
+        categoryId: transactionData.category_id,
+        amount: new Decimal(transactionData.amount),
         type: transactionData.type,
         description: transactionData.description,
         frequency: transactionData.frequency,
-        start_date: transactionData.start_date,
-        end_date: transactionData.end_date,
-        next_occurrence: transactionData.next_occurrence,
-        is_active: transactionData.is_active,
-        created_at: new Date(),
+        startDate: new Date(transactionData.start_date),
+        endDate: transactionData.end_date ? new Date(transactionData.end_date) : null,
+        nextOccurrence: new Date(transactionData.next_occurrence),
+        isActive: transactionData.is_active,
+        createdAt: new Date(),
       };
 
       mockRequest.user = {
@@ -235,17 +237,17 @@ describe('Recurring Transaction Controller', () => {
       const transactions: RecurringTransaction[] = [
         {
           id: 'recurring-1',
-          user_id: 'user-123',
-          category_id: 'cat-1',
-          amount: '100',
+          userId: 'user-123',
+          categoryId: 'cat-1',
+          amount: new Decimal('100'),
           type: 'expense' as const,
           description: null,
           frequency: 'monthly' as const,
-          start_date: '2024-01-01',
-          end_date: null,
-          next_occurrence: '2024-02-01',
-          is_active: true,
-          created_at: new Date(),
+          startDate: new Date('2024-01-01'),
+        endDate: null,
+        nextOccurrence: new Date('2024-02-01'),
+        isActive: true,
+        createdAt: new Date(),
         },
       ];
 
@@ -288,17 +290,17 @@ describe('Recurring Transaction Controller', () => {
     it('should return recurring transaction by id', async () => {
       const transaction: RecurringTransaction = {
         id: 'recurring-123',
-        user_id: 'user-123',
-        category_id: 'cat-1',
-        amount: '100',
+        userId: 'user-123',
+        categoryId: 'cat-1',
+        amount: new Decimal('100'),
         type: 'expense' as const,
         description: null,
         frequency: 'monthly' as const,
-        start_date: '2024-01-01',
-        end_date: null,
-        next_occurrence: '2024-02-01',
-        is_active: true,
-        created_at: new Date(),
+        startDate: new Date('2024-01-01'),
+        endDate: null,
+        nextOccurrence: new Date('2024-02-01'),
+        isActive: true,
+        createdAt: new Date(),
       };
 
       mockRequest.params = { id: 'recurring-123' };
@@ -333,17 +335,17 @@ describe('Recurring Transaction Controller', () => {
       const transactions: RecurringTransaction[] = [
         {
           id: 'recurring-1',
-          user_id: 'user-123',
-          category_id: 'cat-1',
-          amount: '100',
+          userId: 'user-123',
+          categoryId: 'cat-1',
+          amount: new Decimal('100'),
           type: 'expense' as const,
           description: null,
           frequency: 'monthly' as const,
-          start_date: '2024-01-01',
-          end_date: null,
-          next_occurrence: '2024-02-01',
-          is_active: true,
-          created_at: new Date(),
+          startDate: new Date('2024-01-01'),
+        endDate: null,
+        nextOccurrence: new Date('2024-02-01'),
+        isActive: true,
+        createdAt: new Date(),
         },
       ];
 
@@ -378,22 +380,22 @@ describe('Recurring Transaction Controller', () => {
     it('should update recurring transaction successfully', async () => {
       const existingTransaction: RecurringTransaction = {
         id: 'recurring-123',
-        user_id: 'user-123',
-        category_id: 'cat-1',
-        amount: '100',
+        userId: 'user-123',
+        categoryId: 'cat-1',
+        amount: new Decimal('100'),
         type: 'expense' as const,
         description: null,
         frequency: 'monthly' as const,
-        start_date: '2024-01-01',
-        end_date: null,
-        next_occurrence: '2024-02-01',
-        is_active: true,
-        created_at: new Date(),
+        startDate: new Date('2024-01-01'),
+        endDate: null,
+        nextOccurrence: new Date('2024-02-01'),
+        isActive: true,
+        createdAt: new Date(),
       };
 
       const updatedTransaction: RecurringTransaction = {
         ...existingTransaction,
-        amount: '150',
+        amount: new Decimal('150'),
       };
 
       mockRequest.user = {
@@ -419,17 +421,17 @@ describe('Recurring Transaction Controller', () => {
     it('should return 403 when user does not own transaction', async () => {
       const existingTransaction: RecurringTransaction = {
         id: 'recurring-123',
-        user_id: 'other-user-123',
-        category_id: 'cat-1',
-        amount: '100',
+        userId: 'other-user-123',
+        categoryId: 'cat-1',
+        amount: new Decimal('100'),
         type: 'expense' as const,
         description: null,
         frequency: 'monthly' as const,
-        start_date: '2024-01-01',
-        end_date: null,
-        next_occurrence: '2024-02-01',
-        is_active: true,
-        created_at: new Date(),
+        startDate: new Date('2024-01-01'),
+        endDate: null,
+        nextOccurrence: new Date('2024-02-01'),
+        isActive: true,
+        createdAt: new Date(),
       };
 
       mockRequest.user = {
@@ -454,17 +456,17 @@ describe('Recurring Transaction Controller', () => {
     it('should delete recurring transaction successfully', async () => {
       const existingTransaction: RecurringTransaction = {
         id: 'recurring-123',
-        user_id: 'user-123',
-        category_id: 'cat-1',
-        amount: '100',
+        userId: 'user-123',
+        categoryId: 'cat-1',
+        amount: new Decimal('100'),
         type: 'expense' as const,
         description: null,
         frequency: 'monthly' as const,
-        start_date: '2024-01-01',
-        end_date: null,
-        next_occurrence: '2024-02-01',
-        is_active: true,
-        created_at: new Date(),
+        startDate: new Date('2024-01-01'),
+        endDate: null,
+        nextOccurrence: new Date('2024-02-01'),
+        isActive: true,
+        createdAt: new Date(),
       };
 
       mockRequest.user = {

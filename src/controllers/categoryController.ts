@@ -140,7 +140,7 @@ export const getCategories = async (
     }
 
     const categories = await CategoryModel.getAllCategories(
-      parsedUserId,
+      parsedUserId ?? undefined,
       parsedType
     );
     res.json(categories);
@@ -232,13 +232,13 @@ export const updateCategory = async (
     }
 
     // System categories cannot be updated
-    if (existingCategory.is_system) {
+    if (existingCategory.isSystem) {
       return res.status(403).json({ error: 'Cannot update system categories' });
     }
 
     // Check if user owns the category or is admin/manager
     if (req.user.role !== 'admin' && req.user.role !== 'manager') {
-      if (existingCategory.user_id !== req.user.id) {
+      if (existingCategory.userId !== req.user.id) {
         return res.status(403).json({
           error: 'Access denied',
           message: 'You can only update your own categories',
@@ -332,13 +332,13 @@ export const deleteCategory = async (
     }
 
     // System categories cannot be deleted
-    if (category.is_system) {
+    if (category.isSystem) {
       return res.status(403).json({ error: 'Cannot delete system categories' });
     }
 
     // Check if user owns the category or is admin/manager
     if (req.user.role !== 'admin' && req.user.role !== 'manager') {
-      if (category.user_id !== req.user.id) {
+      if (category.userId !== req.user.id) {
         return res.status(403).json({
           error: 'Access denied',
           message: 'You can only delete your own categories',

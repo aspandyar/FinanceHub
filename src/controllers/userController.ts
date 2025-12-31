@@ -101,8 +101,8 @@ export const getUsers = async (
     }
 
     const users = await UserModel.getAllUsers();
-    // Remove password_hash from response
-    const usersWithoutPassword = users.map(({ password_hash, ...user }) => user);
+    // Remove passwordHash from response
+    const usersWithoutPassword = users.map(({ passwordHash, ...user }) => user);
     res.json(usersWithoutPassword);
   } catch (error) {
     next(error);
@@ -140,8 +140,8 @@ export const getUserById = async (
       return res.status(404).json({ message: 'User not found' });
     }
 
-    // Remove password_hash from response
-    const { password_hash, ...userWithoutPassword } = user;
+    // Remove passwordHash from response
+    const { passwordHash, ...userWithoutPassword } = user;
     res.json(userWithoutPassword);
   } catch (error) {
     next(error);
@@ -253,8 +253,8 @@ export const updateUser = async (
       return res.status(404).json({ message: 'User not found' });
     }
 
-    // Remove password_hash from response
-    const { password_hash: _, ...userWithoutPassword } = user;
+    // Remove passwordHash from response
+    const { passwordHash: _, ...userWithoutPassword } = user;
     res.json(userWithoutPassword);
   } catch (error: any) {
     // Handle unique constraint violation

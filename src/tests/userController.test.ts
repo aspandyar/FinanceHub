@@ -63,8 +63,8 @@ describe('User Controller', () => {
     it('should create user successfully as admin', async () => {
       const userData = {
         email: 'newuser@example.com',
-        password_hash: 'hashed-password',
-        full_name: 'New User',
+        passwordHash: 'hashed-password',
+        fullName: 'New User',
         currency: 'USD',
         role: 'user' as UserRole,
       };
@@ -72,8 +72,8 @@ describe('User Controller', () => {
       const createdUser: User = {
         id: 'user-123',
         ...userData,
-        created_at: new Date(),
-        updated_at: new Date(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
       mockRequest.user = {
@@ -92,8 +92,8 @@ describe('User Controller', () => {
 
       expect(mockCreateUser).toHaveBeenCalledWith({
         email: 'newuser@example.com',
-        password_hash: 'hashed-password',
-        full_name: 'New User',
+        passwordHash: 'hashed-password',
+        fullName: 'New User',
         currency: 'USD',
         role: 'user',
       });
@@ -142,8 +142,8 @@ describe('User Controller', () => {
       };
       mockRequest.body = {
         email: 'invalid-email',
-        password_hash: 'hash',
-        full_name: 'User',
+        passwordHash: 'hash',
+        fullName: 'User',
       };
 
       await createUser(
@@ -168,8 +168,8 @@ describe('User Controller', () => {
       };
       mockRequest.body = {
         email: 'existing@example.com',
-        password_hash: 'hash',
-        full_name: 'User',
+        passwordHash: 'hash',
+        fullName: 'User',
       };
 
       mockCreateUser.mockRejectedValue(error);
@@ -191,22 +191,22 @@ describe('User Controller', () => {
         {
           id: 'user-1',
           email: 'user1@example.com',
-          full_name: 'User 1',
+          fullName: 'User 1',
           currency: 'USD',
           role: 'user',
-          password_hash: 'hash1',
-          created_at: new Date(),
-          updated_at: new Date(),
+          passwordHash: 'hash1',
+          createdAt: new Date(),
+          updatedAt: new Date(),
         },
         {
           id: 'user-2',
           email: 'user2@example.com',
-          full_name: 'User 2',
+          fullName: 'User 2',
           currency: 'USD',
           role: 'user',
-          password_hash: 'hash2',
-          created_at: new Date(),
-          updated_at: new Date(),
+          passwordHash: 'hash2',
+          createdAt: new Date(),
+          updatedAt: new Date(),
         },
       ];
 
@@ -225,8 +225,8 @@ describe('User Controller', () => {
 
       expect(mockGetAllUsers).toHaveBeenCalled();
       expect(responseJson).toHaveBeenCalledWith([
-        expect.not.objectContaining({ password_hash: expect.anything() }),
-        expect.not.objectContaining({ password_hash: expect.anything() }),
+        expect.not.objectContaining({ passwordHash: expect.anything() }),
+        expect.not.objectContaining({ passwordHash: expect.anything() }),
       ]);
     });
 
@@ -252,12 +252,12 @@ describe('User Controller', () => {
       const user: User = {
         id: 'user-123',
         email: 'user@example.com',
-        full_name: 'User',
+        fullName: 'User',
         currency: 'USD',
         role: 'user',
-        password_hash: 'hash',
-        created_at: new Date(),
-        updated_at: new Date(),
+        passwordHash: 'hash',
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
       mockRequest.user = {
@@ -284,12 +284,12 @@ describe('User Controller', () => {
       const user: User = {
         id: 'user-123',
         email: 'user@example.com',
-        full_name: 'User',
+        fullName: 'User',
         currency: 'USD',
         role: 'user',
-        password_hash: 'hash',
-        created_at: new Date(),
-        updated_at: new Date(),
+        passwordHash: 'hash',
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
       mockRequest.user = {
@@ -355,12 +355,12 @@ describe('User Controller', () => {
       const updatedUser: User = {
         id: 'user-123',
         email: 'updated@example.com',
-        full_name: 'Updated User',
+        fullName: 'Updated User',
         currency: 'EUR',
         role: 'user',
-        password_hash: 'hash',
-        created_at: new Date(),
-        updated_at: new Date(),
+        passwordHash: 'hash',
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
       mockRequest.user = {
@@ -371,18 +371,18 @@ describe('User Controller', () => {
       mockRequest.params = { id: 'user-123' };
       mockRequest.body = {
         email: 'updated@example.com',
-        full_name: 'Updated User',
+        fullName: 'Updated User',
         currency: 'EUR',
       };
       mockGetUserById.mockResolvedValue({
         id: 'user-123',
         email: 'user@example.com',
-        full_name: 'User',
+        fullName: 'User',
         currency: 'USD',
         role: 'user',
-        password_hash: 'hash',
-        created_at: new Date(),
-        updated_at: new Date(),
+        passwordHash: 'hash',
+        createdAt: new Date(),
+        updatedAt: new Date(),
       });
       mockUpdateUser.mockResolvedValue(updatedUser);
 
@@ -409,12 +409,12 @@ describe('User Controller', () => {
       mockGetUserById.mockResolvedValue({
         id: 'user-123',
         email: 'user@example.com',
-        full_name: 'User',
+        fullName: 'User',
         currency: 'USD',
         role: 'user',
-        password_hash: 'hash',
-        created_at: new Date(),
-        updated_at: new Date(),
+        passwordHash: 'hash',
+        createdAt: new Date(),
+        updatedAt: new Date(),
       });
 
       await updateUser(
@@ -434,12 +434,12 @@ describe('User Controller', () => {
       const updatedUser: User = {
         id: 'user-123',
         email: 'user@example.com',
-        full_name: 'User',
+        fullName: 'User',
         currency: 'USD',
         role: 'manager',
-        password_hash: 'hash',
-        created_at: new Date(),
-        updated_at: new Date(),
+        passwordHash: 'hash',
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
       mockRequest.user = {
@@ -452,12 +452,12 @@ describe('User Controller', () => {
       mockGetUserById.mockResolvedValue({
         id: 'user-123',
         email: 'user@example.com',
-        full_name: 'User',
+        fullName: 'User',
         currency: 'USD',
         role: 'user',
-        password_hash: 'hash',
-        created_at: new Date(),
-        updated_at: new Date(),
+        passwordHash: 'hash',
+        createdAt: new Date(),
+        updatedAt: new Date(),
       });
       mockUpdateUser.mockResolvedValue(updatedUser);
 

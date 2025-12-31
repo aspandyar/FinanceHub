@@ -2,7 +2,8 @@ import { readdir, readFile } from 'fs/promises';
 import { join } from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
-import pool, { query } from '../config/database.js';
+import prisma from '../config/database.js';
+import { Prisma } from '@prisma/client';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -16,7 +17,7 @@ interface Migration {
 
 // Create migrations table if it doesn't exist
 const ensureMigrationsTable = async () => {
-  await query(`
+  await prisma.$executeRawUnsafe(`
     CREATE TABLE IF NOT EXISTS migrations (
       id SERIAL PRIMARY KEY,
       version INTEGER NOT NULL UNIQUE,
@@ -28,16 +29,13 @@ const ensureMigrationsTable = async () => {
 
 // Get all executed migrations
 const getExecutedMigrations = async (): Promise<number[]> => {
-  const result = await query('SELECT version FROM migrations ORDER BY version');
-  return result.rows.map((row) => row.version);
+  const result = await prisma.$queryRawUnsafe<Array<{ version: number }>>('SELECT version FROM migrations ORDER BY version');
+  return result.map((row) => row.version);
 };
 
-// Record a migration as executed
+// Record a migration as executed (not used, but kept for compatibility)
 const recordMigration = async (version: number, name: string) => {
-  await query('INSERT INTO migrations (version, name) VALUES ($1, $2)', [
-    version,
-    name,
-  ]);
+  await prisma.$executeRaw(Prisma.sql`INSERT INTO migrations (version, name) VALUES (${version}, ${name})`);
 };
 
 // Parse migration filename to extract version and name
@@ -89,27 +87,18 @@ const loadDownMigration = async (filepath: string): Promise<Migration> => {
 
 // Run a single migration
 const runMigration = async (migration: Migration) => {
-  const client = await pool.connect();
   try {
-    await client.query('BEGIN');
+    await prisma.$transaction(async (tx) => {
+      // Execute the UP migration
+      await tx.$executeRawUnsafe(migration.up);
 
-    // Execute the UP migration
-    await client.query(migration.up);
-
-    // Record the migration
-    await client.query(
-      'INSERT INTO migrations (version, name) VALUES ($1, $2)',
-      [migration.version, migration.name]
-    );
-
-    await client.query('COMMIT');
+      // Record the migration
+      await tx.$executeRaw(Prisma.sql`INSERT INTO migrations (version, name) VALUES (${migration.version}, ${migration.name})`);
+    });
     console.log(`✓ Migration ${migration.version}_${migration.name} executed successfully`);
   } catch (error) {
-    await client.query('ROLLBACK');
     console.error(`✗ Migration ${migration.version}_${migration.name} failed:`, error);
     throw error;
-  } finally {
-    client.release();
   }
 };
 
@@ -119,26 +108,18 @@ const rollbackMigration = async (migration: Migration) => {
     throw new Error(`No DOWN migration for ${migration.version}_${migration.name}`);
   }
 
-  const client = await pool.connect();
   try {
-    await client.query('BEGIN');
+    await prisma.$transaction(async (tx) => {
+      // Execute the DOWN migration
+      await tx.$executeRawUnsafe(migration.down!);
 
-    // Execute the DOWN migration
-    await client.query(migration.down);
-
-    // Remove the migration record
-    await client.query('DELETE FROM migrations WHERE version = $1', [
-      migration.version,
-    ]);
-
-    await client.query('COMMIT');
+      // Remove the migration record
+      await tx.$executeRaw(Prisma.sql`DELETE FROM migrations WHERE version = ${migration.version}`);
+    });
     console.log(`✓ Migration ${migration.version}_${migration.name} rolled back successfully`);
   } catch (error) {
-    await client.query('ROLLBACK');
     console.error(`✗ Rollback of ${migration.version}_${migration.name} failed:`, error);
     throw error;
-  } finally {
-    client.release();
   }
 };
 
@@ -262,7 +243,7 @@ export const rollbackAll = async () => {
 
     // Drop the migrations table itself
     try {
-      await query('DROP TABLE IF EXISTS migrations CASCADE');
+      await prisma.$executeRawUnsafe('DROP TABLE IF EXISTS migrations CASCADE');
       console.log('✓ Dropped migrations tracking table');
     } catch (error) {
       console.warn('⚠ Warning: Could not drop migrations table:', error);
@@ -286,36 +267,30 @@ export const dropAllTables = async () => {
     console.log('Dropping all tables...');
     
     // Get all table names
-    const result = await query(`
+    const result = await prisma.$queryRawUnsafe<Array<{ tablename: string }>>(`
       SELECT tablename 
       FROM pg_tables 
       WHERE schemaname = 'public'
     `);
 
-    const tables = result.rows.map((row) => row.tablename);
+    const tables = result.map((row) => row.tablename);
 
     if (tables.length === 0) {
       console.log('No tables to drop.');
       return;
     }
 
-    const client = await pool.connect();
     try {
-      await client.query('BEGIN');
-
-      // Drop all tables with CASCADE to handle foreign keys
-      for (const table of tables) {
-        await client.query(`DROP TABLE IF EXISTS ${table} CASCADE`);
-        console.log(`✓ Dropped table: ${table}`);
-      }
-
-      await client.query('COMMIT');
+      await prisma.$transaction(async (tx) => {
+        // Drop all tables with CASCADE to handle foreign keys
+        for (const table of tables) {
+          await tx.$executeRawUnsafe(`DROP TABLE IF EXISTS ${table} CASCADE`);
+          console.log(`✓ Dropped table: ${table}`);
+        }
+      });
       console.log(`\n✓ Successfully dropped ${tables.length} table(s)`);
     } catch (error) {
-      await client.query('ROLLBACK');
       throw error;
-    } finally {
-      client.release();
     }
   } catch (error) {
     console.error('Drop all tables failed:', error);

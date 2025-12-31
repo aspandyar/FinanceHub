@@ -81,12 +81,12 @@ describe('initializeAdmin', () => {
     const existingUser: User = {
       id: 'user-id',
       email: 'admin@example.com',
-      full_name: 'Admin User',
+      fullName: 'Admin User',
       currency: 'USD',
       role: 'admin',
-      password_hash: 'hashed-password',
-      created_at: new Date(),
-      updated_at: new Date(),
+      passwordHash: 'hashed-password',
+      createdAt: new Date(),
+      updatedAt: new Date(),
     };
 
     mockGetUserByEmail.mockResolvedValue(existingUser);
@@ -105,12 +105,12 @@ describe('initializeAdmin', () => {
     const createdUser: User = {
       id: 'user-id',
       email: 'admin@example.com',
-      full_name: 'Admin User',
+      fullName: 'Admin User',
       currency: 'USD',
       role: 'admin',
-      password_hash: hashedPassword,
-      created_at: new Date(),
-      updated_at: new Date(),
+      passwordHash: hashedPassword,
+      createdAt: new Date(),
+      updatedAt: new Date(),
     };
 
     mockGetUserByEmail.mockResolvedValue(null);
@@ -123,8 +123,8 @@ describe('initializeAdmin', () => {
     expect(mockHashPassword).toHaveBeenCalledWith('password123');
     expect(mockCreateUser).toHaveBeenCalledWith({
       email: 'admin@example.com',
-      password_hash: hashedPassword,
-      full_name: 'Admin User',
+      passwordHash: hashedPassword,
+      fullName: 'Admin User',
       currency: 'USD',
       role: 'admin',
     });
@@ -138,12 +138,12 @@ describe('initializeAdmin', () => {
     const createdUser: User = {
       id: 'user-id',
       email: 'admin@example.com',
-      full_name: 'Admin User',
+      fullName: 'Admin User',
       currency: 'USD',
       role: 'admin',
-      password_hash: hashedPassword,
-      created_at: new Date(),
-      updated_at: new Date(),
+      passwordHash: hashedPassword,
+      createdAt: new Date(),
+      updatedAt: new Date(),
     };
 
     mockGetUserByEmail.mockResolvedValue(null);

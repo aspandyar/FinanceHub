@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { migrate, rollback, rollbackAll, dropAllTables, status } from './migrate.js';
-import { closePool } from '../config/database.js';
+import prisma from '../config/database.js';
 
 const command = process.argv[2];
 
@@ -43,7 +43,7 @@ Commands:
     console.error('Error:', error);
     process.exit(1);
   } finally {
-    await closePool();
+    await prisma.$disconnect();
   }
 }
 
