@@ -1,4 +1,6 @@
 import express from 'express';
+import swaggerUi from 'swagger-ui-express';
+import { swaggerSpec } from './config/swagger.js';
 import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import categoryRoutes from './routes/categoryRoutes.js';
@@ -10,6 +12,12 @@ import { errorHandler } from './middlewares/errorHandler.js';
 const app = express();
 
 app.use(express.json());
+
+// Swagger API Documentation
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+  customCss: '.swagger-ui .topbar { display: none }',
+  customSiteTitle: 'Finance Hub API Documentation',
+}));
 
 // Public routes
 app.use('/api/auth', authRoutes);

@@ -7,6 +7,10 @@ interface Config {
   nodeEnv: string;
   jwtSecret: string;
   jwtExpiresIn: string;
+  apiUrl: {
+    dev: string;
+    prod: string;
+  };
   db: {
     host: string;
     port: number;
@@ -18,11 +22,17 @@ interface Config {
   };
 }
 
+const port = Number(process.env.PORT) || 3000;
+
 const config: Config = {
-  port: Number(process.env.PORT) || 3000,
+  port,
   nodeEnv: process.env.NODE_ENV || 'development',
   jwtSecret: process.env.JWT_SECRET || 'your-secret-key-change-in-production',
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || '7d',
+  apiUrl: {
+    dev: process.env.API_URL_DEV || `http://localhost:${port}`,
+    prod: process.env.API_URL_PROD || 'https://api.financehub.com',
+  },
   db: {
     host: process.env.DB_HOST || 'localhost',
     port: Number(process.env.DB_PORT) || 5432,

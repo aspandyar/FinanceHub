@@ -45,7 +45,8 @@ export const initializeAdmin = async (): Promise<void> => {
     console.log(`Admin user created successfully: ${adminUser.email}`);
   } catch (error: any) {
     // Handle unique constraint violation (email already exists)
-    if (error.code === '23505') {
+    // Prisma error code P2002 for unique constraint violation
+    if (error.code === 'P2002' || error.code === '23505') {
       console.log('Admin user already exists');
       return;
     }

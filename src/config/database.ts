@@ -1,47 +1,88 @@
-import pg from 'pg';
-import type { PoolClient } from 'pg';
+import { PrismaClient } from '@prisma/client';
 import config from './config.js';
 
-// Create a connection pool
-const pool = new pg.Pool({
-  connectionString: config.db.url,
-  ssl: config.db.ssl,
+// Create a Prisma Client instance
+const prisma = new PrismaClient({
+  log: config.nodeEnv === 'development' ? ['query', 'error', 'warn'] : ['error'],
+  datasources: {
+    db: {
+      url: config.db.url,
+    },
+  },
+});
+
+// Default categories to create for each new user
+const defaultUserCategories = [
+  // Income categories
+  { name: 'Salary', type: 'income' as const, color: '#10B981', icon: 'briefcase' },
+  { name: 'Freelance', type: 'income' as const, color: '#3B82F6', icon: 'code' },
+  { name: 'Investments', type: 'income' as const, color: '#8B5CF6', icon: 'trending-up' },
+  { name: 'Gifts', type: 'income' as const, color: '#EC4899', icon: 'gift' },
+  { name: 'Other Income', type: 'income' as const, color: '#6B7280', icon: 'dollar-sign' },
+  // Expense categories
+  { name: 'Food', type: 'expense' as const, color: '#F59E0B', icon: 'utensils' },
+  { name: 'Transport', type: 'expense' as const, color: '#EF4444', icon: 'car' },
+  { name: 'Housing', type: 'expense' as const, color: '#6366F1', icon: 'home' },
+  { name: 'Utilities', type: 'expense' as const, color: '#14B8A6', icon: 'zap' },
+  { name: 'Entertainment', type: 'expense' as const, color: '#A855F7', icon: 'film' },
+  { name: 'Shopping', type: 'expense' as const, color: '#F97316', icon: 'shopping-bag' },
+  { name: 'Health', type: 'expense' as const, color: '#EC4899', icon: 'heart' },
+  { name: 'Education', type: 'expense' as const, color: '#06B6D4', icon: 'book' },
+  { name: 'Other Expense', type: 'expense' as const, color: '#6B7280', icon: 'more-horizontal' },
+];
+
+// Prisma middleware to automatically create default categories when a user is created
+type MiddlewareParams = {
+  model?: string;
+  action: string;
+  args: any;
+  dataPath: string[];
+  runInTransaction: boolean;
+};
+
+prisma.$use(async (params: MiddlewareParams, next: (params: MiddlewareParams) => Promise<any>) => {
+  const result = await next(params);
+
+  // After a user is created, automatically create default categories for them
+  if (params.model === 'User' && params.action === 'create') {
+    const userId = result.id;
+
+    try {
+      await Promise.all(
+        defaultUserCategories.map((cat) =>
+          prisma.category.create({
+            data: {
+              ...cat,
+              userId,
+              isSystem: false, // User-specific categories, not system categories
+            },
+          })
+        )
+      );
+      console.log(`✓ Created default categories for user: ${userId}`);
+    } catch (error) {
+      // Log error but don't fail user creation if category creation fails
+      console.error(`Error creating default categories for user ${userId}:`, error);
+    }
+  }
+
+  return result;
 });
 
 // Test the connection
-pool.on('connect', () => {
-  console.log('Connected to PostgreSQL database');
+prisma.$connect()
+  .then(() => {
+    console.log('Connected to PostgreSQL database via Prisma');
+  })
+  .catch((err: Error) => {
+    console.error('Failed to connect to database', err);
+    process.exit(-1);
+  });
+
+// Handle graceful shutdown
+process.on('beforeExit', async () => {
+  await prisma.$disconnect();
+  console.log('Database connection closed');
 });
 
-pool.on('error', (err: Error) => {
-  console.error('Unexpected error on idle client', err);
-  process.exit(-1);
-});
-
-// Helper function to execute queries
-export const query = async (text: string, params?: any[]) => {
-  const start = Date.now();
-  try {
-    const res = await pool.query(text, params);
-    const duration = Date.now() - start;
-    console.log('Executed query', { text, duration, rows: res.rowCount });
-    return res;
-  } catch (error) {
-    console.error('Database query error', { text, error });
-    throw error;
-  }
-};
-
-// Helper function to get a client from the pool (for transactions)
-export const getClient = async (): Promise<PoolClient> => {
-  const client = await pool.connect();
-  return client;
-};
-
-// Close the pool (useful for graceful shutdown)
-export const closePool = async () => {
-  await pool.end();
-  console.log('Database pool closed');
-};
-
-export default pool;
+export default prisma;
