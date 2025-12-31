@@ -1,5 +1,33 @@
 import { jest } from '@jest/globals';
 import type { Request, Response, NextFunction } from 'express';
+
+// Mock database FIRST to prevent real DB calls
+jest.mock('../config/database.js', () => ({
+  default: { query: jest.fn() },
+  query: jest.fn(),
+}));
+
+// 1. Create mock functions FIRST with proper types
+const mockCreateTransaction = jest.fn<() => Promise<any>>();
+const mockGetAllTransactions = jest.fn<() => Promise<any>>();
+const mockGetTransactionById = jest.fn<() => Promise<any>>();
+const mockGetTransactionsByUserId = jest.fn<() => Promise<any>>();
+const mockUpdateTransaction = jest.fn<() => Promise<any>>();
+const mockDeleteTransaction = jest.fn<() => Promise<any>>();
+
+// 2. Mock modules
+jest.mock('../models/models.js', () => ({
+  TransactionModel: {
+    createTransaction: mockCreateTransaction,
+    getAllTransactions: mockGetAllTransactions,
+    getTransactionById: mockGetTransactionById,
+    getTransactionsByUserId: mockGetTransactionsByUserId,
+    updateTransaction: mockUpdateTransaction,
+    deleteTransaction: mockDeleteTransaction,
+  },
+}));
+
+// 3. Import controller AFTER mocks
 import {
   createTransaction,
   getTransactions,
@@ -8,11 +36,7 @@ import {
   updateTransaction,
   deleteTransaction,
 } from '../controllers/transactionController.js';
-import { TransactionModel } from '../models/models.js';
 import type { Transaction } from '../models/transaction.js';
-
-// Mock dependencies
-jest.mock('../models/models.js');
 
 describe('Transaction Controller', () => {
   let mockRequest: Partial<Request>;
@@ -20,13 +44,6 @@ describe('Transaction Controller', () => {
   let mockNext: NextFunction;
   let responseStatus: jest.Mock;
   let responseJson: jest.Mock;
-
-  const mockCreateTransaction = TransactionModel.createTransaction as jest.MockedFunction<typeof TransactionModel.createTransaction>;
-  const mockGetAllTransactions = TransactionModel.getAllTransactions as jest.MockedFunction<typeof TransactionModel.getAllTransactions>;
-  const mockGetTransactionById = TransactionModel.getTransactionById as jest.MockedFunction<typeof TransactionModel.getTransactionById>;
-  const mockGetTransactionsByUserId = TransactionModel.getTransactionsByUserId as jest.MockedFunction<typeof TransactionModel.getTransactionsByUserId>;
-  const mockUpdateTransaction = TransactionModel.updateTransaction as jest.MockedFunction<typeof TransactionModel.updateTransaction>;
-  const mockDeleteTransaction = TransactionModel.deleteTransaction as jest.MockedFunction<typeof TransactionModel.deleteTransaction>;
 
   beforeEach(() => {
     responseStatus = jest.fn().mockReturnThis();
@@ -582,4 +599,3 @@ describe('Transaction Controller', () => {
     });
   });
 });
-

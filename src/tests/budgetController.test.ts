@@ -1,5 +1,35 @@
 import { jest } from '@jest/globals';
 import type { Request, Response, NextFunction } from 'express';
+
+// Mock database FIRST to prevent real DB calls
+jest.mock('../config/database.js', () => ({
+  default: { query: jest.fn() },
+  query: jest.fn(),
+}));
+
+// 1. Create mock functions FIRST with proper types
+const mockCreateBudget = jest.fn<() => Promise<any>>();
+const mockGetAllBudgets = jest.fn<() => Promise<any>>();
+const mockGetBudgetById = jest.fn<() => Promise<any>>();
+const mockGetBudgetsByUserId = jest.fn<() => Promise<any>>();
+const mockGetBudgetsByUserIdAndMonth = jest.fn<() => Promise<any>>();
+const mockUpdateBudget = jest.fn<() => Promise<any>>();
+const mockDeleteBudget = jest.fn<() => Promise<any>>();
+
+// 2. Mock modules
+jest.mock('../models/models.js', () => ({
+  BudgetModel: {
+    createBudget: mockCreateBudget,
+    getAllBudgets: mockGetAllBudgets,
+    getBudgetById: mockGetBudgetById,
+    getBudgetsByUserId: mockGetBudgetsByUserId,
+    getBudgetsByUserIdAndMonth: mockGetBudgetsByUserIdAndMonth,
+    updateBudget: mockUpdateBudget,
+    deleteBudget: mockDeleteBudget,
+  },
+}));
+
+// 3. Import controller AFTER mocks
 import {
   createBudget,
   getBudgets,
@@ -9,12 +39,8 @@ import {
   updateBudget,
   deleteBudget,
 } from '../controllers/budgetController.js';
-import { BudgetModel } from '../models/models.js';
 import type { User } from '../models/user.js';
 import type { Budget } from '../models/budget.js';
-
-// Mock dependencies
-jest.mock('../models/models.js');
 
 describe('Budget Controller', () => {
   let mockRequest: Partial<Request>;
@@ -22,14 +48,6 @@ describe('Budget Controller', () => {
   let mockNext: NextFunction;
   let responseStatus: jest.Mock;
   let responseJson: jest.Mock;
-
-  const mockCreateBudget = BudgetModel.createBudget as jest.MockedFunction<typeof BudgetModel.createBudget>;
-  const mockGetAllBudgets = BudgetModel.getAllBudgets as jest.MockedFunction<typeof BudgetModel.getAllBudgets>;
-  const mockGetBudgetById = BudgetModel.getBudgetById as jest.MockedFunction<typeof BudgetModel.getBudgetById>;
-  const mockGetBudgetsByUserId = BudgetModel.getBudgetsByUserId as jest.MockedFunction<typeof BudgetModel.getBudgetsByUserId>;
-  const mockGetBudgetsByUserIdAndMonth = BudgetModel.getBudgetsByUserIdAndMonth as jest.MockedFunction<typeof BudgetModel.getBudgetsByUserIdAndMonth>;
-  const mockUpdateBudget = BudgetModel.updateBudget as jest.MockedFunction<typeof BudgetModel.updateBudget>;
-  const mockDeleteBudget = BudgetModel.deleteBudget as jest.MockedFunction<typeof BudgetModel.deleteBudget>;
 
   beforeEach(() => {
     responseStatus = jest.fn().mockReturnThis();

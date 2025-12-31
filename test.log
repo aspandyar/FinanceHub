@@ -2,15 +2,207 @@
 > financehub-backend@1.0.0 test
 > node --experimental-vm-modules node_modules/jest/bin/jest.js
 
-(node:12056) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+(node:21425) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
 (Use `node --trace-warnings ...` to show where the warning was created)
+FAIL src/tests/authController.test.ts
+  ● Auth Controller › register › should register a new user successfully
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: "TestPass123!"
+
+    Number of calls: 0
+
+      102 |       );
+      103 |
+    > 104 |       expect(mockValidatePassword).toHaveBeenCalledWith('TestPass123!');
+          |                                    ^
+      105 |       expect(mockGetUserByEmail).toHaveBeenCalledWith('test@example.com');
+      106 |       expect(mockHashPassword).toHaveBeenCalledWith('TestPass123!');
+      107 |       expect(mockCreateUser).toHaveBeenCalledWith({
+
+      at Object.<anonymous> (src/tests/authController.test.ts:104:36)
+
+  ● Auth Controller › register › should return 400 for weak password
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    - Expected
+    + Received
+
+      Object {
+        "details": Array [
+          "Password must be at least 8 characters long",
+    +     "Password must contain at least one uppercase letter",
+    +     "Password must contain at least one number",
+    +     "Password must contain at least one special character",
+        ],
+        "error": "Password does not meet requirements",
+      },
+
+    Number of calls: 1
+
+      175 |
+      176 |       expect(responseStatus).toHaveBeenCalledWith(400);
+    > 177 |       expect(responseJson).toHaveBeenCalledWith({
+          |                            ^
+      178 |         error: 'Password does not meet requirements',
+      179 |         details: ['Password must be at least 8 characters long'],
+      180 |       });
+
+      at Object.<anonymous> (src/tests/authController.test.ts:177:28)
+
+  ● Auth Controller › register › should return 409 when email already exists
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: 409
+
+    Number of calls: 0
+
+      243 |       );
+      244 |
+    > 245 |       expect(responseStatus).toHaveBeenCalledWith(409);
+          |                              ^
+      246 |       expect(responseJson).toHaveBeenCalledWith({ error: 'Email already registered' });
+      247 |     });
+      248 |
+
+      at Object.<anonymous> (src/tests/authController.test.ts:245:30)
+
+  ● Auth Controller › register › should handle unique constraint violation
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: 409
+
+    Number of calls: 0
+
+      268 |       );
+      269 |
+    > 270 |       expect(responseStatus).toHaveBeenCalledWith(409);
+          |                              ^
+      271 |       expect(responseJson).toHaveBeenCalledWith({ error: 'Email already registered' });
+      272 |     });
+      273 |
+
+      at Object.<anonymous> (src/tests/authController.test.ts:270:30)
+
+  ● Auth Controller › register › should use default currency USD when not provided
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: ObjectContaining {"currency": "USD"}
+
+    Number of calls: 0
+
+      303 |       );
+      304 |
+    > 305 |       expect(mockCreateUser).toHaveBeenCalledWith(
+          |                              ^
+      306 |         expect.objectContaining({ currency: 'USD' })
+      307 |       );
+      308 |     });
+
+      at Object.<anonymous> (src/tests/authController.test.ts:305:30)
+
+  ● Auth Controller › login › should login user successfully
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: "test@example.com"
+
+    Number of calls: 0
+
+      338 |       );
+      339 |
+    > 340 |       expect(mockGetUserByEmail).toHaveBeenCalledWith('test@example.com');
+          |                                  ^
+      341 |       expect(mockComparePassword).toHaveBeenCalledWith('TestPass123!', 'hashed-password');
+      342 |       expect(responseJson).toHaveBeenCalledWith({
+      343 |         user: expect.objectContaining({
+
+      at Object.<anonymous> (src/tests/authController.test.ts:340:34)
+
+  ● Auth Controller › login › should return 401 for non-existent user
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: 401
+
+    Number of calls: 0
+
+      389 |       );
+      390 |
+    > 391 |       expect(responseStatus).toHaveBeenCalledWith(401);
+          |                              ^
+      392 |       expect(responseJson).toHaveBeenCalledWith({ error: 'Invalid email or password' });
+      393 |     });
+      394 |
+
+      at Object.<anonymous> (src/tests/authController.test.ts:391:30)
+
+  ● Auth Controller › login › should return 401 for incorrect password
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: 401
+
+    Number of calls: 0
+
+      419 |       );
+      420 |
+    > 421 |       expect(responseStatus).toHaveBeenCalledWith(401);
+          |                              ^
+      422 |       expect(responseJson).toHaveBeenCalledWith({ error: 'Invalid email or password' });
+      423 |     });
+      424 |   });
+
+      at Object.<anonymous> (src/tests/authController.test.ts:421:30)
+
+  ● Auth Controller › getCurrentUser › should return current user profile
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: "user-123"
+
+    Number of calls: 0
+
+      463 |       );
+      464 |
+    > 465 |       expect(mockGetUserById).toHaveBeenCalledWith('user-123');
+          |                               ^
+      466 |       expect(responseJson).toHaveBeenCalledWith(
+      467 |         expect.objectContaining({
+      468 |           id: 'user-123',
+
+      at Object.<anonymous> (src/tests/authController.test.ts:465:31)
+
+  ● Auth Controller › getCurrentUser › should return 404 when user not found
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: 404
+
+    Number of calls: 0
+
+      501 |       );
+      502 |
+    > 503 |       expect(responseStatus).toHaveBeenCalledWith(404);
+          |                              ^
+      504 |       expect(responseJson).toHaveBeenCalledWith({ error: 'User not found' });
+      505 |     });
+      506 |   });
+
+      at Object.<anonymous> (src/tests/authController.test.ts:503:30)
+
 FAIL src/tests/password.test.ts
   ● Password Utils › hashPassword › should hash password with bcrypt
 
     expect(received).toBe(expected) // Object.is equality
 
     Expected: "hashed-password"
-    Received: "$2b$10$H6nHPxltt1AVsB9Vi6l6/uHkDDi/U5dBf7soZs80FEYNQUeFijDwi"
+    Received: "$2b$10$uSeOunfC8KEGZDAXlxOJLeQmeg6ROH.XRN5BD10QFRVq2LuR0QctO"
 
       94 |       const result = await hashPassword(password);
       95 |
@@ -75,1320 +267,1165 @@ FAIL src/tests/password.test.ts
 
       at Object.<anonymous> (src/tests/password.test.ts:131:27)
 
+FAIL src/tests/userController.test.ts
+  ● User Controller › createUser › should create user successfully as admin
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: {"currency": "USD", "email": "newuser@example.com", "full_name": "New User", "password_hash": "hashed-password", "role": "user"}
+
+    Number of calls: 0
+
+      91 |       );
+      92 |
+    > 93 |       expect(mockCreateUser).toHaveBeenCalledWith({
+         |                              ^
+      94 |         email: 'newuser@example.com',
+      95 |         password_hash: 'hashed-password',
+      96 |         full_name: 'New User',
+
+      at Object.<anonymous> (src/tests/userController.test.ts:93:30)
+
+  ● User Controller › createUser › should return 409 when email already exists
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: 409
+
+    Number of calls: 0
+
+      181 |       );
+      182 |
+    > 183 |       expect(responseStatus).toHaveBeenCalledWith(409);
+          |                              ^
+      184 |       expect(responseJson).toHaveBeenCalledWith({ error: 'Email already exists' });
+      185 |     });
+      186 |   });
+
+      at Object.<anonymous> (src/tests/userController.test.ts:183:30)
+
+  ● User Controller › getUsers › should return all users for admin
+
+    expect(jest.fn()).toHaveBeenCalled()
+
+    Expected number of calls: >= 1
+    Received number of calls:    0
+
+      224 |       );
+      225 |
+    > 226 |       expect(mockGetAllUsers).toHaveBeenCalled();
+          |                               ^
+      227 |       expect(responseJson).toHaveBeenCalledWith([
+      228 |         expect.not.objectContaining({ password_hash: expect.anything() }),
+      229 |         expect.not.objectContaining({ password_hash: expect.anything() }),
+
+      at Object.<anonymous> (src/tests/userController.test.ts:226:31)
+
+  ● User Controller › getUserById › should return user for admin
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: "user-123"
+
+    Number of calls: 0
+
+      275 |       );
+      276 |
+    > 277 |       expect(mockGetUserById).toHaveBeenCalledWith('user-123');
+          |                               ^
+      278 |       expect(responseJson).toHaveBeenCalledWith(
+      279 |         expect.not.objectContaining({ password_hash: expect.anything() })
+      280 |       );
+
+      at Object.<anonymous> (src/tests/userController.test.ts:277:31)
+
+  ● User Controller › getUserById › should allow users to view their own profile
+
+    expect(jest.fn()).toHaveBeenCalled()
+
+    Expected number of calls: >= 1
+    Received number of calls:    0
+
+      307 |       );
+      308 |
+    > 309 |       expect(responseJson).toHaveBeenCalled();
+          |                            ^
+      310 |     });
+      311 |
+      312 |     it('should return 403 when user tries to view another user', async () => {
+
+      at Object.<anonymous> (src/tests/userController.test.ts:309:28)
+
+  ● User Controller › getUserById › should return 404 when user not found
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: 404
+
+    Number of calls: 0
+
+      346 |       );
+      347 |
+    > 348 |       expect(responseStatus).toHaveBeenCalledWith(404);
+          |                              ^
+      349 |       expect(responseJson).toHaveBeenCalledWith({ message: 'User not found' });
+      350 |     });
+      351 |   });
+
+      at Object.<anonymous> (src/tests/userController.test.ts:348:30)
+
+  ● User Controller › updateUser › should update user successfully
+
+    expect(jest.fn()).toHaveBeenCalled()
+
+    Expected number of calls: >= 1
+    Received number of calls:    0
+
+      393 |       );
+      394 |
+    > 395 |       expect(mockUpdateUser).toHaveBeenCalled();
+          |                              ^
+      396 |       expect(responseJson).toHaveBeenCalledWith(
+      397 |         expect.not.objectContaining({ password_hash: expect.anything() })
+      398 |       );
+
+      at Object.<anonymous> (src/tests/userController.test.ts:395:30)
+
+  ● User Controller › updateUser › should allow admin to change role
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: "user-123", ObjectContaining {"role": "manager"}
+
+    Number of calls: 0
+
+      468 |       );
+      469 |
+    > 470 |       expect(mockUpdateUser).toHaveBeenCalledWith('user-123', expect.objectContaining({ role: 'manager' }));
+          |                              ^
+      471 |     });
+      472 |   });
+      473 |
+
+      at Object.<anonymous> (src/tests/userController.test.ts:470:30)
+
+  ● User Controller › deleteUser › should delete user successfully as admin
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: "user-123"
+
+    Number of calls: 0
+
+      488 |       );
+      489 |
+    > 490 |       expect(mockDeleteUser).toHaveBeenCalledWith('user-123');
+          |                              ^
+      491 |       expect(responseStatus).toHaveBeenCalledWith(204);
+      492 |     });
+      493 |
+
+      at Object.<anonymous> (src/tests/userController.test.ts:490:30)
+
+  ● User Controller › deleteUser › should return 404 when user not found
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: 404
+
+    Number of calls: 0
+
+      548 |       );
+      549 |
+    > 550 |       expect(responseStatus).toHaveBeenCalledWith(404);
+          |                              ^
+      551 |       expect(responseJson).toHaveBeenCalledWith({ message: 'User not found' });
+      552 |     });
+      553 |   });
+
+      at Object.<anonymous> (src/tests/userController.test.ts:550:30)
+
+FAIL src/tests/transactionController.test.ts
+  ● Transaction Controller › createTransaction › should create transaction successfully
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: {"amount": 100.5, "category_id": "550e8400-e29b-41d4-a716-446655440000", "date": "2024-01-15", "description": "Grocery shopping", "type": "expense", "user_id": "user-123"}
+
+    Number of calls: 0
+
+      100 |       );
+      101 |
+    > 102 |       expect(mockCreateTransaction).toHaveBeenCalledWith({
+          |                                     ^
+      103 |         user_id: 'user-123',
+      104 |         ...transactionData,
+      105 |       });
+
+      at Object.<anonymous> (src/tests/transactionController.test.ts:102:37)
+
+  ● Transaction Controller › createTransaction › should handle foreign key constraint violation
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: 400
+
+    Number of calls: 0
+
+      265 |       );
+      266 |
+    > 267 |       expect(responseStatus).toHaveBeenCalledWith(400);
+          |                              ^
+      268 |       expect(responseJson).toHaveBeenCalledWith({
+      269 |         error: 'Invalid user_id or category_id',
+      270 |       });
+
+      at Object.<anonymous> (src/tests/transactionController.test.ts:267:30)
+
+  ● Transaction Controller › getTransactions › should return transactions for authenticated user
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: "user-123", undefined, undefined, undefined, undefined
+
+    Number of calls: 0
+
+      301 |       );
+      302 |
+    > 303 |       expect(mockGetAllTransactions).toHaveBeenCalledWith('user-123', undefined, undefined, undefined, undefined);
+          |                                      ^
+      304 |       expect(responseJson).toHaveBeenCalledWith(transactions);
+      305 |     });
+      306 |
+
+      at Object.<anonymous> (src/tests/transactionController.test.ts:303:38)
+
+  ● Transaction Controller › getTransactions › should allow admin to filter by user_id
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: "other-user-123", "expense", undefined, undefined, undefined
+
+    Number of calls: 0
+
+      322 |       );
+      323 |
+    > 324 |       expect(mockGetAllTransactions).toHaveBeenCalledWith(
+          |                                      ^
+      325 |         'other-user-123',
+      326 |         'expense',
+      327 |         undefined,
+
+      at Object.<anonymous> (src/tests/transactionController.test.ts:324:38)
+
+  ● Transaction Controller › getTransactions › should filter by date range
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: "user-123", undefined, undefined, "2024-01-01", "2024-01-31"
+
+    Number of calls: 0
+
+      348 |       );
+      349 |
+    > 350 |       expect(mockGetAllTransactions).toHaveBeenCalledWith(
+          |                                      ^
+      351 |         'user-123',
+      352 |         undefined,
+      353 |         undefined,
+
+      at Object.<anonymous> (src/tests/transactionController.test.ts:350:38)
+
+  ● Transaction Controller › getTransactionById › should return transaction by id
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: "transaction-123"
+
+    Number of calls: 0
+
+      381 |       );
+      382 |
+    > 383 |       expect(mockGetTransactionById).toHaveBeenCalledWith('transaction-123');
+          |                                      ^
+      384 |       expect(responseJson).toHaveBeenCalledWith(transaction);
+      385 |     });
+      386 |
+
+      at Object.<anonymous> (src/tests/transactionController.test.ts:383:38)
+
+  ● Transaction Controller › getTransactionById › should return 404 when transaction not found
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: 404
+    Received: 400
+
+    Number of calls: 1
+
+      395 |       );
+      396 |
+    > 397 |       expect(responseStatus).toHaveBeenCalledWith(404);
+          |                              ^
+      398 |       expect(responseJson).toHaveBeenCalledWith({ message: 'Transaction not found' });
+      399 |     });
+      400 |   });
+
+      at Object.<anonymous> (src/tests/transactionController.test.ts:397:30)
+
+  ● Transaction Controller › getTransactionsByUserId › should return transactions for user
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: "user-123"
+
+    Number of calls: 0
+
+      425 |       );
+      426 |
+    > 427 |       expect(mockGetTransactionsByUserId).toHaveBeenCalledWith('user-123');
+          |                                           ^
+      428 |       expect(responseJson).toHaveBeenCalledWith(transactions);
+      429 |     });
+      430 |
+
+      at Object.<anonymous> (src/tests/transactionController.test.ts:427:43)
+
+  ● Transaction Controller › updateTransaction › should update transaction successfully
+
+    expect(jest.fn()).toHaveBeenCalled()
+
+    Expected number of calls: >= 1
+    Received number of calls:    0
+
+      478 |       );
+      479 |
+    > 480 |       expect(mockUpdateTransaction).toHaveBeenCalled();
+          |                                     ^
+      481 |       expect(responseJson).toHaveBeenCalledWith(updatedTransaction);
+      482 |     });
+      483 |
+
+      at Object.<anonymous> (src/tests/transactionController.test.ts:480:37)
+
+  ● Transaction Controller › updateTransaction › should return 403 when user does not own transaction
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: 403
+    Received: 400
+
+    Number of calls: 1
+
+      509 |       );
+      510 |
+    > 511 |       expect(responseStatus).toHaveBeenCalledWith(403);
+          |                              ^
+      512 |       expect(responseJson).toHaveBeenCalledWith({
+      513 |         error: 'Access denied',
+      514 |         message: 'You can only update your own transactions',
+
+      at Object.<anonymous> (src/tests/transactionController.test.ts:511:30)
+
+  ● Transaction Controller › updateTransaction › should return 404 when transaction not found
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: 404
+    Received: 400
+
+    Number of calls: 1
+
+      531 |       );
+      532 |
+    > 533 |       expect(responseStatus).toHaveBeenCalledWith(404);
+          |                              ^
+      534 |       expect(responseJson).toHaveBeenCalledWith({ message: 'Transaction not found' });
+      535 |     });
+      536 |   });
+
+      at Object.<anonymous> (src/tests/transactionController.test.ts:533:30)
+
+  ● Transaction Controller › deleteTransaction › should delete transaction successfully
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: "transaction-123"
+
+    Number of calls: 0
+
+      565 |       );
+      566 |
+    > 567 |       expect(mockDeleteTransaction).toHaveBeenCalledWith('transaction-123');
+          |                                     ^
+      568 |       expect(responseStatus).toHaveBeenCalledWith(204);
+      569 |     });
+      570 |
+
+      at Object.<anonymous> (src/tests/transactionController.test.ts:567:37)
+
+  ● Transaction Controller › deleteTransaction › should return 403 when user does not own transaction
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: 403
+    Received: 400
+
+    Number of calls: 1
+
+      596 |       );
+      597 |
+    > 598 |       expect(responseStatus).toHaveBeenCalledWith(403);
+          |                              ^
+      599 |     });
+      600 |   });
+      601 | });
+
+      at Object.<anonymous> (src/tests/transactionController.test.ts:598:30)
+
 FAIL src/tests/recurringTransactionController.test.ts
-  ● Console
-
-    console.log
-      [dotenv@17.2.3] injecting env (5) from .env -- tip: ⚙️  override existing env vars with { override: true }
-
-      at _log (node_modules/dotenv/lib/main.js:142:11)
-
-    console.log
-      Connected to PostgreSQL database
-
-      at BoundPool.<anonymous> (src/config/database.ts:13:11)
-
-    console.log
-      Connected to PostgreSQL database
-
-      at BoundPool.<anonymous> (src/config/database.ts:13:11)
-
-    console.log
-      Executed query {
-        text: 'SELECT * FROM recurring_transactions \n' +
-          '     WHERE is_active = TRUE \n' +
-          '     AND next_occurrence <= $1 \n' +
-          '     AND (end_date IS NULL OR end_date >= $1)\n' +
-          '     ORDER BY next_occurrence ASC',
-        duration: 11,
-        rows: 0
-      }
-
-      at query (src/config/database.ts:27:13)
-
   ● Recurring Transaction Controller › createRecurringTransaction › should create recurring transaction successfully
 
-    TypeError: mockCreateRecurringTransaction.mockResolvedValue is not a function
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
 
-      84 |       };
-      85 |       mockRequest.body = transactionData;
-    > 86 |       mockCreateRecurringTransaction.mockResolvedValue(createdTransaction);
-         |                                      ^
-      87 |  
-      88 |       await createRecurringTransaction(
-      89 |         mockRequest as Request,
+    Expected: {"amount": 100.5, "category_id": "550e8400-e29b-41d4-a716-446655440000", "description": "Monthly subscription", "end_date": null, "frequency": "monthly", "is_active": true, "next_occurrence": "2024-02-01", "start_date": "2024-01-01", "type": "expense", "user_id": "user-123"}
 
-      at Object.<anonymous> (src/tests/recurringTransactionController.test.ts:86:38)
+    Number of calls: 0
+
+      110 |       );
+      111 |
+    > 112 |       expect(mockCreateRecurringTransaction).toHaveBeenCalledWith({
+          |                                              ^
+      113 |         user_id: 'user-123',
+      114 |         ...transactionData,
+      115 |       });
+
+      at Object.<anonymous> (src/tests/recurringTransactionController.test.ts:112:46)
 
   ● Recurring Transaction Controller › getRecurringTransactions › should return recurring transactions for authenticated user
 
-    TypeError: mockGetAllRecurringTransactions.mockResolvedValue is not a function
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
 
-      237 |         role: 'user',
-      238 |       };
-    > 239 |       mockGetAllRecurringTransactions.mockResolvedValue(transactions);
-          |                                       ^
-      240 |     
-      241 |       await getRecurringTransactions(
-      242 |         mockRequest as Request,
+    Expected: "user-123", undefined
 
-      at Object.<anonymous> (src/tests/recurringTransactionController.test.ts:239:39)
-
-  ● Recurring Transaction Controller › getRecurringTransactions › should filter by is_active when provided
-
-    expect(received).toHaveBeenCalledWith(...expected)
-
-    Matcher error: received value must be a mock or spy function
-
-    Received has type:  function
-    Received has value: [Function getAllRecurringTransactions]
+    Number of calls: 0
 
       263 |       );
       264 |
-    > 265 |       expect(mockGetAllRecurringTransactions).toHaveBeenCalledWith('user-123', true);
+    > 265 |       expect(mockGetAllRecurringTransactions).toHaveBeenCalledWith('user-123', undefined);
           |                                               ^
-      266 |     });
-      267 |   });
+      266 |       expect(responseJson).toHaveBeenCalledWith(transactions);
+      267 |     });
       268 |
 
       at Object.<anonymous> (src/tests/recurringTransactionController.test.ts:265:47)
 
+  ● Recurring Transaction Controller › getRecurringTransactions › should filter by is_active when provided
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: "user-123", true
+
+    Number of calls: 0
+
+      281 |       );
+      282 |
+    > 283 |       expect(mockGetAllRecurringTransactions).toHaveBeenCalledWith('user-123', true);
+          |                                               ^
+      284 |     });
+      285 |   });
+      286 |
+
+      at Object.<anonymous> (src/tests/recurringTransactionController.test.ts:283:47)
+
   ● Recurring Transaction Controller › getRecurringTransactionById › should return recurring transaction by id
 
-    TypeError: mockGetRecurringTransactionById.mockResolvedValue is not a function
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
 
-      285 |
-      286 |       mockRequest.params = { id: 'recurring-123' };
-    > 287 |       mockGetRecurringTransactionById.mockResolvedValue(transaction);
-          |                                       ^
-      288 |
-      289 |       await getRecurringTransactionById(
-      290 |         mockRequest as Request,
+    Expected: "recurring-123"
 
-      at Object.<anonymous> (src/tests/recurringTransactionController.test.ts:287:39)
+    Number of calls: 0
+
+      311 |       );
+      312 |
+    > 313 |       expect(mockGetRecurringTransactionById).toHaveBeenCalledWith('recurring-123');
+          |                                               ^
+      314 |       expect(responseJson).toHaveBeenCalledWith(transaction);
+      315 |     });
+      316 |
+
+      at Object.<anonymous> (src/tests/recurringTransactionController.test.ts:313:47)
 
   ● Recurring Transaction Controller › getRecurringTransactionById › should return 404 when transaction not found
 
-    TypeError: mockGetRecurringTransactionById.mockResolvedValue is not a function
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
 
-      299 |     it('should return 404 when transaction not found', async () => {
-      300 |       mockRequest.params = { id: 'recurring-123' };
-    > 301 |       mockGetRecurringTransactionById.mockResolvedValue(null);
-          |                                       ^
-      302 |
-      303 |       await getRecurringTransactionById(
-      304 |         mockRequest as Request,
+    Expected: 404
+    Received: 400
 
-      at Object.<anonymous> (src/tests/recurringTransactionController.test.ts:301:39)
+    Number of calls: 1
+
+      325 |       );
+      326 |
+    > 327 |       expect(responseStatus).toHaveBeenCalledWith(404);
+          |                              ^
+      328 |     });
+      329 |   });
+      330 |
+
+      at Object.<anonymous> (src/tests/recurringTransactionController.test.ts:327:30)
 
   ● Recurring Transaction Controller › getDueRecurringTransactions › should return due transactions for specified date
 
-    TypeError: mockGetDueRecurringTransactions.mockResolvedValue is not a function
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
 
-      331 |
-      332 |       mockRequest.query = { date: '2024-02-01' };
-    > 333 |       mockGetDueRecurringTransactions.mockResolvedValue(transactions);
-          |                                       ^
-      334 |
-      335 |       await getDueRecurringTransactions(
-      336 |         mockRequest as Request,
+    Expected: "2024-02-01"
 
-      at Object.<anonymous> (src/tests/recurringTransactionController.test.ts:333:39)
+    Number of calls: 0
+
+      357 |       );
+      358 |
+    > 359 |       expect(mockGetDueRecurringTransactions).toHaveBeenCalledWith('2024-02-01');
+          |                                               ^
+      360 |       expect(responseJson).toHaveBeenCalledWith(transactions);
+      361 |     });
+      362 |
+
+      at Object.<anonymous> (src/tests/recurringTransactionController.test.ts:359:47)
 
   ● Recurring Transaction Controller › getDueRecurringTransactions › should use today as default when date not provided
 
-    expect(received).toHaveBeenCalledWith(...expected)
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
 
-    Matcher error: received value must be a mock or spy function
+    Expected: "2025-12-31"
 
-    Received has type:  function
-    Received has value: [Function getDueRecurringTransactions]
+    Number of calls: 0
 
-      353 |       );
-      354 |
-    > 355 |       expect(mockGetDueRecurringTransactions).toHaveBeenCalledWith(today);
+      371 |       );
+      372 |
+    > 373 |       expect(mockGetDueRecurringTransactions).toHaveBeenCalledWith(today);
           |                                               ^
-      356 |     });
-      357 |   });
-      358 |
+      374 |     });
+      375 |   });
+      376 |
 
-      at Object.<anonymous> (src/tests/recurringTransactionController.test.ts:355:47)
+      at Object.<anonymous> (src/tests/recurringTransactionController.test.ts:373:47)
 
   ● Recurring Transaction Controller › updateRecurringTransaction › should update recurring transaction successfully
 
-    TypeError: mockGetRecurringTransactionById.mockResolvedValue is not a function
+    expect(jest.fn()).toHaveBeenCalled()
 
-      386 |       mockRequest.params = { id: 'recurring-123' };
-      387 |       mockRequest.body = { amount: 150 };
-    > 388 |       mockGetRecurringTransactionById.mockResolvedValue(existingTransaction);
-          |                                       ^
-      389 |       mockUpdateRecurringTransaction.mockResolvedValue(updatedTransaction);
-      390 |
-      391 |       await updateRecurringTransaction(
+    Expected number of calls: >= 1
+    Received number of calls:    0
 
-      at Object.<anonymous> (src/tests/recurringTransactionController.test.ts:388:39)
+      413 |       );
+      414 |
+    > 415 |       expect(mockUpdateRecurringTransaction).toHaveBeenCalled();
+          |                                              ^
+      416 |       expect(responseJson).toHaveBeenCalledWith(updatedTransaction);
+      417 |     });
+      418 |
+
+      at Object.<anonymous> (src/tests/recurringTransactionController.test.ts:415:46)
 
   ● Recurring Transaction Controller › updateRecurringTransaction › should return 403 when user does not own transaction
 
-    TypeError: mockGetRecurringTransactionById.mockResolvedValue is not a function
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
 
-      421 |       };
-      422 |       mockRequest.params = { id: 'recurring-123' };
-    > 423 |       mockGetRecurringTransactionById.mockResolvedValue(existingTransaction);
-          |                                       ^
-      424 |
-      425 |       await updateRecurringTransaction(
-      426 |         mockRequest as Request,
+    Expected: 403
+    Received: 400
 
-      at Object.<anonymous> (src/tests/recurringTransactionController.test.ts:423:39)
+    Number of calls: 1
+
+      447 |       );
+      448 |
+    > 449 |       expect(responseStatus).toHaveBeenCalledWith(403);
+          |                              ^
+      450 |     });
+      451 |   });
+      452 |
+
+      at Object.<anonymous> (src/tests/recurringTransactionController.test.ts:449:30)
 
   ● Recurring Transaction Controller › deleteRecurringTransaction › should delete recurring transaction successfully
 
-    TypeError: mockGetRecurringTransactionById.mockResolvedValue is not a function
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
 
-      456 |       };
-      457 |       mockRequest.params = { id: 'recurring-123' };
-    > 458 |       mockGetRecurringTransactionById.mockResolvedValue(existingTransaction);
-          |                                       ^
-      459 |       mockDeleteRecurringTransaction.mockResolvedValue(true);
-      460 |
-      461 |       await deleteRecurringTransaction(
+    Expected: "recurring-123"
 
-      at Object.<anonymous> (src/tests/recurringTransactionController.test.ts:458:39)
+    Number of calls: 0
 
-FAIL src/tests/transactionController.test.ts
-  ● Console
+      483 |       );
+      484 |
+    > 485 |       expect(mockDeleteRecurringTransaction).toHaveBeenCalledWith('recurring-123');
+          |                                              ^
+      486 |       expect(responseStatus).toHaveBeenCalledWith(204);
+      487 |     });
+      488 |   });
 
-    console.log
-      [dotenv@17.2.3] injecting env (5) from .env -- tip: 🗂️ backup and recover secrets: https://dotenvx.com/ops
-
-      at _log (node_modules/dotenv/lib/main.js:142:11)
-
-    console.log
-      Connected to PostgreSQL database
-
-      at BoundPool.<anonymous> (src/config/database.ts:13:11)
-
-  ● Transaction Controller › createTransaction › should create transaction successfully
-
-    TypeError: mockCreateTransaction.mockResolvedValue is not a function
-
-      75 |       };
-      76 |       mockRequest.body = transactionData;
-    > 77 |       mockCreateTransaction.mockResolvedValue(createdTransaction);
-         |                             ^
-      78 |
-      79 |       await createTransaction(
-      80 |         mockRequest as Request,
-
-      at Object.<anonymous> (src/tests/transactionController.test.ts:77:29)
-
-  ● Transaction Controller › createTransaction › should handle foreign key constraint violation
-
-    TypeError: mockCreateTransaction.mockRejectedValue is not a function
-
-      240 |       };
-      241 |
-    > 242 |       mockCreateTransaction.mockRejectedValue(error);
-          |                             ^
-      243 |
-      244 |       await createTransaction(
-      245 |         mockRequest as Request,
-
-      at Object.<anonymous> (src/tests/transactionController.test.ts:242:29)
-
-  ● Transaction Controller › getTransactions › should return transactions for authenticated user
-
-    TypeError: mockGetAllTransactions.mockResolvedValue is not a function
-
-      276 |         role: 'user',
-      277 |       };
-    > 278 |       mockGetAllTransactions.mockResolvedValue(transactions);
-          |                              ^
-      279 |
-      280 |       await getTransactions(
-      281 |         mockRequest as Request,
-
-      at Object.<anonymous> (src/tests/transactionController.test.ts:278:30)
-
-  ● Transaction Controller › getTransactions › should allow admin to filter by user_id
-
-    expect(received).toHaveBeenCalledWith(...expected)
-
-    Matcher error: received value must be a mock or spy function
-
-    Received has type:  function
-    Received has value: [Function getAllTransactions]
-
-      305 |       );
-      306 |
-    > 307 |       expect(mockGetAllTransactions).toHaveBeenCalledWith(
-          |                                      ^
-      308 |         'other-user-123',
-      309 |         'expense',
-      310 |         undefined,
-
-      at Object.<anonymous> (src/tests/transactionController.test.ts:307:38)
-
-  ● Transaction Controller › getTransactions › should filter by date range
-
-    expect(received).toHaveBeenCalledWith(...expected)
-
-    Matcher error: received value must be a mock or spy function
-
-    Received has type:  function
-    Received has value: [Function getAllTransactions]
-
-      331 |       );
-      332 |
-    > 333 |       expect(mockGetAllTransactions).toHaveBeenCalledWith(
-          |                                      ^
-      334 |         'user-123',
-      335 |         undefined,
-      336 |         undefined,
-
-      at Object.<anonymous> (src/tests/transactionController.test.ts:333:38)
-
-  ● Transaction Controller › getTransactionById › should return transaction by id
-
-    TypeError: mockGetTransactionById.mockResolvedValue is not a function
-
-      356 |
-      357 |       mockRequest.params = { id: 'transaction-123' };
-    > 358 |       mockGetTransactionById.mockResolvedValue(transaction);
-          |                              ^
-      359 |
-      360 |       await getTransactionById(
-      361 |         mockRequest as Request,
-
-      at Object.<anonymous> (src/tests/transactionController.test.ts:358:30)
-
-  ● Transaction Controller › getTransactionById › should return 404 when transaction not found
-
-    TypeError: mockGetTransactionById.mockResolvedValue is not a function
-
-      370 |     it('should return 404 when transaction not found', async () => {
-      371 |       mockRequest.params = { id: 'transaction-123' };
-    > 372 |       mockGetTransactionById.mockResolvedValue(null);
-          |                              ^
-      373 |
-      374 |       await getTransactionById(
-      375 |         mockRequest as Request,
-
-      at Object.<anonymous> (src/tests/transactionController.test.ts:372:30)
-
-  ● Transaction Controller › getTransactionsByUserId › should return transactions for user
-
-    TypeError: mockGetTransactionsByUserId.mockResolvedValue is not a function
-
-      400 |
-      401 |       mockRequest.params = { user_id: 'user-123' };
-    > 402 |       mockGetTransactionsByUserId.mockResolvedValue(transactions);
-          |                                   ^
-      403 |
-      404 |       await getTransactionsByUserId(
-      405 |         mockRequest as Request,
-
-      at Object.<anonymous> (src/tests/transactionController.test.ts:402:35)
-
-  ● Transaction Controller › updateTransaction › should update transaction successfully
-
-    TypeError: mockGetTransactionById.mockResolvedValue is not a function
-
-      452 |       mockRequest.params = { id: 'transaction-123' };
-      453 |       mockRequest.body = { amount: 150 };
-    > 454 |       mockGetTransactionById.mockResolvedValue(existingTransaction);
-          |                              ^
-      455 |       mockUpdateTransaction.mockResolvedValue(updatedTransaction);
-      456 |
-      457 |       await updateTransaction(
-
-      at Object.<anonymous> (src/tests/transactionController.test.ts:454:30)
-
-  ● Transaction Controller › updateTransaction › should return 403 when user does not own transaction
-
-    TypeError: mockGetTransactionById.mockResolvedValue is not a function
-
-      484 |       };
-      485 |       mockRequest.params = { id: 'transaction-123' };
-    > 486 |       mockGetTransactionById.mockResolvedValue(existingTransaction);
-          |                              ^
-      487 |
-      488 |       await updateTransaction(
-      489 |         mockRequest as Request,
-
-      at Object.<anonymous> (src/tests/transactionController.test.ts:486:30)
-
-  ● Transaction Controller › updateTransaction › should return 404 when transaction not found
-
-    TypeError: mockGetTransactionById.mockResolvedValue is not a function
-
-      506 |       };
-      507 |       mockRequest.params = { id: 'transaction-123' };
-    > 508 |       mockGetTransactionById.mockResolvedValue(null);
-          |                              ^
-      509 |
-      510 |       await updateTransaction(
-      511 |         mockRequest as Request,
-
-      at Object.<anonymous> (src/tests/transactionController.test.ts:508:30)
-
-  ● Transaction Controller › deleteTransaction › should delete transaction successfully
-
-    TypeError: mockGetTransactionById.mockResolvedValue is not a function
-
-      539 |       };
-      540 |       mockRequest.params = { id: 'transaction-123' };
-    > 541 |       mockGetTransactionById.mockResolvedValue(existingTransaction);
-          |                              ^
-      542 |       mockDeleteTransaction.mockResolvedValue(true);
-      543 |
-      544 |       await deleteTransaction(
-
-      at Object.<anonymous> (src/tests/transactionController.test.ts:541:30)
-
-  ● Transaction Controller › deleteTransaction › should return 403 when user does not own transaction
-
-    TypeError: mockGetTransactionById.mockResolvedValue is not a function
-
-      571 |       };
-      572 |       mockRequest.params = { id: 'transaction-123' };
-    > 573 |       mockGetTransactionById.mockResolvedValue(existingTransaction);
-          |                              ^
-      574 |
-      575 |       await deleteTransaction(
-      576 |         mockRequest as Request,
-
-      at Object.<anonymous> (src/tests/transactionController.test.ts:573:30)
-
-FAIL src/tests/authController.test.ts
-  ● Console
-
-    console.log
-      [dotenv@17.2.3] injecting env (5) from .env -- tip: 👥 sync secrets across teammates & machines: https://dotenvx.com/ops
-
-      at _log (node_modules/dotenv/lib/main.js:142:11)
-
-  ● Auth Controller › register › should register a new user successfully
-
-    TypeError: mockValidatePassword.mockReturnValue is not a function
-
-      70 |
-      71 |       mockRequest.body = userData;
-    > 72 |       mockValidatePassword.mockReturnValue({ isValid: true, errors: [] });
-         |                            ^
-      73 |       mockGetUserByEmail.mockResolvedValue(null);
-      74 |       mockHashPassword.mockResolvedValue(hashedPassword);
-      75 |       mockCreateUser.mockResolvedValue(createdUser);
-
-      at Object.<anonymous> (src/tests/authController.test.ts:72:28)
-
-  ● Auth Controller › register › should return 400 for weak password
-
-    TypeError: mockValidatePassword.mockReturnValue is not a function
-
-      143 |       };
-      144 |
-    > 145 |       mockValidatePassword.mockReturnValue({
-          |                            ^
-      146 |         isValid: false,
-      147 |         errors: ['Password must be at least 8 characters long'],
-      148 |       });
-
-      at Object.<anonymous> (src/tests/authController.test.ts:145:28)
-
-  ● Auth Controller › register › should return 409 when email already exists
-
-    TypeError: mockValidatePassword.mockReturnValue is not a function
-
-      214 |       };
-      215 |
-    > 216 |       mockValidatePassword.mockReturnValue({ isValid: true, errors: [] });
-          |                            ^
-      217 |       mockGetUserByEmail.mockResolvedValue(existingUser);
-      218 |
-      219 |       await register(
-
-      at Object.<anonymous> (src/tests/authController.test.ts:216:28)
-
-  ● Auth Controller › register › should handle unique constraint violation
-
-    TypeError: mockValidatePassword.mockReturnValue is not a function
-
-      237 |       };
-      238 |
-    > 239 |       mockValidatePassword.mockReturnValue({ isValid: true, errors: [] });
-          |                            ^
-      240 |       mockGetUserByEmail.mockResolvedValue(null);
-      241 |       mockHashPassword.mockResolvedValue('hashed');
-      242 |       mockCreateUser.mockRejectedValue(error);
-
-      at Object.<anonymous> (src/tests/authController.test.ts:239:28)
-
-  ● Auth Controller › register › should use default currency USD when not provided
-
-    TypeError: mockValidatePassword.mockReturnValue is not a function
-
-      271 |
-      272 |       mockRequest.body = userData;
-    > 273 |       mockValidatePassword.mockReturnValue({ isValid: true, errors: [] });
-          |                            ^
-      274 |       mockGetUserByEmail.mockResolvedValue(null);
-      275 |       mockHashPassword.mockResolvedValue('hashed');
-      276 |       mockCreateUser.mockResolvedValue(createdUser);
-
-      at Object.<anonymous> (src/tests/authController.test.ts:273:28)
-
-  ● Auth Controller › login › should login user successfully
-
-    TypeError: mockGetUserByEmail.mockResolvedValue is not a function
-
-      308 |       };
-      309 |
-    > 310 |       mockGetUserByEmail.mockResolvedValue(user);
-          |                          ^
-      311 |       mockComparePassword.mockResolvedValue(true);
-      312 |       mockGenerateToken.mockReturnValue(token);
-      313 |
-
-      at Object.<anonymous> (src/tests/authController.test.ts:310:26)
-
-  ● Auth Controller › login › should return 401 for non-existent user
-
-    TypeError: mockGetUserByEmail.mockResolvedValue is not a function
-
-      361 |       };
-      362 |
-    > 363 |       mockGetUserByEmail.mockResolvedValue(null);
-          |                          ^
-      364 |
-      365 |       await login(
-      366 |         mockRequest as Request,
-
-      at Object.<anonymous> (src/tests/authController.test.ts:363:26)
-
-  ● Auth Controller › login › should return 401 for incorrect password
-
-    TypeError: mockGetUserByEmail.mockResolvedValue is not a function
-
-      390 |       };
-      391 |
-    > 392 |       mockGetUserByEmail.mockResolvedValue(user);
-          |                          ^
-      393 |       mockComparePassword.mockResolvedValue(false);
-      394 |
-      395 |       await login(
-
-      at Object.<anonymous> (src/tests/authController.test.ts:392:26)
-
-  ● Auth Controller › getCurrentUser › should return current user profile
-
-    TypeError: mockGetUserById.mockResolvedValue is not a function
-
-      435 |       };
-      436 |
-    > 437 |       mockGetUserById.mockResolvedValue(user);
-          |                       ^
-      438 |
-      439 |       await getCurrentUser(
-      440 |         mockRequest as Request,
-
-      at Object.<anonymous> (src/tests/authController.test.ts:437:23)
-
-  ● Auth Controller › getCurrentUser › should return 404 when user not found
-
-    TypeError: mockGetUserById.mockResolvedValue is not a function
-
-      473 |       };
-      474 |
-    > 475 |       mockGetUserById.mockResolvedValue(null);
-          |                       ^
-      476 |
-      477 |       await getCurrentUser(
-      478 |         mockRequest as Request,
-
-      at Object.<anonymous> (src/tests/authController.test.ts:475:23)
-
-FAIL src/tests/userController.test.ts
-  ● Console
-
-    console.log
-      [dotenv@17.2.3] injecting env (5) from .env -- tip: ⚙️  write to custom object with { processEnv: myObject }
-
-      at _log (node_modules/dotenv/lib/main.js:142:11)
-
-  ● User Controller › createUser › should create user successfully as admin
-
-    TypeError: mockCreateUser.mockResolvedValue is not a function
-
-      67 |       };
-      68 |       mockRequest.body = userData;
-    > 69 |       mockCreateUser.mockResolvedValue(createdUser);
-         |                      ^
-      70 |
-      71 |       await createUser(
-      72 |         mockRequest as Request,
-
-      at Object.<anonymous> (src/tests/userController.test.ts:69:22)
-
-  ● User Controller › createUser › should return 409 when email already exists
-
-    TypeError: mockCreateUser.mockRejectedValue is not a function
-
-      157 |       };
-      158 |
-    > 159 |       mockCreateUser.mockRejectedValue(error);
-          |                      ^
-      160 |
-      161 |       await createUser(
-      162 |         mockRequest as Request,
-
-      at Object.<anonymous> (src/tests/userController.test.ts:159:22)
-
-  ● User Controller › getUsers › should return all users for admin
-
-    TypeError: mockGetAllUsers.mockResolvedValue is not a function
-
-      200 |         role: 'admin',
-      201 |       };
-    > 202 |       mockGetAllUsers.mockResolvedValue(users);
-          |                       ^
-      203 |
-      204 |       await getUsers(
-      205 |         mockRequest as Request,
-
-      at Object.<anonymous> (src/tests/userController.test.ts:202:23)
-
-  ● User Controller › getUserById › should return user for admin
-
-    TypeError: mockGetUserById.mockResolvedValue is not a function
-
-      251 |       };
-      252 |       mockRequest.params = { id: 'user-123' };
-    > 253 |       mockGetUserById.mockResolvedValue(user);
-          |                       ^
-      254 |
-      255 |       await getUserById(
-      256 |         mockRequest as Request,
-
-      at Object.<anonymous> (src/tests/userController.test.ts:253:23)
-
-  ● User Controller › getUserById › should allow users to view their own profile
-
-    TypeError: mockGetUserById.mockResolvedValue is not a function
-
-      283 |       };
-      284 |       mockRequest.params = { id: 'user-123' };
-    > 285 |       mockGetUserById.mockResolvedValue(user);
-          |                       ^
-      286 |
-      287 |       await getUserById(
-      288 |         mockRequest as Request,
-
-      at Object.<anonymous> (src/tests/userController.test.ts:285:23)
-
-  ● User Controller › getUserById › should return 404 when user not found
-
-    TypeError: mockGetUserById.mockResolvedValue is not a function
-
-      322 |       };
-      323 |       mockRequest.params = { id: 'non-existent' };
-    > 324 |       mockGetUserById.mockResolvedValue(null);
-          |                       ^
-      325 |
-      326 |       await getUserById(
-      327 |         mockRequest as Request,
-
-      at Object.<anonymous> (src/tests/userController.test.ts:324:23)
-
-  ● User Controller › updateUser › should update user successfully
-
-    TypeError: mockGetUserById.mockResolvedValue is not a function
-
-      359 |         currency: 'EUR',
-      360 |       };
-    > 361 |       mockGetUserById.mockResolvedValue({
-          |                       ^
-      362 |         id: 'user-123',
-      363 |         email: 'user@example.com',
-      364 |         full_name: 'User',
-
-      at Object.<anonymous> (src/tests/userController.test.ts:361:23)
-
-  ● User Controller › updateUser › should return 403 when non-admin tries to change role
-
-    TypeError: mockGetUserById.mockResolvedValue is not a function
-
-      391 |       mockRequest.params = { id: 'user-123' };
-      392 |       mockRequest.body = { role: 'admin' };
-    > 393 |       mockGetUserById.mockResolvedValue({
-          |                       ^
-      394 |         id: 'user-123',
-      395 |         email: 'user@example.com',
-      396 |         full_name: 'User',
-
-      at Object.<anonymous> (src/tests/userController.test.ts:393:23)
-
-  ● User Controller › updateUser › should allow admin to change role
-
-    TypeError: mockGetUserById.mockResolvedValue is not a function
-
-      434 |       mockRequest.params = { id: 'user-123' };
-      435 |       mockRequest.body = { role: 'manager' };
-    > 436 |       mockGetUserById.mockResolvedValue({
-          |                       ^
-      437 |         id: 'user-123',
-      438 |         email: 'user@example.com',
-      439 |         full_name: 'User',
-
-      at Object.<anonymous> (src/tests/userController.test.ts:436:23)
-
-  ● User Controller › deleteUser › should delete user successfully as admin
-
-    TypeError: mockDeleteUser.mockResolvedValue is not a function
-
-      464 |       };
-      465 |       mockRequest.params = { id: 'user-123' };
-    > 466 |       mockDeleteUser.mockResolvedValue(true);
-          |                      ^
-      467 |
-      468 |       await deleteUser(
-      469 |         mockRequest as Request,
-
-      at Object.<anonymous> (src/tests/userController.test.ts:466:22)
-
-  ● User Controller › deleteUser › should return 404 when user not found
-
-    TypeError: mockDeleteUser.mockResolvedValue is not a function
-
-      524 |       };
-      525 |       mockRequest.params = { id: 'non-existent' };
-    > 526 |       mockDeleteUser.mockResolvedValue(false);
-          |                      ^
-      527 |
-      528 |       await deleteUser(
-      529 |         mockRequest as Request,
-
-      at Object.<anonymous> (src/tests/userController.test.ts:526:22)
+      at Object.<anonymous> (src/tests/recurringTransactionController.test.ts:485:46)
 
 FAIL src/tests/categoryController.test.ts
-  ● Console
-
-    console.log
-      [dotenv@17.2.3] injecting env (5) from .env -- tip: 🔑 add access controls to secrets: https://dotenvx.com/ops
-
-      at _log (node_modules/dotenv/lib/main.js:142:11)
-
   ● Category Controller › createCategory › should create category successfully
 
-    TypeError: mockCreateCategory.mockResolvedValue is not a function
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
 
-      71 |       };
-      72 |       mockRequest.body = categoryData;
-    > 73 |       mockCreateCategory.mockResolvedValue(createdCategory);
-         |                          ^
-      74 |
-      75 |       await createCategory(
-      76 |         mockRequest as Request,
+    Expected: {"color": "#6B7280", "icon": "shopping-cart", "is_system": false, "name": "Groceries", "type": "expense", "user_id": "user-123"}
 
-      at Object.<anonymous> (src/tests/categoryController.test.ts:73:26)
+    Number of calls: 0
+
+       96 |       );
+       97 |
+    >  98 |       expect(mockCreateCategory).toHaveBeenCalledWith({
+          |                                  ^
+       99 |         user_id: 'user-123',
+      100 |         name: 'Groceries',
+      101 |         type: 'expense',
+
+      at Object.<anonymous> (src/tests/categoryController.test.ts:98:34)
 
   ● Category Controller › createCategory › should return 409 when category already exists
 
-    TypeError: mockCreateCategory.mockRejectedValue is not a function
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
 
-      184 |       };
-      185 |
-    > 186 |       mockCreateCategory.mockRejectedValue(error);
-          |                          ^
-      187 |
-      188 |       await createCategory(
-      189 |         mockRequest as Request,
+    Expected: 409
 
-      at Object.<anonymous> (src/tests/categoryController.test.ts:186:26)
+    Number of calls: 0
+
+      209 |       );
+      210 |
+    > 211 |       expect(responseStatus).toHaveBeenCalledWith(409);
+          |                              ^
+      212 |     });
+      213 |   });
+      214 |
+
+      at Object.<anonymous> (src/tests/categoryController.test.ts:211:30)
 
   ● Category Controller › getCategories › should return categories for authenticated user
 
-    TypeError: mockGetAllCategories.mockResolvedValue is not a function
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
 
-      217 |         role: 'user',
-      218 |       };
-    > 219 |       mockGetAllCategories.mockResolvedValue(categories);
-          |                            ^
-      220 |
-      221 |       await getCategories(
-      222 |         mockRequest as Request,
+    Expected: "user-123", undefined
 
-      at Object.<anonymous> (src/tests/categoryController.test.ts:219:28)
-
-  ● Category Controller › getCategories › should allow admin to filter by user_id
-
-    expect(received).toHaveBeenCalledWith(...expected)
-
-    Matcher error: received value must be a mock or spy function
-
-    Received has type:  function
-    Received has value: [Function getAllCategories]
-
-      245 |       );
-      246 |
-    > 247 |       expect(mockGetAllCategories).toHaveBeenCalledWith('other-user-123', undefined);
-          |                                    ^
-      248 |     });
-      249 |   });
-      250 |
-
-      at Object.<anonymous> (src/tests/categoryController.test.ts:247:36)
-
-  ● Category Controller › getCategoryById › should return category by id
-
-    TypeError: mockGetCategoryById.mockResolvedValue is not a function
-
-      264 |
-      265 |       mockRequest.params = { id: 'cat-123' };
-    > 266 |       mockGetCategoryById.mockResolvedValue(category);
-          |                           ^
-      267 |
-      268 |       await getCategoryById(
-      269 |         mockRequest as Request,
-
-      at Object.<anonymous> (src/tests/categoryController.test.ts:266:27)
-
-  ● Category Controller › getCategoryById › should return 404 when category not found
-
-    TypeError: mockGetCategoryById.mockResolvedValue is not a function
-
-      278 |     it('should return 404 when category not found', async () => {
-      279 |       mockRequest.params = { id: 'cat-123' };
-    > 280 |       mockGetCategoryById.mockResolvedValue(null);
-          |                           ^
-      281 |
-      282 |       await getCategoryById(
-      283 |         mockRequest as Request,
-
-      at Object.<anonymous> (src/tests/categoryController.test.ts:280:27)
-
-  ● Category Controller › updateCategory › should update category successfully
-
-    TypeError: mockGetCategoryById.mockResolvedValue is not a function
-
-      316 |       mockRequest.params = { id: 'cat-123' };
-      317 |       mockRequest.body = { name: 'New Name' };
-    > 318 |       mockGetCategoryById.mockResolvedValue(existingCategory);
-          |                           ^
-      319 |       mockUpdateCategory.mockResolvedValue(updatedCategory);
-      320 |
-      321 |       await updateCategory(
-
-      at Object.<anonymous> (src/tests/categoryController.test.ts:318:27)
-
-  ● Category Controller › updateCategory › should return 403 when trying to update system category
-
-    TypeError: mockGetCategoryById.mockResolvedValue is not a function
-
-      348 |       };
-      349 |       mockRequest.params = { id: 'cat-123' };
-    > 350 |       mockGetCategoryById.mockResolvedValue(existingCategory);
-          |                           ^
-      351 |
-      352 |       await updateCategory(
-      353 |         mockRequest as Request,
-
-      at Object.<anonymous> (src/tests/categoryController.test.ts:350:27)
-
-  ● Category Controller › updateCategory › should return 403 when user does not own category
-
-    TypeError: mockGetCategoryById.mockResolvedValue is not a function
-
-      379 |       };
-      380 |       mockRequest.params = { id: 'cat-123' };
-    > 381 |       mockGetCategoryById.mockResolvedValue(existingCategory);
-          |                           ^
-      382 |
-      383 |       await updateCategory(
-      384 |         mockRequest as Request,
-
-      at Object.<anonymous> (src/tests/categoryController.test.ts:381:27)
-
-  ● Category Controller › deleteCategory › should delete category successfully
-
-    TypeError: mockGetCategoryById.mockResolvedValue is not a function
-
-      411 |       };
-      412 |       mockRequest.params = { id: 'cat-123' };
-    > 413 |       mockGetCategoryById.mockResolvedValue(existingCategory);
-          |                           ^
-      414 |       mockDeleteCategory.mockResolvedValue(true);
-      415 |
-      416 |       await deleteCategory(
-
-      at Object.<anonymous> (src/tests/categoryController.test.ts:413:27)
-
-  ● Category Controller › deleteCategory › should return 403 when trying to delete system category
-
-    TypeError: mockGetCategoryById.mockResolvedValue is not a function
-
-      443 |       };
-      444 |       mockRequest.params = { id: 'cat-123' };
-    > 445 |       mockGetCategoryById.mockResolvedValue(existingCategory);
-          |                           ^
-      446 |
-      447 |       await deleteCategory(
-      448 |         mockRequest as Request,
-
-      at Object.<anonymous> (src/tests/categoryController.test.ts:445:27)
-
-FAIL src/tests/auth.test.ts
-  ● Console
-
-    console.log
-      [dotenv@17.2.3] injecting env (5) from .env -- tip: 🔑 add access controls to secrets: https://dotenvx.com/ops
-
-      at _log (node_modules/dotenv/lib/main.js:142:11)
-
-  ● Auth Middleware › authenticate › should authenticate user with valid token
-
-    TypeError: mockVerifyToken.mockReturnValue is not a function
-
-      80 |
-      81 |       mockRequest.headers = { authorization: `Bearer ${token}` };
-    > 82 |       mockVerifyToken.mockReturnValue(decoded);
-         |                       ^
-      83 |       mockGetUserById.mockResolvedValue(user);
-      84 |
-      85 |       await authenticate(
-
-      at Object.<anonymous> (src/tests/auth.test.ts:82:23)
-
-  ● Auth Middleware › authenticate › should return 401 when token is invalid
-
-    TypeError: mockVerifyToken.mockImplementation is not a function
-
-      102 |       const token = 'invalid-token';
-      103 |       mockRequest.headers = { authorization: `Bearer ${token}` };
-    > 104 |       mockVerifyToken.mockImplementation(() => {
-          |                       ^
-      105 |         throw new Error('Invalid token');
-      106 |       });
-      107 |
-
-      at Object.<anonymous> (src/tests/auth.test.ts:104:23)
-
-  ● Auth Middleware › authenticate › should return 401 when user not found
-
-    TypeError: mockVerifyToken.mockReturnValue is not a function
-
-      126 |
-      127 |       mockRequest.headers = { authorization: `Bearer ${token}` };
-    > 128 |       mockVerifyToken.mockReturnValue(decoded);
-          |                       ^
-      129 |       mockGetUserById.mockResolvedValue(null);
-      130 |
-      131 |       await authenticate(
-
-      at Object.<anonymous> (src/tests/auth.test.ts:128:23)
-
-  ● Auth Middleware › authenticate › should call next with error when exception occurs
-
-    TypeError: mockVerifyToken.mockImplementation is not a function
-
-      144 |       mockRequest.headers = { authorization: `Bearer ${token}` };
-      145 |       const error = new Error('Database error');
-    > 146 |       mockVerifyToken.mockImplementation(() => {
-          |                       ^
-      147 |         throw error;
-      148 |       });
-      149 |
-
-      at Object.<anonymous> (src/tests/auth.test.ts:146:23)
-
-FAIL src/tests/initAdmin.test.ts
-  ● Console
-
-    console.log
-      [dotenv@17.2.3] injecting env (5) from .env -- tip: 🛠️  run anywhere with `dotenvx run -- yourcommand`
-
-      at _log (node_modules/dotenv/lib/main.js:142:11)
-
-  ● initializeAdmin › should skip admin creation when ADMIN_EMAIL is not set
-
-    expect(received).not.toHaveBeenCalled()
-
-    Matcher error: received value must be a mock or spy function
-
-    Received has type:  function
-    Received has value: [Function getUserByEmail]
-
-      35 |     await initializeAdmin();
-      36 |
-    > 37 |     expect(mockGetUserByEmail).not.toHaveBeenCalled();
-         |                                    ^
-      38 |     expect(mockCreateUser).not.toHaveBeenCalled();
-      39 |   });
-      40 |
-
-      at Object.<anonymous> (src/tests/initAdmin.test.ts:37:36)
-
-  ● initializeAdmin › should skip admin creation when ADMIN_PASSWORD is not set
-
-    expect(received).not.toHaveBeenCalled()
-
-    Matcher error: received value must be a mock or spy function
-
-    Received has type:  function
-    Received has value: [Function getUserByEmail]
-
-      45 |     await initializeAdmin();
-      46 |
-    > 47 |     expect(mockGetUserByEmail).not.toHaveBeenCalled();
-         |                                    ^
-      48 |     expect(mockCreateUser).not.toHaveBeenCalled();
-      49 |   });
-      50 |
-
-      at Object.<anonymous> (src/tests/initAdmin.test.ts:47:36)
-
-  ● initializeAdmin › should skip admin creation when email format is invalid
-
-    expect(received).not.toHaveBeenCalled()
-
-    Matcher error: received value must be a mock or spy function
-
-    Received has type:  function
-    Received has value: [Function getUserByEmail]
-
-      55 |     await initializeAdmin();
-      56 |
-    > 57 |     expect(mockGetUserByEmail).not.toHaveBeenCalled();
-         |                                    ^
-      58 |     expect(mockCreateUser).not.toHaveBeenCalled();
-      59 |   });
-      60 |
-
-      at Object.<anonymous> (src/tests/initAdmin.test.ts:57:36)
-
-  ● initializeAdmin › should skip admin creation when admin user already exists
-
-    TypeError: mockGetUserByEmail.mockResolvedValue is not a function
-
-      74 |     };
-      75 |
-    > 76 |     mockGetUserByEmail.mockResolvedValue(existingUser);
-         |                        ^
-      77 |
-      78 |     await initializeAdmin();
-      79 |
-
-      at Object.<anonymous> (src/tests/initAdmin.test.ts:76:24)
-
-  ● initializeAdmin › should create admin user when it does not exist
-
-    TypeError: mockGetUserByEmail.mockResolvedValue is not a function
-
-       98 |     };
-       99 |
-    > 100 |     mockGetUserByEmail.mockResolvedValue(null);
-          |                        ^
-      101 |     mockHashPassword.mockResolvedValue(hashedPassword);
-      102 |     mockCreateUser.mockResolvedValue(createdUser);
-      103 |
-
-      at Object.<anonymous> (src/tests/initAdmin.test.ts:100:24)
-
-  ● initializeAdmin › should normalize email to lowercase and trim
-
-    TypeError: mockGetUserByEmail.mockResolvedValue is not a function
-
-      131 |     };
-      132 |
-    > 133 |     mockGetUserByEmail.mockResolvedValue(null);
-          |                        ^
-      134 |     mockHashPassword.mockResolvedValue(hashedPassword);
-      135 |     mockCreateUser.mockResolvedValue(createdUser);
-      136 |
-
-      at Object.<anonymous> (src/tests/initAdmin.test.ts:133:24)
-
-  ● initializeAdmin › should handle unique constraint violation gracefully
-
-    TypeError: mockGetUserByEmail.mockResolvedValue is not a function
-
-      152 |     (error as any).code = '23505';
-      153 |
-    > 154 |     mockGetUserByEmail.mockResolvedValue(null);
-          |                        ^
-      155 |     mockHashPassword.mockResolvedValue('hashed-password');
-      156 |     mockCreateUser.mockRejectedValue(error);
-      157 |
-
-      at Object.<anonymous> (src/tests/initAdmin.test.ts:154:24)
-
-  ● initializeAdmin › should handle other errors gracefully without throwing
-
-    TypeError: mockGetUserByEmail.mockRejectedValue is not a function
-
-      165 |
-      166 |     const error = new Error('Database error');
-    > 167 |     mockGetUserByEmail.mockRejectedValue(error);
-          |                        ^
-      168 |
-      169 |     await expect(initializeAdmin()).resolves.not.toThrow();
-      170 |     expect(console.error).toHaveBeenCalledWith('Error initializing admin user:', error);
-
-      at Object.<anonymous> (src/tests/initAdmin.test.ts:167:24)
-
-FAIL src/tests/budgetController.test.ts
-  ● Console
-
-    console.log
-      [dotenv@17.2.3] injecting env (5) from .env -- tip: 🔐 prevent building .env in docker: https://dotenvx.com/prebuild
-
-      at _log (node_modules/dotenv/lib/main.js:142:11)
-
-  ● Budget Controller › createBudget › should create budget successfully
-
-    TypeError: mockCreateBudget.mockResolvedValue is not a function
-
-      74 |       };
-      75 |       mockRequest.body = budgetData;
-    > 76 |       mockCreateBudget.mockResolvedValue(createdBudget);
-         |                        ^
-      77 |
-      78 |       await createBudget(
-      79 |         mockRequest as Request,
-
-      at Object.<anonymous> (src/tests/budgetController.test.ts:76:24)
-
-  ● Budget Controller › createBudget › should return 409 when budget already exists
-
-    TypeError: mockCreateBudget.mockRejectedValue is not a function
-
-      183 |       };
-      184 |
-    > 185 |       mockCreateBudget.mockRejectedValue(error);
-          |                        ^
-      186 |
-      187 |       await createBudget(
-      188 |         mockRequest as Request,
-
-      at Object.<anonymous> (src/tests/budgetController.test.ts:185:24)
-
-  ● Budget Controller › getBudgets › should return budgets for authenticated user
-
-    TypeError: mockGetAllBudgets.mockResolvedValue is not a function
-
-      214 |         role: 'user',
-      215 |       };
-    > 216 |       mockGetAllBudgets.mockResolvedValue(budgets);
-          |                         ^
-      217 |
-      218 |       await getBudgets(
-      219 |         mockRequest as Request,
-
-      at Object.<anonymous> (src/tests/budgetController.test.ts:216:25)
-
-  ● Budget Controller › getBudgets › should allow admin to filter by user_id
-
-    expect(received).toHaveBeenCalledWith(...expected)
-
-    Matcher error: received value must be a mock or spy function
-
-    Received has type:  function
-    Received has value: [Function getAllBudgets]
+    Number of calls: 0
 
       242 |       );
       243 |
-    > 244 |       expect(mockGetAllBudgets).toHaveBeenCalledWith('other-user-123', undefined, undefined);
-          |                                 ^
-      245 |     });
-      246 |   });
+    > 244 |       expect(mockGetAllCategories).toHaveBeenCalledWith('user-123', undefined);
+          |                                    ^
+      245 |       expect(responseJson).toHaveBeenCalledWith(categories);
+      246 |     });
       247 |
 
-      at Object.<anonymous> (src/tests/budgetController.test.ts:244:33)
+      at Object.<anonymous> (src/tests/categoryController.test.ts:244:36)
+
+  ● Category Controller › getCategories › should allow admin to filter by user_id
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: "other-user-123", undefined
+
+    Number of calls: 0
+
+      262 |       );
+      263 |
+    > 264 |       expect(mockGetAllCategories).toHaveBeenCalledWith('other-user-123', undefined);
+          |                                    ^
+      265 |     });
+      266 |   });
+      267 |
+
+      at Object.<anonymous> (src/tests/categoryController.test.ts:264:36)
+
+  ● Category Controller › getCategoryById › should return category by id
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: "cat-123"
+
+    Number of calls: 0
+
+      289 |       );
+      290 |
+    > 291 |       expect(mockGetCategoryById).toHaveBeenCalledWith('cat-123');
+          |                                   ^
+      292 |       expect(responseJson).toHaveBeenCalledWith(category);
+      293 |     });
+      294 |
+
+      at Object.<anonymous> (src/tests/categoryController.test.ts:291:35)
+
+  ● Category Controller › getCategoryById › should return 404 when category not found
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: 404
+    Received: 400
+
+    Number of calls: 1
+
+      303 |       );
+      304 |
+    > 305 |       expect(responseStatus).toHaveBeenCalledWith(404);
+          |                              ^
+      306 |     });
+      307 |   });
+      308 |
+
+      at Object.<anonymous> (src/tests/categoryController.test.ts:305:30)
+
+  ● Category Controller › updateCategory › should update category successfully
+
+    expect(jest.fn()).toHaveBeenCalled()
+
+    Expected number of calls: >= 1
+    Received number of calls:    0
+
+      342 |       );
+      343 |
+    > 344 |       expect(mockUpdateCategory).toHaveBeenCalled();
+          |                                  ^
+      345 |       expect(responseJson).toHaveBeenCalledWith(updatedCategory);
+      346 |     });
+      347 |
+
+      at Object.<anonymous> (src/tests/categoryController.test.ts:344:34)
+
+  ● Category Controller › updateCategory › should return 403 when trying to update system category
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: 403
+    Received: 400
+
+    Number of calls: 1
+
+      373 |       );
+      374 |
+    > 375 |       expect(responseStatus).toHaveBeenCalledWith(403);
+          |                              ^
+      376 |       expect(responseJson).toHaveBeenCalledWith({ error: 'Cannot update system categories' });
+      377 |     });
+      378 |
+
+      at Object.<anonymous> (src/tests/categoryController.test.ts:375:30)
+
+  ● Category Controller › updateCategory › should return 403 when user does not own category
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: 403
+    Received: 400
+
+    Number of calls: 1
+
+      404 |       );
+      405 |
+    > 406 |       expect(responseStatus).toHaveBeenCalledWith(403);
+          |                              ^
+      407 |     });
+      408 |   });
+      409 |
+
+      at Object.<anonymous> (src/tests/categoryController.test.ts:406:30)
+
+  ● Category Controller › deleteCategory › should delete category successfully
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: "cat-123"
+
+    Number of calls: 0
+
+      437 |       );
+      438 |
+    > 439 |       expect(mockDeleteCategory).toHaveBeenCalledWith('cat-123');
+          |                                  ^
+      440 |       expect(responseStatus).toHaveBeenCalledWith(204);
+      441 |     });
+      442 |
+
+      at Object.<anonymous> (src/tests/categoryController.test.ts:439:34)
+
+  ● Category Controller › deleteCategory › should return 403 when trying to delete system category
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: 403
+    Received: 400
+
+    Number of calls: 1
+
+      468 |       );
+      469 |
+    > 470 |       expect(responseStatus).toHaveBeenCalledWith(403);
+          |                              ^
+      471 |       expect(responseJson).toHaveBeenCalledWith({ error: 'Cannot delete system categories' });
+      472 |     });
+      473 |   });
+
+      at Object.<anonymous> (src/tests/categoryController.test.ts:470:30)
+
+FAIL src/tests/auth.test.ts
+  ● Auth Middleware › authenticate › should authenticate user with valid token
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: "valid-token"
+
+    Number of calls: 0
+
+      103 |       );
+      104 |
+    > 105 |       expect(mockVerifyToken).toHaveBeenCalledWith(token);
+          |                               ^
+      106 |       expect(mockGetUserById).toHaveBeenCalledWith('user-123');
+      107 |       expect(mockRequest.user).toEqual({
+      108 |         id: 'user-123',
+
+      at Object.<anonymous> (src/tests/auth.test.ts:105:31)
+
+  ● Auth Middleware › authenticate › should return 401 when user not found
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    - Expected
+    + Received
+
+      Object {
+    -   "error": "User not found",
+    +   "error": "Invalid or expired token",
+      },
+
+    Number of calls: 1
+
+      150 |
+      151 |       expect(responseStatus).toHaveBeenCalledWith(401);
+    > 152 |       expect(responseJson).toHaveBeenCalledWith({ error: 'User not found' });
+          |                            ^
+      153 |       expect(mockNext).not.toHaveBeenCalled();
+      154 |     });
+      155 |
+
+      at Object.<anonymous> (src/tests/auth.test.ts:152:28)
+
+FAIL src/tests/budgetController.test.ts
+  ● Budget Controller › createBudget › should create budget successfully
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: {"amount": 1000.5, "category_id": "550e8400-e29b-41d4-a716-446655440000", "month": "2024-01-01", "user_id": "user-123"}
+
+    Number of calls: 0
+
+      100 |       );
+      101 |
+    > 102 |       expect(mockCreateBudget).toHaveBeenCalledWith({
+          |                                ^
+      103 |         user_id: 'user-123',
+      104 |         category_id: budgetData.category_id,
+      105 |         amount: budgetData.amount,
+
+      at Object.<anonymous> (src/tests/budgetController.test.ts:102:32)
+
+  ● Budget Controller › createBudget › should return 409 when budget already exists
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: 409
+
+    Number of calls: 0
+
+      209 |       );
+      210 |
+    > 211 |       expect(responseStatus).toHaveBeenCalledWith(409);
+          |                              ^
+      212 |     });
+      213 |   });
+      214 |
+
+      at Object.<anonymous> (src/tests/budgetController.test.ts:211:30)
+
+  ● Budget Controller › getBudgets › should return budgets for authenticated user
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: "user-123", undefined, undefined
+
+    Number of calls: 0
+
+      240 |       );
+      241 |
+    > 242 |       expect(mockGetAllBudgets).toHaveBeenCalledWith('user-123', undefined, undefined);
+          |                                 ^
+      243 |       expect(responseJson).toHaveBeenCalledWith(budgets);
+      244 |     });
+      245 |
+
+      at Object.<anonymous> (src/tests/budgetController.test.ts:242:33)
+
+  ● Budget Controller › getBudgets › should allow admin to filter by user_id
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: "other-user-123", undefined, undefined
+
+    Number of calls: 0
+
+      260 |       );
+      261 |
+    > 262 |       expect(mockGetAllBudgets).toHaveBeenCalledWith('other-user-123', undefined, undefined);
+          |                                 ^
+      263 |     });
+      264 |   });
+      265 |
+
+      at Object.<anonymous> (src/tests/budgetController.test.ts:262:33)
 
   ● Budget Controller › getBudgetById › should return budget by id
 
-    TypeError: mockGetBudgetById.mockResolvedValue is not a function
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
 
-      259 |
-      260 |       mockRequest.params = { id: 'budget-123' };
-    > 261 |       mockGetBudgetById.mockResolvedValue(budget);
-          |                         ^
-      262 |
-      263 |       await getBudgetById(
-      264 |         mockRequest as Request,
+    Expected: "budget-123"
 
-      at Object.<anonymous> (src/tests/budgetController.test.ts:261:25)
+    Number of calls: 0
+
+      285 |       );
+      286 |
+    > 287 |       expect(mockGetBudgetById).toHaveBeenCalledWith('budget-123');
+          |                                 ^
+      288 |       expect(responseJson).toHaveBeenCalledWith(budget);
+      289 |     });
+      290 |
+
+      at Object.<anonymous> (src/tests/budgetController.test.ts:287:33)
 
   ● Budget Controller › getBudgetById › should return 404 when budget not found
 
-    TypeError: mockGetBudgetById.mockResolvedValue is not a function
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
 
-      273 |     it('should return 404 when budget not found', async () => {
-      274 |       mockRequest.params = { id: 'budget-123' };
-    > 275 |       mockGetBudgetById.mockResolvedValue(null);
-          |                         ^
-      276 |
-      277 |       await getBudgetById(
-      278 |         mockRequest as Request,
+    Expected: 404
+    Received: 400
 
-      at Object.<anonymous> (src/tests/budgetController.test.ts:275:25)
+    Number of calls: 1
+
+      299 |       );
+      300 |
+    > 301 |       expect(responseStatus).toHaveBeenCalledWith(404);
+          |                              ^
+      302 |     });
+      303 |   });
+      304 |
+
+      at Object.<anonymous> (src/tests/budgetController.test.ts:301:30)
 
   ● Budget Controller › updateBudget › should update budget successfully
 
-    TypeError: mockGetBudgetById.mockResolvedValue is not a function
+    expect(jest.fn()).toHaveBeenCalled()
 
-      309 |       mockRequest.params = { id: 'budget-123' };
-      310 |       mockRequest.body = { amount: 1500 };
-    > 311 |       mockGetBudgetById.mockResolvedValue(existingBudget);
-          |                         ^
-      312 |       mockUpdateBudget.mockResolvedValue(updatedBudget);
-      313 |
-      314 |       await updateBudget(
+    Expected number of calls: >= 1
+    Received number of calls:    0
 
-      at Object.<anonymous> (src/tests/budgetController.test.ts:311:25)
+      336 |       );
+      337 |
+    > 338 |       expect(mockUpdateBudget).toHaveBeenCalled();
+          |                                ^
+      339 |       expect(responseJson).toHaveBeenCalledWith(updatedBudget);
+      340 |     });
+      341 |
+
+      at Object.<anonymous> (src/tests/budgetController.test.ts:338:32)
 
   ● Budget Controller › updateBudget › should return 403 when user does not own budget
 
-    TypeError: mockGetBudgetById.mockResolvedValue is not a function
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
 
-      339 |       };
-      340 |       mockRequest.params = { id: 'budget-123' };
-    > 341 |       mockGetBudgetById.mockResolvedValue(existingBudget);
-          |                         ^
-      342 |
-      343 |       await updateBudget(
-      344 |         mockRequest as Request,
+    Expected: 403
+    Received: 400
 
-      at Object.<anonymous> (src/tests/budgetController.test.ts:341:25)
+    Number of calls: 1
+
+      365 |       );
+      366 |
+    > 367 |       expect(responseStatus).toHaveBeenCalledWith(403);
+          |                              ^
+      368 |     });
+      369 |   });
+      370 |
+
+      at Object.<anonymous> (src/tests/budgetController.test.ts:367:30)
 
   ● Budget Controller › deleteBudget › should delete budget successfully
 
-    TypeError: mockGetBudgetById.mockResolvedValue is not a function
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
 
-      369 |       };
-      370 |       mockRequest.params = { id: 'budget-123' };
-    > 371 |       mockGetBudgetById.mockResolvedValue(existingBudget);
-          |                         ^
-      372 |       mockDeleteBudget.mockResolvedValue(true);
-      373 |
-      374 |       await deleteBudget(
+    Expected: "budget-123"
 
-      at Object.<anonymous> (src/tests/budgetController.test.ts:371:25)
+    Number of calls: 0
+
+      396 |       );
+      397 |
+    > 398 |       expect(mockDeleteBudget).toHaveBeenCalledWith('budget-123');
+          |                                ^
+      399 |       expect(responseStatus).toHaveBeenCalledWith(204);
+      400 |     });
+      401 |   });
+
+      at Object.<anonymous> (src/tests/budgetController.test.ts:398:32)
 
 FAIL src/tests/jwt.test.ts
-  ● Console
-
-    console.log
-      [dotenv@17.2.3] injecting env (5) from .env -- tip: ⚙️  specify custom .env file path with { path: '/custom/path/.env' }
-
-      at _log (node_modules/dotenv/lib/main.js:142:11)
-
   ● JWT Utils › generateToken › should generate a JWT token with correct payload
 
-    TypeError: mockJwt.sign.mockReturnValue is not a function
+    expect(received).toBe(expected) // Object.is equality
 
-      29 |     it('should generate a JWT token with correct payload', () => {
-      30 |       const expectedToken = 'generated-token';
-    > 31 |       mockJwt.sign.mockReturnValue(expectedToken as any);
-         |                    ^
-      32 |
-      33 |       const result = generateToken(mockPayload);
-      34 |
+    Expected: "generated-token"
+    Received: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJ1c2VyLTEyMyIsImVtYWlsIjoidGVzdEBleGFtcGxlLmNvbSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzY3MTQ4MDEyLCJleHAiOjE3Njc3NTI4MTJ9.YwaLKe9PesY_LPdYpNtZ-hroTRF0GfDKOb4e3r2mn_s"
 
-      at Object.<anonymous> (src/tests/jwt.test.ts:31:20)
+      45 |       const result = generateToken(mockPayload);
+      46 |
+    > 47 |       expect(result).toBe(expectedToken);
+         |                      ^
+      48 |       expect(mockSign).toHaveBeenCalledWith(
+      49 |         mockPayload,
+      50 |         'test-secret',
+
+      at Object.<anonymous> (src/tests/jwt.test.ts:47:22)
 
   ● JWT Utils › verifyToken › should verify and return decoded token
 
-    TypeError: mockJwt.verify.mockReturnValue is not a function
+    Invalid or expired token
 
-      54 |     it('should verify and return decoded token', () => {
-      55 |       const token = 'valid-token';
-    > 56 |       mockJwt.verify.mockReturnValue(mockPayload as any);
-         |                      ^
-      57 |
-      58 |       const result = verifyToken(token);
-      59 |
+      23 |     return jwt.verify(token, config.jwtSecret) as JWTPayload;
+      24 |   } catch (error) {
+    > 25 |     throw new Error('Invalid or expired token');
+         |           ^
+      26 |   }
+      27 | };
+      28 |
 
-      at Object.<anonymous> (src/tests/jwt.test.ts:56:22)
-
-  ● JWT Utils › verifyToken › should throw error for invalid token
-
-    TypeError: mockJwt.verify.mockImplementation is not a function
-
-      64 |     it('should throw error for invalid token', () => {
-      65 |       const token = 'invalid-token';
-    > 66 |       mockJwt.verify.mockImplementation(() => {
-         |                      ^
-      67 |         throw new Error('Invalid token');
-      68 |       });
-      69 |
-
-      at Object.<anonymous> (src/tests/jwt.test.ts:66:22)
-
-  ● JWT Utils › verifyToken › should throw error for expired token
-
-    TypeError: mockJwt.verify.mockImplementation is not a function
-
-      73 |     it('should throw error for expired token', () => {
-      74 |       const token = 'expired-token';
-    > 75 |       mockJwt.verify.mockImplementation(() => {
-         |                      ^
-      76 |         throw new Error('Token expired');
-      77 |       });
-      78 |
-
-      at Object.<anonymous> (src/tests/jwt.test.ts:75:22)
+      at verifyToken (src/utils/jwt.ts:25:11)
+      at Object.<anonymous> (src/tests/jwt.test.ts:70:22)
 
   ● JWT Utils › decodeToken › should decode token without verification
 
-    TypeError: mockJwt.decode.mockReturnValue is not a function
+    expect(received).toEqual(expected) // deep equality
 
-      84 |     it('should decode token without verification', () => {
-      85 |       const token = 'some-token';
-    > 86 |       mockJwt.decode.mockReturnValue(mockPayload as any);
-         |                      ^
-      87 |
-      88 |       const result = decodeToken(token);
-      89 |
+    Expected: {"email": "test@example.com", "role": "user", "userId": "user-123"}
+    Received: null
 
-      at Object.<anonymous> (src/tests/jwt.test.ts:86:22)
+      100 |       const result = decodeToken(token);
+      101 |
+    > 102 |       expect(result).toEqual(mockPayload);
+          |                      ^
+      103 |       expect(mockDecode).toHaveBeenCalledWith(token);
+      104 |     });
+      105 |
 
-  ● JWT Utils › decodeToken › should return null when decode fails
+      at Object.<anonymous> (src/tests/jwt.test.ts:102:22)
 
-    TypeError: mockJwt.decode.mockReturnValue is not a function
+FAIL src/tests/initAdmin.test.ts
+  ● initializeAdmin › should skip admin creation when admin user already exists
 
-      94 |     it('should return null when decode fails', () => {
-      95 |       const token = 'invalid-token';
-    > 96 |       mockJwt.decode.mockReturnValue(null);
-         |                      ^
-      97 |
-      98 |       const result = decodeToken(token);
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: "admin@example.com"
+
+    Number of calls: 0
+
+      94 |     await initializeAdmin();
+      95 |
+    > 96 |     expect(mockGetUserByEmail).toHaveBeenCalledWith('admin@example.com');
+         |                                ^
+      97 |     expect(mockCreateUser).not.toHaveBeenCalled();
+      98 |   });
       99 |
 
-      at Object.<anonymous> (src/tests/jwt.test.ts:96:22)
+      at Object.<anonymous> (src/tests/initAdmin.test.ts:96:32)
 
-  ● JWT Utils › decodeToken › should return null when decode throws error
+  ● initializeAdmin › should create admin user when it does not exist
 
-    TypeError: mockJwt.decode.mockImplementation is not a function
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
 
-      103 |     it('should return null when decode throws error', () => {
-      104 |       const token = 'invalid-token';
-    > 105 |       mockJwt.decode.mockImplementation(() => {
-          |                      ^
-      106 |         throw new Error('Decode error');
-      107 |       });
-      108 |
+    Expected: "admin@example.com"
 
-      at Object.<anonymous> (src/tests/jwt.test.ts:105:22)
+    Number of calls: 0
+
+      120 |     await initializeAdmin();
+      121 |
+    > 122 |     expect(mockGetUserByEmail).toHaveBeenCalledWith('admin@example.com');
+          |                                ^
+      123 |     expect(mockHashPassword).toHaveBeenCalledWith('password123');
+      124 |     expect(mockCreateUser).toHaveBeenCalledWith({
+      125 |       email: 'admin@example.com',
+
+      at Object.<anonymous> (src/tests/initAdmin.test.ts:122:32)
+
+  ● initializeAdmin › should normalize email to lowercase and trim
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: "admin@example.com"
+
+    Number of calls: 0
+
+      153 |     await initializeAdmin();
+      154 |
+    > 155 |     expect(mockGetUserByEmail).toHaveBeenCalledWith('admin@example.com');
+          |                                ^
+      156 |     expect(mockCreateUser).toHaveBeenCalledWith(
+      157 |       expect.objectContaining({
+      158 |         email: 'admin@example.com',
+
+      at Object.<anonymous> (src/tests/initAdmin.test.ts:155:32)
+
+  ● initializeAdmin › should handle unique constraint violation gracefully
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: "Admin user already exists"
+
+    Number of calls: 0
+
+      173 |
+      174 |     await expect(initializeAdmin()).resolves.not.toThrow();
+    > 175 |     expect(console.log).toHaveBeenCalledWith('Admin user already exists');
+          |                         ^
+      176 |   });
+      177 |
+      178 |   it('should handle other errors gracefully without throwing', async () => {
+
+      at Object.<anonymous> (src/tests/initAdmin.test.ts:175:25)
+
+  ● initializeAdmin › should handle other errors gracefully without throwing
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: "Error initializing admin user:", [Error: Database error]
+    Received
+           1
+              "Database query error",
+            - [Error: Database error]
+            + Object {
+            +   "error": [TypeError: Cannot read properties of undefined (reading 'rowCount')],
+            +   "text": "SELECT * FROM users WHERE email = $1",
+            + },
+           2: "Error initializing admin user:", [TypeError: Cannot read properties of undefined (reading 'rowCount')]
+
+    Number of calls: 2
+
+      184 |
+      185 |     await expect(initializeAdmin()).resolves.not.toThrow();
+    > 186 |     expect(console.error).toHaveBeenCalledWith('Error initializing admin user:', error);
+          |                           ^
+      187 |   });
+      188 | });
+      189 |
+
+      at Object.<anonymous> (src/tests/initAdmin.test.ts:186:27)
 
 PASS dist/tests/itemController.test.js
   ● Console
-
-    console.log
-      [dotenv@17.2.3] injecting env (5) from .env -- tip: 🔑 add access controls to secrets: https://dotenvx.com/ops
-
-      at _log (node_modules/dotenv/lib/main.js:142:11)
 
     console.error
       Error: Database connection failed
@@ -1579,159 +1616,7 @@ PASS dist/tests/itemController.test.js
       at Timeout.task [as _onTimeout] (node_modules/jsdom/lib/jsdom/browser/Window.js:579:19)
 
 PASS src/tests/config.test.ts
-  ● Console
-
-    console.log
-      [dotenv@17.2.3] injecting env (6) from .env -- tip: 🗂️ backup and recover secrets: https://dotenvx.com/ops
-
-      at _log (node_modules/dotenv/lib/main.js:142:11)
-
-    console.log
-      [dotenv@17.2.3] injecting env (5) from .env -- tip: 🛠️  run anywhere with `dotenvx run -- yourcommand`
-
-      at _log (node_modules/dotenv/lib/main.js:142:11)
-
-    console.log
-      [dotenv@17.2.3] injecting env (6) from .env -- tip: 🛠️  run anywhere with `dotenvx run -- yourcommand`
-
-      at _log (node_modules/dotenv/lib/main.js:142:11)
-
-    console.log
-      [dotenv@17.2.3] injecting env (5) from .env -- tip: ⚙️  enable debug logging with { debug: true }
-
-      at _log (node_modules/dotenv/lib/main.js:142:11)
-
-    console.log
-      [dotenv@17.2.3] injecting env (5) from .env -- tip: ✅ audit secrets and track compliance: https://dotenvx.com/ops
-
-      at _log (node_modules/dotenv/lib/main.js:142:11)
-
-    console.log
-      [dotenv@17.2.3] injecting env (5) from .env -- tip: ⚙️  load multiple .env files with { path: ['.env.local', '.env'] }
-
-      at _log (node_modules/dotenv/lib/main.js:142:11)
-
-    console.log
-      [dotenv@17.2.3] injecting env (6) from .env -- tip: 📡 add observability to secrets: https://dotenvx.com/ops
-
-      at _log (node_modules/dotenv/lib/main.js:142:11)
-
-    console.log
-      [dotenv@17.2.3] injecting env (5) from .env -- tip: ⚙️  override existing env vars with { override: true }
-
-      at _log (node_modules/dotenv/lib/main.js:142:11)
-
-    console.log
-      [dotenv@17.2.3] injecting env (6) from .env -- tip: 🛠️  run anywhere with `dotenvx run -- yourcommand`
-
-      at _log (node_modules/dotenv/lib/main.js:142:11)
-
-    console.log
-      [dotenv@17.2.3] injecting env (5) from .env -- tip: ⚙️  specify custom .env file path with { path: '/custom/path/.env' }
-
-      at _log (node_modules/dotenv/lib/main.js:142:11)
-
-    console.log
-      [dotenv@17.2.3] injecting env (6) from .env -- tip: 🔐 encrypt with Dotenvx: https://dotenvx.com
-
-      at _log (node_modules/dotenv/lib/main.js:142:11)
-
-    console.log
-      [dotenv@17.2.3] injecting env (5) from .env -- tip: 🔐 prevent committing .env to code: https://dotenvx.com/precommit
-
-      at _log (node_modules/dotenv/lib/main.js:142:11)
-
-    console.log
-      [dotenv@17.2.3] injecting env (6) from .env -- tip: 🗂️ backup and recover secrets: https://dotenvx.com/ops
-
-      at _log (node_modules/dotenv/lib/main.js:142:11)
-
-    console.log
-      [dotenv@17.2.3] injecting env (5) from .env -- tip: ⚙️  suppress all logs with { quiet: true }
-
-      at _log (node_modules/dotenv/lib/main.js:142:11)
-
 PASS dist/tests/config.test.js
-  ● Console
-
-    console.log
-      [dotenv@17.2.3] injecting env (6) from .env -- tip: 🔑 add access controls to secrets: https://dotenvx.com/ops
-
-      at _log (node_modules/dotenv/lib/main.js:142:11)
-
-    console.log
-      [dotenv@17.2.3] injecting env (5) from .env -- tip: 👥 sync secrets across teammates & machines: https://dotenvx.com/ops
-
-      at _log (node_modules/dotenv/lib/main.js:142:11)
-
-    console.log
-      [dotenv@17.2.3] injecting env (6) from .env -- tip: 🔑 add access controls to secrets: https://dotenvx.com/ops
-
-      at _log (node_modules/dotenv/lib/main.js:142:11)
-
-    console.log
-      [dotenv@17.2.3] injecting env (5) from .env -- tip: ⚙️  override existing env vars with { override: true }
-
-      at _log (node_modules/dotenv/lib/main.js:142:11)
-
-    console.log
-      [dotenv@17.2.3] injecting env (5) from .env -- tip: 🔐 prevent building .env in docker: https://dotenvx.com/prebuild
-
-      at _log (node_modules/dotenv/lib/main.js:142:11)
-
-    console.log
-      [dotenv@17.2.3] injecting env (5) from .env -- tip: ⚙️  enable debug logging with { debug: true }
-
-      at _log (node_modules/dotenv/lib/main.js:142:11)
-
-    console.log
-      [dotenv@17.2.3] injecting env (6) from .env -- tip: 🔐 prevent committing .env to code: https://dotenvx.com/precommit
-
-      at _log (node_modules/dotenv/lib/main.js:142:11)
-
-    console.log
-      [dotenv@17.2.3] injecting env (5) from .env -- tip: 🔐 encrypt with Dotenvx: https://dotenvx.com
-
-      at _log (node_modules/dotenv/lib/main.js:142:11)
-
-    console.log
-      [dotenv@17.2.3] injecting env (6) from .env -- tip: 📡 add observability to secrets: https://dotenvx.com/ops
-
-      at _log (node_modules/dotenv/lib/main.js:142:11)
-
-    console.log
-      [dotenv@17.2.3] injecting env (5) from .env -- tip: 🔄 add secrets lifecycle management: https://dotenvx.com/ops
-
-      at _log (node_modules/dotenv/lib/main.js:142:11)
-
-    console.log
-      [dotenv@17.2.3] injecting env (6) from .env -- tip: 🔐 encrypt with Dotenvx: https://dotenvx.com
-
-      at _log (node_modules/dotenv/lib/main.js:142:11)
-
-    console.log
-      [dotenv@17.2.3] injecting env (5) from .env -- tip: 🔄 add secrets lifecycle management: https://dotenvx.com/ops
-
-      at _log (node_modules/dotenv/lib/main.js:142:11)
-
-    console.log
-      [dotenv@17.2.3] injecting env (6) from .env -- tip: ⚙️  override existing env vars with { override: true }
-
-      at _log (node_modules/dotenv/lib/main.js:142:11)
-
-    console.log
-      [dotenv@17.2.3] injecting env (5) from .env -- tip: ⚙️  suppress all logs with { quiet: true }
-
-      at _log (node_modules/dotenv/lib/main.js:142:11)
-
-PASS src/tests/database.test.ts
-  ● Console
-
-    console.log
-      [dotenv@17.2.3] injecting env (5) from .env -- tip: ✅ audit secrets and track compliance: https://dotenvx.com/ops
-
-      at _log (node_modules/dotenv/lib/main.js:142:11)
-
 PASS src/tests/errorHandler.test.ts
   ● Console
 
@@ -1822,14 +1707,6 @@ PASS src/tests/errorHandler.test.ts
 
       at errorHandler (src/middlewares/errorHandler.ts:13:11)
       at Object.<anonymous> (src/tests/errorHandler.test.ts:82:5)
-
-PASS dist/tests/database.test.js
-  ● Console
-
-    console.log
-      [dotenv@17.2.3] injecting env (5) from .env -- tip: 🔑 add access controls to secrets: https://dotenvx.com/ops
-
-      at _log (node_modules/dotenv/lib/main.js:142:11)
 
 PASS dist/tests/errorHandler.test.js
   ● Console
@@ -1923,12 +1800,11 @@ PASS dist/tests/errorHandler.test.js
       at Object.<anonymous> (src/tests/errorHandler.test.ts:82:5)
 
 PASS dist/tests/item.test.js
+PASS dist/tests/database.test.js
+PASS src/tests/database.test.ts
 
 Test Suites: 10 failed, 8 passed, 18 total
-Tests:       87 failed, 139 passed, 226 total
+Tests:       77 failed, 149 passed, 226 total
 Snapshots:   0 total
-Time:        1.876 s
+Time:        1.753 s
 Ran all test suites.
-Jest did not exit one second after the test run has completed.
-
-'This usually means that there are asynchronous operations that weren't stopped in your tests. Consider running Jest with `--detectOpenHandles` to troubleshoot this issue.

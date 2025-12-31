@@ -1,9 +1,20 @@
 import { jest } from '@jest/globals';
-import jwt from 'jsonwebtoken';
-import { generateToken, verifyToken, decodeToken, type JWTPayload } from '../utils/jwt.js';
-import config from '../config/config.js';
 
-// Mock dependencies
+// 1. Create mock functions FIRST with proper types
+const mockSign = jest.fn<() => any>();
+const mockVerify = jest.fn<() => any>();
+const mockDecode = jest.fn<() => any>();
+
+// 2. Mock jsonwebtoken
+jest.mock('jsonwebtoken', () => ({
+  default: {
+    sign: mockSign,
+    verify: mockVerify,
+    decode: mockDecode,
+  },
+}));
+
+// 3. Mock config
 jest.mock('../config/config.js', () => ({
   default: {
     jwtSecret: 'test-secret',
@@ -11,10 +22,11 @@ jest.mock('../config/config.js', () => ({
   },
 }));
 
-jest.mock('jsonwebtoken');
+// 4. Import utils AFTER mocks
+import { generateToken, verifyToken, decodeToken, type JWTPayload } from '../utils/jwt.js';
+import config from '../config/config.js';
 
 describe('JWT Utils', () => {
-  const mockJwt = jwt as jest.Mocked<typeof jwt>;
   const mockPayload: JWTPayload = {
     userId: 'user-123',
     email: 'test@example.com',
@@ -28,12 +40,12 @@ describe('JWT Utils', () => {
   describe('generateToken', () => {
     it('should generate a JWT token with correct payload', () => {
       const expectedToken = 'generated-token';
-      mockJwt.sign.mockReturnValue(expectedToken as any);
+      mockSign.mockReturnValue(expectedToken);
 
       const result = generateToken(mockPayload);
 
       expect(result).toBe(expectedToken);
-      expect(mockJwt.sign).toHaveBeenCalledWith(
+      expect(mockSign).toHaveBeenCalledWith(
         mockPayload,
         'test-secret',
         { expiresIn: '1h' }
@@ -53,17 +65,17 @@ describe('JWT Utils', () => {
   describe('verifyToken', () => {
     it('should verify and return decoded token', () => {
       const token = 'valid-token';
-      mockJwt.verify.mockReturnValue(mockPayload as any);
+      mockVerify.mockReturnValue(mockPayload);
 
       const result = verifyToken(token);
 
       expect(result).toEqual(mockPayload);
-      expect(mockJwt.verify).toHaveBeenCalledWith(token, 'test-secret');
+      expect(mockVerify).toHaveBeenCalledWith(token, 'test-secret');
     });
 
     it('should throw error for invalid token', () => {
       const token = 'invalid-token';
-      mockJwt.verify.mockImplementation(() => {
+      mockVerify.mockImplementation(() => {
         throw new Error('Invalid token');
       });
 
@@ -72,7 +84,7 @@ describe('JWT Utils', () => {
 
     it('should throw error for expired token', () => {
       const token = 'expired-token';
-      mockJwt.verify.mockImplementation(() => {
+      mockVerify.mockImplementation(() => {
         throw new Error('Token expired');
       });
 
@@ -83,17 +95,17 @@ describe('JWT Utils', () => {
   describe('decodeToken', () => {
     it('should decode token without verification', () => {
       const token = 'some-token';
-      mockJwt.decode.mockReturnValue(mockPayload as any);
+      mockDecode.mockReturnValue(mockPayload);
 
       const result = decodeToken(token);
 
       expect(result).toEqual(mockPayload);
-      expect(mockJwt.decode).toHaveBeenCalledWith(token);
+      expect(mockDecode).toHaveBeenCalledWith(token);
     });
 
     it('should return null when decode fails', () => {
       const token = 'invalid-token';
-      mockJwt.decode.mockReturnValue(null);
+      mockDecode.mockReturnValue(null);
 
       const result = decodeToken(token);
 
@@ -102,7 +114,7 @@ describe('JWT Utils', () => {
 
     it('should return null when decode throws error', () => {
       const token = 'invalid-token';
-      mockJwt.decode.mockImplementation(() => {
+      mockDecode.mockImplementation(() => {
         throw new Error('Decode error');
       });
 
@@ -112,4 +124,3 @@ describe('JWT Utils', () => {
     });
   });
 });
-

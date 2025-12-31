@@ -1,20 +1,48 @@
 import { jest } from '@jest/globals';
 import type { Request, Response, NextFunction } from 'express';
+
+// Mock database FIRST to prevent real DB calls
+jest.mock('../config/database.js', () => ({
+  default: { query: jest.fn() },
+  query: jest.fn(),
+}));
+
+// 1. Create mock functions FIRST with proper types
+const mockGetUserByEmail = jest.fn<() => Promise<any>>();
+const mockCreateUser = jest.fn<() => Promise<any>>();
+const mockGetUserById = jest.fn<() => Promise<any>>();
+const mockHashPassword = jest.fn<() => Promise<any>>();
+const mockComparePassword = jest.fn<() => Promise<any>>();
+const mockValidatePassword = jest.fn<() => any>();
+const mockGenerateToken = jest.fn<() => any>();
+
+// 2. Mock modules
+jest.mock('../models/models.js', () => ({
+  UserModel: {
+    getUserByEmail: mockGetUserByEmail,
+    createUser: mockCreateUser,
+    getUserById: mockGetUserById,
+  },
+}));
+
+jest.mock('../utils/password.js', () => ({
+  hashPassword: mockHashPassword,
+  comparePassword: mockComparePassword,
+  validatePassword: mockValidatePassword,
+}));
+
+jest.mock('../utils/jwt.js', () => ({
+  generateToken: mockGenerateToken,
+}));
+
+// 3. Import controller AFTER mocks
 import {
   register,
   login,
   logout,
   getCurrentUser,
 } from '../controllers/authController.js';
-import { UserModel } from '../models/models.js';
-import { hashPassword, comparePassword, validatePassword } from '../utils/password.js';
-import { generateToken } from '../utils/jwt.js';
 import type { User } from '../models/user.js';
-
-// Mock dependencies
-jest.mock('../models/models.js');
-jest.mock('../utils/password.js');
-jest.mock('../utils/jwt.js');
 
 describe('Auth Controller', () => {
   let mockRequest: Partial<Request>;
@@ -22,14 +50,6 @@ describe('Auth Controller', () => {
   let mockNext: NextFunction;
   let responseStatus: jest.Mock;
   let responseJson: jest.Mock;
-
-  const mockGetUserByEmail = UserModel.getUserByEmail as jest.MockedFunction<typeof UserModel.getUserByEmail>;
-  const mockCreateUser = UserModel.createUser as jest.MockedFunction<typeof UserModel.createUser>;
-  const mockGetUserById = UserModel.getUserById as jest.MockedFunction<typeof UserModel.getUserById>;
-  const mockHashPassword = hashPassword as jest.MockedFunction<typeof hashPassword>;
-  const mockComparePassword = comparePassword as jest.MockedFunction<typeof comparePassword>;
-  const mockValidatePassword = validatePassword as jest.MockedFunction<typeof validatePassword>;
-  const mockGenerateToken = generateToken as jest.MockedFunction<typeof generateToken>;
 
   beforeEach(() => {
     responseStatus = jest.fn().mockReturnThis();

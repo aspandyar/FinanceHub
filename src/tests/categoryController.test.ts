@@ -1,5 +1,33 @@
 import { jest } from '@jest/globals';
 import type { Request, Response, NextFunction } from 'express';
+
+// Mock database FIRST to prevent real DB calls
+jest.mock('../config/database.js', () => ({
+  default: { query: jest.fn() },
+  query: jest.fn(),
+}));
+
+// 1. Create mock functions FIRST with proper types
+const mockCreateCategory = jest.fn<() => Promise<any>>();
+const mockGetAllCategories = jest.fn<() => Promise<any>>();
+const mockGetCategoryById = jest.fn<() => Promise<any>>();
+const mockGetCategoriesByUserId = jest.fn<() => Promise<any>>();
+const mockUpdateCategory = jest.fn<() => Promise<any>>();
+const mockDeleteCategory = jest.fn<() => Promise<any>>();
+
+// 2. Mock modules
+jest.mock('../models/models.js', () => ({
+  CategoryModel: {
+    createCategory: mockCreateCategory,
+    getAllCategories: mockGetAllCategories,
+    getCategoryById: mockGetCategoryById,
+    getCategoriesByUserId: mockGetCategoriesByUserId,
+    updateCategory: mockUpdateCategory,
+    deleteCategory: mockDeleteCategory,
+  },
+}));
+
+// 3. Import controller AFTER mocks
 import {
   createCategory,
   getCategories,
@@ -8,11 +36,7 @@ import {
   updateCategory,
   deleteCategory,
 } from '../controllers/categoryController.js';
-import { CategoryModel } from '../models/models.js';
 import type { User } from '../models/user.js';
-
-// Mock dependencies
-jest.mock('../models/models.js');
 
 describe('Category Controller', () => {
   let mockRequest: Partial<Request>;
@@ -20,13 +44,6 @@ describe('Category Controller', () => {
   let mockNext: NextFunction;
   let responseStatus: jest.Mock;
   let responseJson: jest.Mock;
-
-  const mockCreateCategory = CategoryModel.createCategory as jest.MockedFunction<typeof CategoryModel.createCategory>;
-  const mockGetAllCategories = CategoryModel.getAllCategories as jest.MockedFunction<typeof CategoryModel.getAllCategories>;
-  const mockGetCategoryById = CategoryModel.getCategoryById as jest.MockedFunction<typeof CategoryModel.getCategoryById>;
-  const mockGetCategoriesByUserId = CategoryModel.getCategoriesByUserId as jest.MockedFunction<typeof CategoryModel.getCategoriesByUserId>;
-  const mockUpdateCategory = CategoryModel.updateCategory as jest.MockedFunction<typeof CategoryModel.updateCategory>;
-  const mockDeleteCategory = CategoryModel.deleteCategory as jest.MockedFunction<typeof CategoryModel.deleteCategory>;
 
   beforeEach(() => {
     responseStatus = jest.fn().mockReturnThis();

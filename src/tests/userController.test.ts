@@ -1,5 +1,31 @@
 import { jest } from '@jest/globals';
 import type { Request, Response, NextFunction } from 'express';
+
+// Mock database FIRST to prevent real DB calls
+jest.mock('../config/database.js', () => ({
+  default: { query: jest.fn() },
+  query: jest.fn(),
+}));
+
+// 1. Create mock functions FIRST with proper types
+const mockCreateUser = jest.fn<() => Promise<any>>();
+const mockGetAllUsers = jest.fn<() => Promise<any>>();
+const mockGetUserById = jest.fn<() => Promise<any>>();
+const mockUpdateUser = jest.fn<() => Promise<any>>();
+const mockDeleteUser = jest.fn<() => Promise<any>>();
+
+// 2. Mock modules
+jest.mock('../models/models.js', () => ({
+  UserModel: {
+    createUser: mockCreateUser,
+    getAllUsers: mockGetAllUsers,
+    getUserById: mockGetUserById,
+    updateUser: mockUpdateUser,
+    deleteUser: mockDeleteUser,
+  },
+}));
+
+// 3. Import controller AFTER mocks
 import {
   createUser,
   getUsers,
@@ -7,11 +33,7 @@ import {
   updateUser,
   deleteUser,
 } from '../controllers/userController.js';
-import { UserModel } from '../models/models.js';
 import type { User, UserRole } from '../models/user.js';
-
-// Mock dependencies
-jest.mock('../models/models.js');
 
 describe('User Controller', () => {
   let mockRequest: Partial<Request>;
@@ -19,12 +41,6 @@ describe('User Controller', () => {
   let mockNext: NextFunction;
   let responseStatus: jest.Mock;
   let responseJson: jest.Mock;
-
-  const mockCreateUser = UserModel.createUser as jest.MockedFunction<typeof UserModel.createUser>;
-  const mockGetAllUsers = UserModel.getAllUsers as jest.MockedFunction<typeof UserModel.getAllUsers>;
-  const mockGetUserById = UserModel.getUserById as jest.MockedFunction<typeof UserModel.getUserById>;
-  const mockUpdateUser = UserModel.updateUser as jest.MockedFunction<typeof UserModel.updateUser>;
-  const mockDeleteUser = UserModel.deleteUser as jest.MockedFunction<typeof UserModel.deleteUser>;
 
   beforeEach(() => {
     responseStatus = jest.fn().mockReturnThis();

@@ -1,13 +1,30 @@
 import { jest } from '@jest/globals';
 import type { Request, Response, NextFunction } from 'express';
-import { authenticate, requireRole, requireOwnershipOrRole } from '../middlewares/auth.js';
-import { verifyToken } from '../utils/jwt.js';
-import { UserModel } from '../models/models.js';
-import type { User } from '../models/user.js';
 
-// Mock dependencies
-jest.mock('../utils/jwt.js');
-jest.mock('../models/models.js');
+// Mock database FIRST to prevent real DB calls
+jest.mock('../config/database.js', () => ({
+  default: { query: jest.fn() },
+  query: jest.fn(),
+}));
+
+// 1. Create mock functions FIRST with proper types
+const mockVerifyToken = jest.fn<() => any>();
+const mockGetUserById = jest.fn<() => Promise<any>>();
+
+// 2. Mock modules
+jest.mock('../utils/jwt.js', () => ({
+  verifyToken: mockVerifyToken,
+}));
+
+jest.mock('../models/models.js', () => ({
+  UserModel: {
+    getUserById: mockGetUserById,
+  },
+}));
+
+// 3. Import middleware AFTER mocks
+import { authenticate, requireRole, requireOwnershipOrRole } from '../middlewares/auth.js';
+import type { User } from '../models/user.js';
 
 describe('Auth Middleware', () => {
   let mockRequest: Partial<Request>;
@@ -15,9 +32,6 @@ describe('Auth Middleware', () => {
   let mockNext: NextFunction;
   let responseStatus: jest.Mock;
   let responseJson: jest.Mock;
-
-  const mockVerifyToken = verifyToken as jest.MockedFunction<typeof verifyToken>;
-  const mockGetUserById = UserModel.getUserById as jest.MockedFunction<typeof UserModel.getUserById>;
 
   beforeEach(() => {
     responseStatus = jest.fn().mockReturnThis();
@@ -369,4 +383,3 @@ describe('Auth Middleware', () => {
     });
   });
 });
-

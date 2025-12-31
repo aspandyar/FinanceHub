@@ -1,18 +1,34 @@
 import { jest } from '@jest/globals';
-import { initializeAdmin } from '../utils/initAdmin.js';
-import { UserModel } from '../models/models.js';
-import { hashPassword } from '../utils/password.js';
-import type { User } from '../models/user.js';
 
-// Mock dependencies
-jest.mock('../models/models.js');
-jest.mock('../utils/password.js');
+// Mock database FIRST to prevent real DB calls
+jest.mock('../config/database.js', () => ({
+  default: { query: jest.fn() },
+  query: jest.fn(),
+}));
+
+// 1. Create mock functions FIRST with proper types
+const mockGetUserByEmail = jest.fn<() => Promise<any>>();
+const mockCreateUser = jest.fn<() => Promise<any>>();
+const mockHashPassword = jest.fn<() => Promise<any>>();
+
+// 2. Mock modules
+jest.mock('../models/models.js', () => ({
+  UserModel: {
+    getUserByEmail: mockGetUserByEmail,
+    createUser: mockCreateUser,
+  },
+}));
+
+jest.mock('../utils/password.js', () => ({
+  hashPassword: mockHashPassword,
+}));
+
+// 3. Import utils AFTER mocks
+import { initializeAdmin } from '../utils/initAdmin.js';
+import type { User } from '../models/user.js';
 
 describe('initializeAdmin', () => {
   const originalEnv = process.env;
-  const mockHashPassword = hashPassword as jest.MockedFunction<typeof hashPassword>;
-  const mockGetUserByEmail = UserModel.getUserByEmail as jest.MockedFunction<typeof UserModel.getUserByEmail>;
-  const mockCreateUser = UserModel.createUser as jest.MockedFunction<typeof UserModel.createUser>;
 
   beforeEach(() => {
     jest.resetModules();
@@ -170,4 +186,3 @@ describe('initializeAdmin', () => {
     expect(console.error).toHaveBeenCalledWith('Error initializing admin user:', error);
   });
 });
-

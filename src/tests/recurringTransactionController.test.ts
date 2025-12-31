@@ -1,5 +1,35 @@
 import { jest } from '@jest/globals';
 import type { Request, Response, NextFunction } from 'express';
+
+// Mock database FIRST to prevent real DB calls
+jest.mock('../config/database.js', () => ({
+  default: { query: jest.fn() },
+  query: jest.fn(),
+}));
+
+// 1. Create mock functions FIRST with proper types
+const mockCreateRecurringTransaction = jest.fn<() => Promise<any>>();
+const mockGetAllRecurringTransactions = jest.fn<() => Promise<any>>();
+const mockGetRecurringTransactionById = jest.fn<() => Promise<any>>();
+const mockGetRecurringTransactionsByUserId = jest.fn<() => Promise<any>>();
+const mockGetDueRecurringTransactions = jest.fn<() => Promise<any>>();
+const mockUpdateRecurringTransaction = jest.fn<() => Promise<any>>();
+const mockDeleteRecurringTransaction = jest.fn<() => Promise<any>>();
+
+// 2. Mock modules
+jest.mock('../models/models.js', () => ({
+  RecurringTransactionModel: {
+    createRecurringTransaction: mockCreateRecurringTransaction,
+    getAllRecurringTransactions: mockGetAllRecurringTransactions,
+    getRecurringTransactionById: mockGetRecurringTransactionById,
+    getRecurringTransactionsByUserId: mockGetRecurringTransactionsByUserId,
+    getDueRecurringTransactions: mockGetDueRecurringTransactions,
+    updateRecurringTransaction: mockUpdateRecurringTransaction,
+    deleteRecurringTransaction: mockDeleteRecurringTransaction,
+  },
+}));
+
+// 3. Import controller AFTER mocks
 import {
   createRecurringTransaction,
   getRecurringTransactions,
@@ -9,11 +39,7 @@ import {
   updateRecurringTransaction,
   deleteRecurringTransaction,
 } from '../controllers/recurringTransactionController.js';
-import { RecurringTransactionModel } from '../models/models.js';
 import type { RecurringTransaction } from '../models/recurringTransaction.js';
-
-// Mock dependencies
-jest.mock('../models/models.js');
 
 describe('Recurring Transaction Controller', () => {
   let mockRequest: Partial<Request>;
@@ -21,14 +47,6 @@ describe('Recurring Transaction Controller', () => {
   let mockNext: NextFunction;
   let responseStatus: jest.Mock;
   let responseJson: jest.Mock;
-
-  const mockCreateRecurringTransaction = RecurringTransactionModel.createRecurringTransaction as jest.MockedFunction<typeof RecurringTransactionModel.createRecurringTransaction>;
-  const mockGetAllRecurringTransactions = RecurringTransactionModel.getAllRecurringTransactions as jest.MockedFunction<typeof RecurringTransactionModel.getAllRecurringTransactions>;
-  const mockGetRecurringTransactionById = RecurringTransactionModel.getRecurringTransactionById as jest.MockedFunction<typeof RecurringTransactionModel.getRecurringTransactionById>;
-  const mockGetRecurringTransactionsByUserId = RecurringTransactionModel.getRecurringTransactionsByUserId as jest.MockedFunction<typeof RecurringTransactionModel.getRecurringTransactionsByUserId>;
-  const mockGetDueRecurringTransactions = RecurringTransactionModel.getDueRecurringTransactions as jest.MockedFunction<typeof RecurringTransactionModel.getDueRecurringTransactions>;
-  const mockUpdateRecurringTransaction = RecurringTransactionModel.updateRecurringTransaction as jest.MockedFunction<typeof RecurringTransactionModel.updateRecurringTransaction>;
-  const mockDeleteRecurringTransaction = RecurringTransactionModel.deleteRecurringTransaction as jest.MockedFunction<typeof RecurringTransactionModel.deleteRecurringTransaction>;
 
   beforeEach(() => {
     responseStatus = jest.fn().mockReturnThis();
