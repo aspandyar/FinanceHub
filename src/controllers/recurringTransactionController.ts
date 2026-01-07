@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from 'express';
-import { RecurringTransactionModel } from '../models/models.js';
+import { RecurringTransactionModel, CategoryModel } from '../models/models.js';
 import { handleForeignKeyError } from '../utils/prismaErrors.js';
 import type {
   TransactionType,
@@ -154,6 +154,22 @@ export const createRecurringTransaction = async (
     // Validate is_active if provided
     if (is_active !== undefined && typeof is_active !== 'boolean') {
       return res.status(400).json({ error: 'is_active must be a boolean' });
+    }
+
+    // Validate that transaction type matches category type
+    const category = await CategoryModel.getCategoryById(category_id);
+    if (!category) {
+      return res.status(400).json({
+        error: 'Invalid category_id',
+        message: 'The specified category does not exist',
+      });
+    }
+
+    if (category.type !== type) {
+      return res.status(400).json({
+        error: 'Transaction type mismatch',
+        message: `Transaction type must match category type. Category is of type '${category.type}', but transaction type is '${type}'`,
+      });
     }
 
     const recurringTransaction =
@@ -495,6 +511,29 @@ export const updateRecurringTransaction = async (
         return res.status(400).json({ error: 'is_active must be a boolean' });
       }
       updateData.is_active = is_active;
+    }
+
+    // Validate that transaction type matches category type
+    // Determine which category to check (new category_id if provided, otherwise existing)
+    const categoryIdToCheck = category_id || existingRecurringTransaction.categoryId;
+    const typeToCheck = type || existingRecurringTransaction.type;
+
+    // Only validate if either category_id or type is being updated
+    if (category_id !== undefined || type !== undefined) {
+      const category = await CategoryModel.getCategoryById(categoryIdToCheck);
+      if (!category) {
+        return res.status(400).json({
+          error: 'Invalid category_id',
+          message: 'The specified category does not exist',
+        });
+      }
+
+      if (category.type !== typeToCheck) {
+        return res.status(400).json({
+          error: 'Transaction type mismatch',
+          message: `Transaction type must match category type. Category is of type '${category.type}', but transaction type is '${typeToCheck}'`,
+        });
+      }
     }
 
     const recurringTransaction =

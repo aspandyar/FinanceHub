@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from 'express';
-import { TransactionModel } from '../models/models.js';
+import { TransactionModel, CategoryModel } from '../models/models.js';
 import type { TransactionType } from '../models/transaction.js';
 import { handleForeignKeyError } from '../utils/prismaErrors.js';
 
@@ -95,6 +95,22 @@ export const createTransaction = async (
           .status(400)
           .json({ error: 'Description must be a string' });
       }
+    }
+
+    // Validate that transaction type matches category type
+    const category = await CategoryModel.getCategoryById(category_id);
+    if (!category) {
+      return res.status(400).json({
+        error: 'Invalid category_id',
+        message: 'The specified category does not exist',
+      });
+    }
+
+    if (category.type !== type) {
+      return res.status(400).json({
+        error: 'Transaction type mismatch',
+        message: `Transaction type must match category type. Category is of type '${category.type}', but transaction type is '${type}'`,
+      });
     }
 
     const transaction = await TransactionModel.createTransaction({
@@ -320,6 +336,29 @@ export const updateTransaction = async (
         return res
           .status(400)
           .json({ error: 'Description must be a string' });
+      }
+    }
+
+    // Validate that transaction type matches category type
+    // Determine which category to check (new category_id if provided, otherwise existing)
+    const categoryIdToCheck = category_id || existingTransaction.categoryId;
+    const typeToCheck = type || existingTransaction.type;
+
+    // Only validate if either category_id or type is being updated
+    if (category_id !== undefined || type !== undefined) {
+      const category = await CategoryModel.getCategoryById(categoryIdToCheck);
+      if (!category) {
+        return res.status(400).json({
+          error: 'Invalid category_id',
+          message: 'The specified category does not exist',
+        });
+      }
+
+      if (category.type !== typeToCheck) {
+        return res.status(400).json({
+          error: 'Transaction type mismatch',
+          message: `Transaction type must match category type. Category is of type '${category.type}', but transaction type is '${typeToCheck}'`,
+        });
       }
     }
 
