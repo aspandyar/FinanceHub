@@ -85,7 +85,7 @@ router.get('/', getCategories);
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.get('/user/:user_id', getCategoriesByUserId);
+router.get('/user/:userId', getCategoriesByUserId);
 
 /**
  * @swagger

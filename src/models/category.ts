@@ -5,12 +5,12 @@ export type Category = NonNullable<Awaited<ReturnType<typeof prisma.category.fin
 export type CategoryType = 'income' | 'expense';
 
 export interface CreateCategoryInput {
-  user_id: string;
+  userId: string;
   name: string;
   type: CategoryType;
   color?: string;
   icon?: string | null;
-  is_system?: boolean;
+  isSystem?: boolean;
 }
 
 export interface UpdateCategoryInput {
@@ -20,9 +20,9 @@ export interface UpdateCategoryInput {
   icon?: string | null;
 }
 
-// Get all categories (optionally filtered by user_id and type)
+// Get all categories (optionally filtered by userId and type)
 export const getAllCategories = async (
-  user_id?: string,
+  userId?: string,
   type?: CategoryType
 ): Promise<Category[]> => {
   const where: {
@@ -30,8 +30,8 @@ export const getAllCategories = async (
     type?: CategoryType;
   } = {};
 
-  if (user_id !== undefined) {
-    where.userId = user_id;
+  if (userId !== undefined) {
+    where.userId = userId;
   }
 
   if (type !== undefined) {
@@ -54,13 +54,13 @@ export const getCategoryById = async (id: string): Promise<Category | null> => {
   });
 };
 
-// Get categories by user_id
+// Get categories by userId
 export const getCategoriesByUserId = async (
-  user_id: string
+  userId: string
 ): Promise<Category[]> => {
   return prisma.category.findMany({
     where: {
-      userId: user_id,
+      userId: userId,
     },
     orderBy: [
       { isSystem: 'desc' },
@@ -75,12 +75,12 @@ export const createCategory = async (
 ): Promise<Category> => {
   return prisma.category.create({
     data: {
-      userId: input.user_id,
+      userId: input.userId,
       name: input.name,
       type: input.type,
       color: input.color || '#6B7280',
       icon: input.icon || null,
-      isSystem: input.is_system || false,
+      isSystem: input.isSystem || false,
     },
   });
 };

@@ -3,22 +3,22 @@ import prisma from '../config/database.js';
 export type Budget = NonNullable<Awaited<ReturnType<typeof prisma.budget.findUnique>>>;
 
 export interface CreateBudgetInput {
-  user_id: string;
-  category_id: string;
+  userId: string;
+  categoryId: string;
   amount: number;
   month: string; // ISO date string (YYYY-MM-DD) - should be first day of month
 }
 
 export interface UpdateBudgetInput {
-  category_id?: string;
+  categoryId?: string;
   amount?: number;
   month?: string; // ISO date string (YYYY-MM-DD) - should be first day of month
 }
 
-// Get all budgets (optionally filtered by user_id, category_id, month)
+// Get all budgets (optionally filtered by userId, categoryId, month)
 export const getAllBudgets = async (
-  user_id?: string,
-  category_id?: string,
+  userId?: string,
+  categoryId?: string,
   month?: string
 ): Promise<Budget[]> => {
   const where: {
@@ -27,12 +27,12 @@ export const getAllBudgets = async (
     month?: Date;
   } = {};
 
-  if (user_id) {
-    where.userId = user_id;
+  if (userId) {
+    where.userId = userId;
   }
 
-  if (category_id) {
-    where.categoryId = category_id;
+  if (categoryId) {
+    where.categoryId = categoryId;
   }
 
   if (month) {
@@ -55,12 +55,12 @@ export const getBudgetById = async (id: string): Promise<Budget | null> => {
   });
 };
 
-// Get budgets by user_id
+// Get budgets by userId
 export const getBudgetsByUserId = async (
-  user_id: string
+  userId: string
 ): Promise<Budget[]> => {
   return prisma.budget.findMany({
-    where: { userId: user_id },
+    where: { userId: userId },
     orderBy: [
       { month: 'desc' },
       { createdAt: 'desc' },
@@ -68,14 +68,14 @@ export const getBudgetsByUserId = async (
   });
 };
 
-// Get budgets by user_id and month
+// Get budgets by userId and month
 export const getBudgetsByUserIdAndMonth = async (
-  user_id: string,
+  userId: string,
   month: string
 ): Promise<Budget[]> => {
   return prisma.budget.findMany({
     where: {
-      userId: user_id,
+      userId: userId,
       month: new Date(month),
     },
     orderBy: { createdAt: 'desc' },
@@ -88,8 +88,8 @@ export const createBudget = async (
 ): Promise<Budget> => {
   return prisma.budget.create({
     data: {
-      userId: input.user_id,
-      categoryId: input.category_id,
+      userId: input.userId,
+      categoryId: input.categoryId,
       amount: input.amount,
       month: new Date(input.month),
     },
@@ -107,8 +107,8 @@ export const updateBudget = async (
     month?: Date;
   } = {};
 
-  if (input.category_id !== undefined) {
-    updateData.categoryId = input.category_id;
+  if (input.categoryId !== undefined) {
+    updateData.categoryId = input.categoryId;
   }
   if (input.amount !== undefined) {
     updateData.amount = input.amount;

@@ -5,46 +5,46 @@ export type FrequencyType = 'daily' | 'weekly' | 'monthly' | 'yearly';
 export type TransactionType = 'income' | 'expense';
 
 export interface CreateRecurringTransactionInput {
-  user_id: string;
-  category_id: string;
+  userId: string;
+  categoryId: string;
   amount: number;
   type: TransactionType;
   description?: string | null;
   frequency: FrequencyType;
-  start_date: string; // ISO date string (YYYY-MM-DD)
-  end_date?: string | null; // ISO date string (YYYY-MM-DD)
-  next_occurrence: string; // ISO date string (YYYY-MM-DD)
-  is_active?: boolean;
+  startDate: string; // ISO date string (YYYY-MM-DD)
+  endDate?: string | null; // ISO date string (YYYY-MM-DD)
+  nextOccurrence: string; // ISO date string (YYYY-MM-DD)
+  isActive?: boolean;
 }
 
 export interface UpdateRecurringTransactionInput {
-  category_id?: string;
+  categoryId?: string;
   amount?: number;
   type?: TransactionType;
   description?: string | null;
   frequency?: FrequencyType;
-  start_date?: string; // ISO date string (YYYY-MM-DD)
-  end_date?: string | null; // ISO date string (YYYY-MM-DD)
-  next_occurrence?: string; // ISO date string (YYYY-MM-DD)
-  is_active?: boolean;
+  startDate?: string; // ISO date string (YYYY-MM-DD)
+  endDate?: string | null; // ISO date string (YYYY-MM-DD)
+  nextOccurrence?: string; // ISO date string (YYYY-MM-DD)
+  isActive?: boolean;
 }
 
-// Get all recurring transactions (optionally filtered by user_id, is_active)
+// Get all recurring transactions (optionally filtered by userId, isActive)
 export const getAllRecurringTransactions = async (
-  user_id?: string,
-  is_active?: boolean
+  userId?: string,
+  isActive?: boolean
 ): Promise<RecurringTransaction[]> => {
   const where: {
     userId?: string;
     isActive?: boolean;
   } = {};
 
-  if (user_id) {
-    where.userId = user_id;
+  if (userId) {
+    where.userId = userId;
   }
 
-  if (is_active !== undefined) {
-    where.isActive = is_active;
+  if (isActive !== undefined) {
+    where.isActive = isActive;
   }
 
   return prisma.recurringTransaction.findMany({
@@ -65,12 +65,12 @@ export const getRecurringTransactionById = async (
   });
 };
 
-// Get recurring transactions by user_id
+// Get recurring transactions by userId
 export const getRecurringTransactionsByUserId = async (
-  user_id: string
+  userId: string
 ): Promise<RecurringTransaction[]> => {
   return prisma.recurringTransaction.findMany({
-    where: { userId: user_id },
+    where: { userId: userId },
     orderBy: [
       { nextOccurrence: 'asc' },
       { createdAt: 'desc' },
@@ -106,16 +106,16 @@ export const createRecurringTransaction = async (
 ): Promise<RecurringTransaction> => {
   return prisma.recurringTransaction.create({
     data: {
-      userId: input.user_id,
-      categoryId: input.category_id,
+      userId: input.userId,
+      categoryId: input.categoryId,
       amount: input.amount,
       type: input.type,
       description: input.description || null,
       frequency: input.frequency,
-      startDate: new Date(input.start_date),
-      endDate: input.end_date ? new Date(input.end_date) : null,
-      nextOccurrence: new Date(input.next_occurrence),
-      isActive: input.is_active !== undefined ? input.is_active : true,
+      startDate: new Date(input.startDate),
+      endDate: input.endDate ? new Date(input.endDate) : null,
+      nextOccurrence: new Date(input.nextOccurrence),
+      isActive: input.isActive !== undefined ? input.isActive : true,
     },
   });
 };
@@ -137,8 +137,8 @@ export const updateRecurringTransaction = async (
     isActive?: boolean;
   } = {};
 
-  if (input.category_id !== undefined) {
-    updateData.categoryId = input.category_id;
+  if (input.categoryId !== undefined) {
+    updateData.categoryId = input.categoryId;
   }
   if (input.amount !== undefined) {
     updateData.amount = input.amount;
@@ -152,17 +152,17 @@ export const updateRecurringTransaction = async (
   if (input.frequency !== undefined) {
     updateData.frequency = input.frequency;
   }
-  if (input.start_date !== undefined) {
-    updateData.startDate = new Date(input.start_date);
+  if (input.startDate !== undefined) {
+    updateData.startDate = new Date(input.startDate);
   }
-  if (input.end_date !== undefined) {
-    updateData.endDate = input.end_date ? new Date(input.end_date) : null;
+  if (input.endDate !== undefined) {
+    updateData.endDate = input.endDate ? new Date(input.endDate) : null;
   }
-  if (input.next_occurrence !== undefined) {
-    updateData.nextOccurrence = new Date(input.next_occurrence);
+  if (input.nextOccurrence !== undefined) {
+    updateData.nextOccurrence = new Date(input.nextOccurrence);
   }
-  if (input.is_active !== undefined) {
-    updateData.isActive = input.is_active;
+  if (input.isActive !== undefined) {
+    updateData.isActive = input.isActive;
   }
 
   if (Object.keys(updateData).length === 0) {

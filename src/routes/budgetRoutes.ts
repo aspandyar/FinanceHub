@@ -99,7 +99,7 @@ router.get('/', getBudgets);
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.get('/user/:user_id/month/:month', getBudgetsByUserIdAndMonth);
+router.get('/user/:userId/month/:month', getBudgetsByUserIdAndMonth);
 
 /**
  * @swagger
@@ -133,7 +133,7 @@ router.get('/user/:user_id/month/:month', getBudgetsByUserIdAndMonth);
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.get('/user/:user_id', getBudgetsByUserId);
+router.get('/user/:userId', getBudgetsByUserId);
 
 /**
  * @swagger

@@ -51,13 +51,13 @@ export const validateMonth = (month: any, res?: Response): boolean => {
  */
 export const validateCreateBudget = (
   data: {
-    category_id: any;
+    categoryId: any;
     amount: any;
     month: any;
   },
   res?: Response
 ): { isValid: boolean; normalizedMonth?: string } => {
-  if (!validateCategoryId(data.category_id, res)) {
+  if (!validateCategoryId(data.categoryId, res)) {
     return { isValid: false };
   }
   if (!validateAmount(data.amount, res)) {
@@ -76,14 +76,14 @@ export const validateCreateBudget = (
  */
 export const validateUpdateBudget = (
   data: {
-    category_id?: any;
+    categoryId?: any;
     amount?: any;
     month?: any;
   },
   res?: Response
 ): { isValid: boolean; normalizedMonth?: string } => {
-  if (data.category_id !== undefined) {
-    if (!validateCategoryId(data.category_id, res)) {
+  if (data.categoryId !== undefined) {
+    if (!validateCategoryId(data.categoryId, res)) {
       return { isValid: false };
     }
   }

@@ -117,7 +117,7 @@ export const validateTransactionTypeMatchesCategory = async (
  */
 export const validateCreateTransaction = async (
   data: {
-    category_id: any;
+    categoryId: any;
     amount: any;
     type: any;
     date: any;
@@ -125,14 +125,14 @@ export const validateCreateTransaction = async (
   },
   res?: Response
 ): Promise<boolean> => {
-  if (!validateCategoryId(data.category_id, res)) return false;
+  if (!validateCategoryId(data.categoryId, res)) return false;
   if (!validateAmount(data.amount, res)) return false;
   if (!validateTransactionType(data.type, res)) return false;
   if (!validateDate(data.date, res)) return false;
   if (!validateDescription(data.description, res)) return false;
   
   // Validate type matches category
-  if (!(await validateTransactionTypeMatchesCategory(data.category_id, data.type, res))) {
+  if (!(await validateTransactionTypeMatchesCategory(data.categoryId, data.type, res))) {
     return false;
   }
 
@@ -144,7 +144,7 @@ export const validateCreateTransaction = async (
  */
 export const validateUpdateTransaction = async (
   data: {
-    category_id?: any;
+    categoryId?: any;
     amount?: any;
     type?: any;
     date?: any;
@@ -154,9 +154,9 @@ export const validateUpdateTransaction = async (
   existingType: TransactionType,
   res?: Response
 ): Promise<boolean> => {
-  // Validate category_id if provided
-  if (data.category_id !== undefined) {
-    if (!validateCategoryId(data.category_id, res)) return false;
+  // Validate categoryId if provided
+  if (data.categoryId !== undefined) {
+    if (!validateCategoryId(data.categoryId, res)) return false;
   }
 
   // Validate amount if provided
@@ -180,8 +180,8 @@ export const validateUpdateTransaction = async (
   }
 
   // Validate type/category consistency if either is being updated
-  if (data.category_id !== undefined || data.type !== undefined) {
-    const categoryIdToCheck = data.category_id || existingCategoryId;
+  if (data.categoryId !== undefined || data.type !== undefined) {
+    const categoryIdToCheck = data.categoryId || existingCategoryId;
     const typeToCheck = data.type || existingType;
     
     if (!(await validateTransactionTypeMatchesCategory(categoryIdToCheck, typeToCheck, res))) {

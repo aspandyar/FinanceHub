@@ -133,16 +133,16 @@ export const validateUserId = (id: any, res?: Response): id is string => {
 export const validateCreateUser = (
   data: {
     email: any;
-    password_hash: any;
-    full_name: any;
+    passwordHash: any;
+    fullName: any;
     currency?: any;
     role?: any;
   },
   res?: Response
 ): boolean => {
   if (!validateEmail(data.email, res)) return false;
-  if (!validatePasswordHash(data.password_hash, res)) return false;
-  if (!validateFullName(data.full_name, res)) return false;
+  if (!validatePasswordHash(data.passwordHash, res)) return false;
+  if (!validateFullName(data.fullName, res)) return false;
   if (!validateCurrency(data.currency, res)) return false;
   if (!validateRole(data.role, res)) return false;
   return true;
@@ -154,8 +154,8 @@ export const validateCreateUser = (
 export const validateUpdateUser = (
   data: {
     email?: any;
-    password_hash?: any;
-    full_name?: any;
+    passwordHash?: any;
+    fullName?: any;
     currency?: any;
     role?: any;
   },
@@ -176,8 +176,8 @@ export const validateUpdateUser = (
     }
   }
 
-  if (data.password_hash !== undefined) {
-    if (typeof data.password_hash !== 'string' || data.password_hash.trim().length === 0) {
+  if (data.passwordHash !== undefined) {
+    if (typeof data.passwordHash !== 'string' || data.passwordHash.trim().length === 0) {
       if (res) {
         res.status(400).json({
           error: 'Password hash must be a non-empty string',
@@ -187,8 +187,8 @@ export const validateUpdateUser = (
     }
   }
 
-  if (data.full_name !== undefined) {
-    if (typeof data.full_name !== 'string' || data.full_name.trim().length === 0) {
+  if (data.fullName !== undefined) {
+    if (typeof data.fullName !== 'string' || data.fullName.trim().length === 0) {
       if (res) {
         res.status(400).json({
           error: 'Full name must be a non-empty string',

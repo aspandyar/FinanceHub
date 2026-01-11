@@ -18,49 +18,49 @@ export const createRecurringTransaction = async (
     }
 
     const {
-      category_id,
+      categoryId,
       amount,
       type,
       description,
       frequency,
-      start_date,
-      end_date,
-      next_occurrence,
-      is_active,
+      startDate,
+      endDate,
+      nextOccurrence,
+      isActive,
     } = req.body;
 
     // Use authenticated user's ID (users can only create recurring transactions for themselves)
-    const user_id = req.user.id;
+    const userId = req.user.id;
 
     // Validate all fields
     if (!(await validateCreateRecurringTransaction({
-      category_id,
+      categoryId,
       amount,
       type,
       frequency,
-      start_date,
-      end_date,
-      next_occurrence,
+      startDate,
+      endDate,
+      nextOccurrence,
       description,
-      is_active,
+      isActive,
     }, res))) {
       return;
     }
 
     const recurringTransaction =
       await RecurringTransactionModel.createRecurringTransaction({
-        user_id,
-        category_id,
+        userId: userId,
+        categoryId: categoryId,
         amount,
         type,
         description: description || null,
         frequency,
-        start_date,
-        end_date: end_date || null,
-        next_occurrence,
-        is_active: is_active !== undefined ? is_active : true,
+        startDate: startDate,
+        endDate: endDate || null,
+        nextOccurrence: nextOccurrence,
+        isActive: isActive !== undefined ? isActive : true,
       });
-
+      
     res.status(201).json(recurringTransaction);
   } catch (error: any) {
     // Handle foreign key constraint violations
@@ -82,17 +82,17 @@ export const getRecurringTransactions = async (
       return res.status(401).json({ error: 'Authentication required' });
     }
 
-    const { is_active } = req.query;
+    const { isActive } = req.query;
 
     // Regular users can only see their own recurring transactions
     // Admin and manager can see all recurring transactions
     let parsedUserId: string | undefined = undefined;
     if (req.user.role === 'admin' || req.user.role === 'manager') {
-      // Admin/manager can filter by any user_id or see all
-      const { user_id } = req.query;
-      if (user_id !== undefined) {
-        if (typeof user_id === 'string' && isValidUUID(user_id)) {
-          parsedUserId = user_id;
+      // Admin/manager can filter by any userId or see all
+      const { userId } = req.query;
+      if (userId !== undefined) {
+        if (typeof userId === 'string' && isValidUUID(userId)) {
+          parsedUserId = userId;
         } else {
           return res.status(400).json({ error: 'Invalid user ID format' });
         }
@@ -103,17 +103,17 @@ export const getRecurringTransactions = async (
     }
 
     let parsedIsActive: boolean | undefined = undefined;
-    if (is_active !== undefined) {
-      if (typeof is_active === 'string') {
-        if (is_active === 'true') {
+    if (isActive !== undefined) {
+      if (typeof isActive === 'string') {
+        if (isActive === 'true') {
           parsedIsActive = true;
-        } else if (is_active === 'false') {
+        } else if (isActive === 'false') {
           parsedIsActive = false;
         } else {
-          return res.status(400).json({ error: 'is_active must be true or false' });
+          return res.status(400).json({ error: 'isActive must be true or false' });
         }
       } else {
-        return res.status(400).json({ error: 'is_active must be a string' });
+        return res.status(400).json({ error: 'isActive must be a string' });
       }
     }
 
@@ -168,16 +168,16 @@ export const getRecurringTransactionsByUserId = async (
       return res.status(401).json({ error: 'Authentication required' });
     }
 
-    const { user_id } = req.params;
+    const { userId } = req.params;
 
-    if (!user_id || !isValidUUID(user_id)) {
+    if (!userId || !isValidUUID(userId)) {
       return res.status(400).json({ error: 'Invalid user ID format' });
     }
 
     // Regular users can only see their own recurring transactions
     // Admin and manager can see any user's recurring transactions
     if (req.user.role !== 'admin' && req.user.role !== 'manager') {
-      if (user_id !== req.user.id) {
+      if (userId !== req.user.id) {
         return res.status(403).json({
           error: 'Access denied',
           message: 'You can only view your own recurring transactions',
@@ -186,7 +186,7 @@ export const getRecurringTransactionsByUserId = async (
     }
 
     const recurringTransactions =
-      await RecurringTransactionModel.getRecurringTransactionsByUserId(user_id);
+      await RecurringTransactionModel.getRecurringTransactionsByUserId(userId);
     res.json(recurringTransactions);
   } catch (error) {
     next(error);
@@ -264,42 +264,29 @@ export const updateRecurringTransaction = async (
     }
 
     const {
-      category_id,
+      categoryId,
       amount,
       type,
       description,
       frequency,
-      start_date,
-      end_date,
-      next_occurrence,
-      is_active,
+      startDate,
+      endDate,
+      nextOccurrence,
+      isActive,
     } = req.body;
-
-    // Build update object, only including defined properties
-    const updateData: {
-      category_id?: string;
-      amount?: number;
-      type?: TransactionType;
-      description?: string | null;
-      frequency?: FrequencyType;
-      start_date?: string;
-      end_date?: string | null;
-      next_occurrence?: string;
-      is_active?: boolean;
-    } = {};
 
     // Validate all fields
     if (!(await validateUpdateRecurringTransaction(
       {
-        category_id,
+        categoryId,
         amount,
         type,
         frequency,
-        start_date,
-        end_date,
-        next_occurrence,
+        startDate,
+        endDate,
+        nextOccurrence,
         description,
-        is_active,
+        isActive,
       },
       existingRecurringTransaction.categoryId,
       existingRecurringTransaction.type,
@@ -309,8 +296,20 @@ export const updateRecurringTransaction = async (
     }
 
     // Build update object, only including defined properties
-    if (category_id !== undefined) {
-      updateData.category_id = category_id;
+    const updateData: {
+      categoryId?: string;
+      amount?: number;
+      type?: TransactionType;
+      description?: string | null;
+      frequency?: FrequencyType;
+      startDate?: string;
+      endDate?: string | null;
+      nextOccurrence?: string;
+      isActive?: boolean;
+    } = {};
+
+    if (categoryId !== undefined) {
+      updateData.categoryId = categoryId;
     }
     if (amount !== undefined) {
       updateData.amount = amount;
@@ -321,20 +320,20 @@ export const updateRecurringTransaction = async (
     if (frequency !== undefined) {
       updateData.frequency = frequency;
     }
-    if (start_date !== undefined) {
-      updateData.start_date = start_date;
+    if (startDate !== undefined) {
+      updateData.startDate = startDate;
     }
-    if (end_date !== undefined) {
-      updateData.end_date = end_date;
+    if (endDate !== undefined) {
+      updateData.endDate = endDate;
     }
-    if (next_occurrence !== undefined) {
-      updateData.next_occurrence = next_occurrence;
+    if (nextOccurrence !== undefined) {
+      updateData.nextOccurrence = nextOccurrence;
     }
     if (description !== undefined) {
       updateData.description = description;
     }
-    if (is_active !== undefined) {
-      updateData.is_active = is_active;
+    if (isActive !== undefined) {
+      updateData.isActive = isActive;
     }
 
     const recurringTransaction =

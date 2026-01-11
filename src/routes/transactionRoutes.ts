@@ -103,7 +103,7 @@ router.get('/', getTransactions);
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.get('/user/:user_id', getTransactionsByUserId);
+router.get('/user/:userId', getTransactionsByUserId);
 
 /**
  * @swagger

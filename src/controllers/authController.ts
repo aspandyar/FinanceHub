@@ -12,7 +12,7 @@ export const register = async (
   next: NextFunction
 ) => {
   try {
-    const { email, password, full_name, currency } = req.body;
+    const { email, password, fullName, currency } = req.body;
 
     // Validate email
     if (!validateEmailForAuth(email, res)) {
@@ -32,8 +32,8 @@ export const register = async (
       });
     }
 
-    // Validate full_name
-    if (!validateFullName(full_name, res, 100)) {
+    // Validate fullName
+    if (!validateFullName(fullName, res, 100)) {
       return;
     }
 
@@ -49,8 +49,8 @@ export const register = async (
     // Create user (default role is 'user')
     const user = await UserModel.createUser({
       email: email.toLowerCase().trim(),
-      password_hash,
-      full_name: full_name.trim(),
+      passwordHash: password_hash,
+      fullName: fullName.trim(),
       currency: currency || 'USD',
       role: 'user', // New users always get 'user' role
     });

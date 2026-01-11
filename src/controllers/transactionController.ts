@@ -16,19 +16,19 @@ export const createTransaction = async (
       return res.status(401).json({ error: 'Authentication required' });
     }
 
-    const { category_id, amount, type, description, date } = req.body;
+    const { categoryId, amount, type, description, date } = req.body;
 
     // Use authenticated user's ID (users can only create transactions for themselves)
-    const user_id = req.user.id;
+    const userId = req.user.id;
 
     // Validate all fields
-    if (!(await validateCreateTransaction({ category_id, amount, type, date, description }, res))) {
+    if (!(await validateCreateTransaction({ categoryId, amount, type, date, description }, res))) {
       return;
     }
 
     const transaction = await TransactionModel.createTransaction({
-      user_id,
-      category_id,
+      userId: userId,
+      categoryId: categoryId,
       amount,
       type,
       description: description || null,
@@ -56,17 +56,17 @@ export const getTransactions = async (
       return res.status(401).json({ error: 'Authentication required' });
     }
 
-    const { type, category_id, start_date, end_date } = req.query;
+    const { type, categoryId, startDate, endDate } = req.query;
 
     // Regular users can only see their own transactions
     // Admin and manager can see all transactions
     let parsedUserId: string | undefined = undefined;
     if (req.user.role === 'admin' || req.user.role === 'manager') {
-      // Admin/manager can filter by any user_id or see all
-      const { user_id } = req.query;
-      if (user_id !== undefined) {
-        if (typeof user_id === 'string' && isValidUUID(user_id)) {
-          parsedUserId = user_id;
+      // Admin/manager can filter by any userId or see all
+      const { userId } = req.query;
+      if (userId !== undefined) {
+        if (typeof userId === 'string' && isValidUUID(userId)) {
+          parsedUserId = userId;
         } else {
           return res.status(400).json({ error: 'Invalid user ID format' });
         }
@@ -88,33 +88,33 @@ export const getTransactions = async (
     }
 
     let parsedCategoryId: string | undefined = undefined;
-    if (category_id !== undefined) {
-      if (typeof category_id === 'string' && isValidUUID(category_id)) {
-        parsedCategoryId = category_id;
+    if (categoryId !== undefined) {
+      if (typeof categoryId === 'string' && isValidUUID(categoryId)) {
+        parsedCategoryId = categoryId;
       } else {
         return res.status(400).json({ error: 'Invalid category ID format' });
       }
     }
 
     let parsedStartDate: string | undefined = undefined;
-    if (start_date !== undefined) {
-      if (typeof start_date === 'string' && isValidDate(start_date)) {
-        parsedStartDate = start_date;
+    if (startDate !== undefined) {
+      if (typeof startDate === 'string' && isValidDate(startDate)) {
+        parsedStartDate = startDate;
       } else {
         return res
           .status(400)
-          .json({ error: 'Invalid start_date format (expected: YYYY-MM-DD)' });
+          .json({ error: 'Invalid startDate format (expected: YYYY-MM-DD)' });
       }
     }
 
     let parsedEndDate: string | undefined = undefined;
-    if (end_date !== undefined) {
-      if (typeof end_date === 'string' && isValidDate(end_date)) {
-        parsedEndDate = end_date;
+    if (endDate !== undefined) {
+      if (typeof endDate === 'string' && isValidDate(endDate)) {
+        parsedEndDate = endDate;
       } else {
         return res
           .status(400)
-          .json({ error: 'Invalid end_date format (expected: YYYY-MM-DD)' });
+          .json({ error: 'Invalid endDate format (expected: YYYY-MM-DD)' });
       }
     }
 
@@ -162,13 +162,13 @@ export const getTransactionsByUserId = async (
   next: NextFunction
 ) => {
   try {
-    const { user_id } = req.params;
+    const { userId } = req.params;
 
-    if (!user_id || !isValidUUID(user_id)) {
+    if (!userId || !isValidUUID(userId)) {
       return res.status(400).json({ error: 'Invalid user ID format' });
     }
 
-    const transactions = await TransactionModel.getTransactionsByUserId(user_id);
+    const transactions = await TransactionModel.getTransactionsByUserId(userId);
     res.json(transactions);
   } catch (error) {
     next(error);
@@ -208,11 +208,11 @@ export const updateTransaction = async (
       }
     }
 
-    const { category_id, amount, type, description, date } = req.body;
+    const { categoryId, amount, type, description, date } = req.body;
 
     // Validate all fields
     if (!(await validateUpdateTransaction(
-      { category_id, amount, type, date, description },
+      { categoryId, amount, type, date, description },
       existingTransaction.categoryId,
       existingTransaction.type,
       res
@@ -221,7 +221,7 @@ export const updateTransaction = async (
     }
 
     const transaction = await TransactionModel.updateTransaction(id, {
-      category_id,
+      categoryId: categoryId,
       amount,
       type,
       description: description !== undefined ? description : undefined,

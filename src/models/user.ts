@@ -6,16 +6,16 @@ export type UserRole = 'admin' | 'manager' | 'user';
 
 export interface CreateUserInput {
   email: string;
-  password_hash: string;
-  full_name: string;
+  passwordHash: string;
+  fullName: string;
   currency?: string;
   role?: UserRole;
 }
 
 export interface UpdateUserInput {
   email?: string;
-  password_hash?: string;
-  full_name?: string;
+  passwordHash?: string;
+  fullName?: string;
   currency?: string;
   role?: UserRole;
 }
@@ -46,8 +46,8 @@ export const createUser = async (input: CreateUserInput): Promise<User> => {
   return prisma.user.create({
     data: {
       email: input.email,
-      passwordHash: input.password_hash,
-      fullName: input.full_name,
+      passwordHash: input.passwordHash,
+      fullName: input.fullName,
       currency: input.currency || 'USD',
       role: input.role || 'user',
     },
@@ -70,11 +70,11 @@ export const updateUser = async (
   if (input.email !== undefined) {
     updateData.email = input.email;
   }
-  if (input.password_hash !== undefined) {
-    updateData.passwordHash = input.password_hash;
+  if (input.passwordHash !== undefined) {
+    updateData.passwordHash = input.passwordHash;
   }
-  if (input.full_name !== undefined) {
-    updateData.fullName = input.full_name;
+  if (input.fullName !== undefined) {
+    updateData.fullName = input.fullName;
   }
   if (input.currency !== undefined) {
     updateData.currency = input.currency;

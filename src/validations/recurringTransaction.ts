@@ -157,34 +157,34 @@ export const validateTransactionTypeMatchesCategory = async (
  */
 export const validateCreateRecurringTransaction = async (
   data: {
-    category_id: any;
+    categoryId: any;
     amount: any;
     type: any;
     frequency: any;
-    start_date: any;
-    next_occurrence: any;
+    startDate: any;
+    nextOccurrence: any;
     description?: any;
-    end_date?: any;
-    is_active?: any;
+    endDate?: any;
+    isActive?: any;
   },
   res?: Response
 ): Promise<boolean> => {
-  if (!validateCategoryId(data.category_id, res)) return false;
+  if (!validateCategoryId(data.categoryId, res)) return false;
   if (!validateAmount(data.amount, res)) return false;
   if (!validateTransactionType(data.type, res)) return false;
   if (!validateFrequency(data.frequency, res)) return false;
-  if (!validateDate(data.start_date, res)) return false;
-  if (!validateDate(data.next_occurrence, res)) return false;
+  if (!validateDate(data.startDate, res)) return false;
+  if (!validateDate(data.nextOccurrence, res)) return false;
   
-  if (data.end_date !== undefined && data.end_date !== null) {
-    if (!validateDate(data.end_date, res)) return false;
+  if (data.endDate !== undefined && data.endDate !== null) {
+    if (!validateDate(data.endDate, res)) return false;
   }
   
   if (!validateDescription(data.description, res)) return false;
-  if (!validateIsActive(data.is_active, res)) return false;
+  if (!validateIsActive(data.isActive, res)) return false;
   
   // Validate type matches category
-  if (!(await validateTransactionTypeMatchesCategory(data.category_id, data.type, res))) {
+  if (!(await validateTransactionTypeMatchesCategory(data.categoryId, data.type, res))) {
     return false;
   }
 
@@ -196,22 +196,22 @@ export const validateCreateRecurringTransaction = async (
  */
 export const validateUpdateRecurringTransaction = async (
   data: {
-    category_id?: any;
+    categoryId?: any;
     amount?: any;
     type?: any;
     frequency?: any;
-    start_date?: any;
-    end_date?: any;
-    next_occurrence?: any;
+    startDate?: any;
+    endDate?: any;
+    nextOccurrence?: any;
     description?: any;
-    is_active?: any;
+    isActive?: any;
   },
   existingCategoryId: string,
   existingType: TransactionType,
   res?: Response
 ): Promise<boolean> => {
-  if (data.category_id !== undefined) {
-    if (!validateCategoryId(data.category_id, res)) return false;
+  if (data.categoryId !== undefined) {
+    if (!validateCategoryId(data.categoryId, res)) return false;
   }
 
   if (data.amount !== undefined) {
@@ -226,20 +226,20 @@ export const validateUpdateRecurringTransaction = async (
     if (!validateFrequency(data.frequency, res)) return false;
   }
 
-  if (data.start_date !== undefined) {
-    if (!validateDate(data.start_date, res)) return false;
+  if (data.startDate !== undefined) {
+    if (!validateDate(data.startDate, res)) return false;
   }
 
-  if (data.end_date !== undefined) {
-    if (data.end_date === null) {
-      // null is allowed for end_date
-    } else if (!validateDate(data.end_date, res)) {
+  if (data.endDate !== undefined) {
+    if (data.endDate === null) {
+      // null is allowed for endDate
+    } else if (!validateDate(data.endDate, res)) {
       return false;
     }
   }
 
-  if (data.next_occurrence !== undefined) {
-    if (!validateDate(data.next_occurrence, res)) return false;
+  if (data.nextOccurrence !== undefined) {
+    if (!validateDate(data.nextOccurrence, res)) return false;
   }
 
   if (data.description !== undefined) {
@@ -250,13 +250,13 @@ export const validateUpdateRecurringTransaction = async (
     }
   }
 
-  if (data.is_active !== undefined) {
-    if (!validateIsActive(data.is_active, res)) return false;
+  if (data.isActive !== undefined) {
+    if (!validateIsActive(data.isActive, res)) return false;
   }
 
   // Validate type/category consistency if either is being updated
-  if (data.category_id !== undefined || data.type !== undefined) {
-    const categoryIdToCheck = data.category_id || existingCategoryId;
+  if (data.categoryId !== undefined || data.type !== undefined) {
+    const categoryIdToCheck = data.categoryId || existingCategoryId;
     const typeToCheck = data.type || existingType;
     
     if (!(await validateTransactionTypeMatchesCategory(categoryIdToCheck, typeToCheck, res))) {

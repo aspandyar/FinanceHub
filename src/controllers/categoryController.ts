@@ -19,7 +19,7 @@ export const createCategory = async (
     const { name, type, color, icon } = req.body;
 
     // Use authenticated user's ID (users can only create categories for themselves)
-    const user_id = req.user.id;
+    const userId = req.user.id;
 
     // Validate all fields
     if (!validateCreateCategory({ name, type, color, icon }, res)) {
@@ -27,12 +27,12 @@ export const createCategory = async (
     }
 
     const category = await CategoryModel.createCategory({
-      user_id: user_id, // Always use authenticated user's ID
+      userId: userId, // Always use authenticated user's ID
       name: name.trim(),
       type,
       color,
       icon: icon || null,
-      is_system: false, // User-created categories are never system categories
+      isSystem: false, // User-created categories are never system categories
     });
 
     res.status(201).json(category);
@@ -64,13 +64,13 @@ export const getCategories = async (
     // Admin and manager can see all categories
     let parsedUserId: string | null | undefined = undefined;
     if (req.user.role === 'admin' || req.user.role === 'manager') {
-      // Admin/manager can filter by any user_id or see all
-      const { user_id } = req.query;
-      if (user_id !== undefined) {
-        if (user_id === 'null' || user_id === '') {
+      // Admin/manager can filter by any userId or see all
+      const { userId } = req.query;
+      if (userId !== undefined) {
+        if (userId === 'null' || userId === '') {
           parsedUserId = null;
-        } else if (typeof user_id === 'string' && isValidUUID(user_id)) {
-          parsedUserId = user_id;
+        } else if (typeof userId === 'string' && isValidUUID(userId)) {
+          parsedUserId = userId;
         } else {
           return res.status(400).json({ error: 'Invalid user ID format' });
         }
@@ -136,16 +136,16 @@ export const getCategoriesByUserId = async (
       return res.status(401).json({ error: 'Authentication required' });
     }
 
-    const { user_id } = req.params;
+    const { userId } = req.params;
 
-    if (!user_id || !isValidUUID(user_id)) {
+    if (!userId || !isValidUUID(userId)) {
       return res.status(400).json({ error: 'Invalid user ID format' });
     }
 
     // Regular users can only see their own categories + system categories
     // Admin and manager can see any user's categories
     if (req.user.role !== 'admin' && req.user.role !== 'manager') {
-      if (user_id !== req.user.id) {
+      if (userId !== req.user.id) {
         return res.status(403).json({
           error: 'Access denied',
           message: 'You can only view your own categories',
@@ -153,7 +153,7 @@ export const getCategoriesByUserId = async (
       }
     }
 
-    const categories = await CategoryModel.getCategoriesByUserId(user_id);
+    const categories = await CategoryModel.getCategoriesByUserId(userId);
     res.json(categories);
   } catch (error) {
     next(error);

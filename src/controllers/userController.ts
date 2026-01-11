@@ -22,17 +22,17 @@ export const createUser = async (
       });
     }
 
-    const { email, password_hash, full_name, currency, role } = req.body;
+    const { email, passwordHash, fullName, currency, role } = req.body;
 
     // Validate all fields
-    if (!validateCreateUser({ email, password_hash, full_name, currency, role }, res)) {
+    if (!validateCreateUser({ email, passwordHash, fullName, currency, role }, res)) {
       return;
     }
 
     const user = await UserModel.createUser({
       email: email.trim().toLowerCase(),
-      password_hash: password_hash.trim(),
-      full_name: full_name.trim(),
+      passwordHash: passwordHash.trim(),
+      fullName: fullName.trim(),
       currency: currency?.trim().toUpperCase() || 'USD',
       role: role || 'user',
     });
@@ -141,7 +141,7 @@ export const updateUser = async (
       }
     }
 
-    const { email, password_hash, full_name, currency, role } = req.body;
+    const { email, passwordHash, fullName, currency, role } = req.body;
 
     // Only admin can change roles
     if (role !== undefined) {
@@ -154,19 +154,25 @@ export const updateUser = async (
     }
 
     // Validate all fields
-    if (!validateUpdateUser({ email, password_hash, full_name, currency, role }, res)) {
+    if (!validateUpdateUser({ email, passwordHash, fullName, currency, role }, res)) {
       return;
     }
 
-    const updateData: any = {};
+    const updateData: {
+      email?: string;
+      passwordHash?: string;
+      fullName?: string;
+      currency?: string;
+      role?: string;
+    } = {};
     if (email !== undefined) {
       updateData.email = email.trim().toLowerCase();
     }
-    if (password_hash !== undefined) {
-      updateData.password_hash = password_hash.trim();
+    if (passwordHash !== undefined) {
+      updateData.passwordHash = passwordHash.trim();
     }
-    if (full_name !== undefined) {
-      updateData.full_name = full_name.trim();
+    if (fullName !== undefined) {
+      updateData.fullName = fullName.trim();
     }
     if (currency !== undefined) {
       updateData.currency = currency.trim().toUpperCase();

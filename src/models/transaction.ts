@@ -4,8 +4,8 @@ export type Transaction = NonNullable<Awaited<ReturnType<typeof prisma.transacti
 export type TransactionType = 'income' | 'expense';
 
 export interface CreateTransactionInput {
-  user_id: string;
-  category_id: string;
+  userId: string;
+  categoryId: string;
   amount: number;
   type: TransactionType;
   description?: string | null;
@@ -13,20 +13,20 @@ export interface CreateTransactionInput {
 }
 
 export interface UpdateTransactionInput {
-  category_id?: string;
+  categoryId?: string;
   amount?: number;
   type?: TransactionType;
   description?: string | null;
   date?: string; // ISO date string (YYYY-MM-DD)
 }
 
-// Get all transactions (optionally filtered by user_id, type, category_id, date range)
+// Get all transactions (optionally filtered by userId, type, categoryId, date range)
 export const getAllTransactions = async (
-  user_id?: string,
+  userId?: string,
   type?: TransactionType,
-  category_id?: string,
-  start_date?: string,
-  end_date?: string
+  categoryId?: string,
+  startDate?: string,
+  endDate?: string
 ): Promise<Transaction[]> => {
   const where: {
     userId?: string;
@@ -38,25 +38,25 @@ export const getAllTransactions = async (
     };
   } = {};
 
-  if (user_id) {
-    where.userId = user_id;
+  if (userId) {
+    where.userId = userId;
   }
 
   if (type) {
     where.type = type;
   }
 
-  if (category_id) {
-    where.categoryId = category_id;
+  if (categoryId) {
+    where.categoryId = categoryId;
   }
 
-  if (start_date || end_date) {
+  if (startDate || endDate) {
     where.date = {};
-    if (start_date) {
-      where.date.gte = new Date(start_date);
+    if (startDate) {
+      where.date.gte = new Date(startDate);
     }
-    if (end_date) {
-      where.date.lte = new Date(end_date);
+    if (endDate) {
+      where.date.lte = new Date(endDate);
     }
   }
 
@@ -78,12 +78,12 @@ export const getTransactionById = async (
   });
 };
 
-// Get transactions by user_id
+// Get transactions by userId
 export const getTransactionsByUserId = async (
-  user_id: string
+  userId: string
 ): Promise<Transaction[]> => {
   return prisma.transaction.findMany({
-    where: { userId: user_id },
+    where: { userId: userId },
     orderBy: [
       { date: 'desc' },
       { createdAt: 'desc' },
@@ -97,8 +97,8 @@ export const createTransaction = async (
 ): Promise<Transaction> => {
   return prisma.transaction.create({
     data: {
-      userId: input.user_id,
-      categoryId: input.category_id,
+      userId: input.userId,
+      categoryId: input.categoryId,
       amount: input.amount,
       type: input.type,
       description: input.description || null,
@@ -120,8 +120,8 @@ export const updateTransaction = async (
     date?: Date;
   } = {};
 
-  if (input.category_id !== undefined) {
-    updateData.categoryId = input.category_id;
+  if (input.categoryId !== undefined) {
+    updateData.categoryId = input.categoryId;
   }
   if (input.amount !== undefined) {
     updateData.amount = input.amount;

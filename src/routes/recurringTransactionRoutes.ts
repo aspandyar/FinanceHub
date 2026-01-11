@@ -118,7 +118,7 @@ router.get('/due', getDueRecurringTransactions);
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.get('/user/:user_id', getRecurringTransactionsByUserId);
+router.get('/user/:userId', getRecurringTransactionsByUserId);
 
 /**
  * @swagger

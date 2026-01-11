@@ -15,21 +15,21 @@ export const createBudget = async (
       return res.status(401).json({ error: 'Authentication required' });
     }
 
-    const { category_id, amount, month } = req.body;
+    const { categoryId, amount, month } = req.body;
 
     // Use authenticated user's ID (users can only create budgets for themselves)
-    const user_id = req.user.id;
+    const userId = req.user.id;
 
     // Validate all fields
-    const validation = validateCreateBudget({ category_id, amount, month }, res);
+    const validation = validateCreateBudget({ categoryId, amount, month }, res);
     if (!validation.isValid) {
       return;
     }
     const normalizedMonth = validation.normalizedMonth!;
 
     const budget = await BudgetModel.createBudget({
-      user_id,
-      category_id,
+      userId: userId,
+      categoryId: categoryId,
       amount,
       month: normalizedMonth,
     });
@@ -63,17 +63,17 @@ export const getBudgets = async (
       return res.status(401).json({ error: 'Authentication required' });
     }
 
-    const { category_id, month } = req.query;
+    const { categoryId, month } = req.query;
 
     // Regular users can only see their own budgets
     // Admin and manager can see all budgets
     let parsedUserId: string | undefined = undefined;
     if (req.user.role === 'admin' || req.user.role === 'manager') {
-      // Admin/manager can filter by any user_id or see all
-      const { user_id } = req.query;
-      if (user_id !== undefined) {
-        if (typeof user_id === 'string' && isValidUUID(user_id)) {
-          parsedUserId = user_id;
+      // Admin/manager can filter by any userId or see all
+      const { userId } = req.query;
+      if (userId !== undefined) {
+        if (typeof userId === 'string' && isValidUUID(userId)) {
+          parsedUserId = userId;
         } else {
           return res.status(400).json({ error: 'Invalid user ID format' });
         }
@@ -84,9 +84,9 @@ export const getBudgets = async (
     }
 
     let parsedCategoryId: string | undefined = undefined;
-    if (category_id !== undefined) {
-      if (typeof category_id === 'string' && isValidUUID(category_id)) {
-        parsedCategoryId = category_id;
+    if (categoryId !== undefined) {
+      if (typeof categoryId === 'string' && isValidUUID(categoryId)) {
+        parsedCategoryId = categoryId;
       } else {
         return res.status(400).json({ error: 'Invalid category ID format' });
       }
@@ -149,16 +149,16 @@ export const getBudgetsByUserId = async (
       return res.status(401).json({ error: 'Authentication required' });
     }
 
-    const { user_id } = req.params;
+    const { userId } = req.params;
 
-    if (!user_id || !isValidUUID(user_id)) {
+    if (!userId || !isValidUUID(userId)) {
       return res.status(400).json({ error: 'Invalid user ID format' });
     }
 
     // Regular users can only see their own budgets
     // Admin and manager can see any user's budgets
     if (req.user.role !== 'admin' && req.user.role !== 'manager') {
-      if (user_id !== req.user.id) {
+      if (userId !== req.user.id) {
         return res.status(403).json({
           error: 'Access denied',
           message: 'You can only view your own budgets',
@@ -166,7 +166,7 @@ export const getBudgetsByUserId = async (
       }
     }
 
-    const budgets = await BudgetModel.getBudgetsByUserId(user_id);
+    const budgets = await BudgetModel.getBudgetsByUserId(userId);
     res.json(budgets);
   } catch (error) {
     next(error);
@@ -184,16 +184,16 @@ export const getBudgetsByUserIdAndMonth = async (
       return res.status(401).json({ error: 'Authentication required' });
     }
 
-    const { user_id, month } = req.params;
+    const { userId, month } = req.params;
 
-    if (!user_id || !isValidUUID(user_id)) {
+    if (!userId || !isValidUUID(userId)) {
       return res.status(400).json({ error: 'Invalid user ID format' });
     }
 
     // Regular users can only see their own budgets
     // Admin and manager can see any user's budgets
     if (req.user.role !== 'admin' && req.user.role !== 'manager') {
-      if (user_id !== req.user.id) {
+      if (userId !== req.user.id) {
         return res.status(403).json({
           error: 'Access denied',
           message: 'You can only view your own budgets',
@@ -209,7 +209,7 @@ export const getBudgetsByUserIdAndMonth = async (
 
     const normalizedMonth = normalizeMonth(month);
     const budgets = await BudgetModel.getBudgetsByUserIdAndMonth(
-      user_id,
+      userId,
       normalizedMonth
     );
     res.json(budgets);
@@ -251,23 +251,23 @@ export const updateBudget = async (
       }
     }
 
-    const { category_id, amount, month } = req.body;
+    const { categoryId, amount, month } = req.body;
 
     // Validate all fields
-    const validation = validateUpdateBudget({ category_id, amount, month }, res);
+    const validation = validateUpdateBudget({ categoryId, amount, month }, res);
     if (!validation.isValid) {
       return;
     }
 
     // Build update object, only including defined properties
     const updateData: {
-      category_id?: string;
+      categoryId?: string;
       amount?: number;
       month?: string;
     } = {};
     
-    if (category_id !== undefined) {
-      updateData.category_id = category_id;
+    if (categoryId !== undefined) {
+      updateData.categoryId = categoryId;
     }
     if (amount !== undefined) {
       updateData.amount = amount;
