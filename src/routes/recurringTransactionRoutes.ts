@@ -7,6 +7,8 @@ import {
   getDueRecurringTransactions,
   updateRecurringTransaction,
   deleteRecurringTransaction,
+  generateTransactions,
+  getEffectiveTransactionsForUser,
 } from '../controllers/recurringTransactionController.js';
 import { authenticate } from '../middlewares/auth.js';
 
@@ -287,13 +289,36 @@ router.post('/', createRecurringTransaction);
  *               is_active:
  *                 type: boolean
  *                 example: true
+ *               scope:
+ *                 type: string
+ *                 enum: [single, future, all]
+ *                 description: |
+ *                   Edit scope:
+ *                   - 'single': Edit only the occurrence on effectiveDate (creates override transaction)
+ *                   - 'future': Edit this occurrence and all future ones (splits series)
+ *                   - 'all': Edit entire series (default if not provided, for backward compatibility)
+ *                 example: future
+ *               effective_date:
+ *                 type: string
+ *                 format: date
+ *                 description: Date from which the edit applies (required if scope is provided)
+ *                 example: 2024-06-01
  *     responses:
  *       200:
  *         description: Recurring transaction successfully updated
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/RecurringTransaction'
+ *               oneOf:
+ *                 - $ref: '#/components/schemas/RecurringTransaction'
+ *                 - type: object
+ *                   properties:
+ *                     message:
+ *                       type: string
+ *                     original:
+ *                       $ref: '#/components/schemas/RecurringTransaction'
+ *                     new:
+ *                       $ref: '#/components/schemas/RecurringTransaction'
  *       400:
  *         description: Validation error
  *         content:
@@ -331,9 +356,32 @@ router.put('/:id', updateRecurringTransaction);
  *           type: string
  *           format: uuid
  *         description: Recurring transaction ID
+ *     requestBody:
+ *       required: false
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               scope:
+ *                 type: string
+ *                 enum: [single, future, all]
+ *                 description: |
+ *                   Delete scope:
+ *                   - 'single': Delete only the occurrence on effectiveDate
+ *                   - 'future': Delete this occurrence and all future ones (ends series at previous day)
+ *                   - 'all': Delete entire series (default if not provided, for backward compatibility)
+ *                 example: future
+ *               effective_date:
+ *                 type: string
+ *                 format: date
+ *                 description: Date from which the delete applies (required if scope is provided)
+ *                 example: 2024-06-01
  *     responses:
+ *       204:
+ *         description: Recurring transaction successfully deleted (for 'all' scope)
  *       200:
- *         description: Recurring transaction successfully deleted
+ *         description: Occurrence(s) deleted, recurring transaction still exists (for 'single' or 'future' scope)
  *         content:
  *           application/json:
  *             schema:
@@ -341,7 +389,8 @@ router.put('/:id', updateRecurringTransaction);
  *               properties:
  *                 message:
  *                   type: string
- *                   example: Recurring transaction deleted successfully
+ *                 recurringTransaction:
+ *                   $ref: '#/components/schemas/RecurringTransaction'
  *       401:
  *         description: Authentication required
  *         content:
@@ -356,6 +405,84 @@ router.put('/:id', updateRecurringTransaction);
  *               $ref: '#/components/schemas/Error'
  */
 router.delete('/:id', deleteRecurringTransaction);
+
+/**
+ * @swagger
+ * /api/recurring-transactions/generate:
+ *   post:
+ *     summary: Generate transactions from recurring transactions for a specific date
+ *     tags: [Recurring Transactions]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: date
+ *         schema:
+ *           type: string
+ *           format: date
+ *         description: Target date for generation (YYYY-MM-DD), defaults to today
+ *     responses:
+ *       200:
+ *         description: Transaction generation completed
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 date:
+ *                   type: string
+ *                   format: date
+ *                 created:
+ *                   type: number
+ *                 skipped:
+ *                   type: number
+ *       401:
+ *         description: Authentication required
+ */
+router.post('/generate', generateTransactions);
+
+/**
+ * @swagger
+ * /api/recurring-transactions/effective:
+ *   get:
+ *     summary: Get effective transactions (real + recurring instances, respecting overrides)
+ *     tags: [Recurring Transactions]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: startDate
+ *         schema:
+ *           type: string
+ *           format: date
+ *         description: Start date for filtering (YYYY-MM-DD)
+ *       - in: query
+ *         name: endDate
+ *         schema:
+ *           type: string
+ *           format: date
+ *         description: End date for filtering (YYYY-MM-DD)
+ *       - in: query
+ *         name: userId
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         description: User ID (admin/manager only)
+ *     responses:
+ *       200:
+ *         description: List of effective transactions
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Transaction'
+ *       401:
+ *         description: Authentication required
+ */
+router.get('/effective', getEffectiveTransactionsForUser);
 
 export default router;
 

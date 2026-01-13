@@ -10,6 +10,8 @@ export interface CreateTransactionInput {
   type: TransactionType;
   description?: string | null;
   date: string; // ISO date string (YYYY-MM-DD)
+  recurringTransactionId?: string | null;
+  isOverride?: boolean;
 }
 
 export interface UpdateTransactionInput {
@@ -18,6 +20,8 @@ export interface UpdateTransactionInput {
   type?: TransactionType;
   description?: string | null;
   date?: string; // ISO date string (YYYY-MM-DD)
+  recurringTransactionId?: string | null;
+  isOverride?: boolean;
 }
 
 // Get all transactions (optionally filtered by userId, type, categoryId, date range)
@@ -95,15 +99,55 @@ export const getTransactionsByUserId = async (
 export const createTransaction = async (
   input: CreateTransactionInput
 ): Promise<Transaction> => {
+  // Parse date string manually to avoid timezone issues
+  // If input.date is a string in YYYY-MM-DD format, parse it manually
+  let dateObj: Date;
+  if (typeof input.date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(input.date)) {
+    // Format: YYYY-MM-DD - create date at UTC midnight to avoid timezone issues
+    // This ensures Prisma stores the correct date regardless of server timezone
+    const parts = input.date.split('-').map(Number);
+    if (parts.length === 3 && parts.every(p => !isNaN(p))) {
+      const year = parts[0]!;
+      const month = parts[1]!;
+      const day = parts[2]!;
+      // Use Date.UTC to create date at UTC midnight
+      dateObj = new Date(Date.UTC(year, month - 1, day));
+    } else {
+      // Fallback to standard parsing if format is unexpected
+      dateObj = new Date(input.date);
+      dateObj.setUTCHours(0, 0, 0, 0);
+    }
+  } else {
+    // Already a Date object or different format
+    dateObj = new Date(input.date);
+    dateObj.setUTCHours(0, 0, 0, 0);
+  }
+
+  const data: {
+    userId: string;
+    categoryId: string;
+    amount: number;
+    type: TransactionType;
+    description: string | null;
+    date: Date;
+    recurringTransactionId?: string | null;
+    isOverride: boolean;
+  } = {
+    userId: input.userId,
+    categoryId: input.categoryId,
+    amount: input.amount,
+    type: input.type,
+    description: input.description || null,
+    date: dateObj,
+    isOverride: input.isOverride !== undefined ? input.isOverride : false,
+  };
+
+  if (input.recurringTransactionId !== undefined) {
+    data.recurringTransactionId = input.recurringTransactionId;
+  }
+
   return prisma.transaction.create({
-    data: {
-      userId: input.userId,
-      categoryId: input.categoryId,
-      amount: input.amount,
-      type: input.type,
-      description: input.description || null,
-      date: new Date(input.date),
-    },
+    data,
   });
 };
 
@@ -118,6 +162,8 @@ export const updateTransaction = async (
     type?: TransactionType;
     description?: string | null;
     date?: Date;
+    recurringTransactionId?: string | null;
+    isOverride?: boolean;
   } = {};
 
   if (input.categoryId !== undefined) {
@@ -133,7 +179,36 @@ export const updateTransaction = async (
     updateData.description = input.description;
   }
   if (input.date !== undefined) {
-    updateData.date = new Date(input.date);
+    // Parse date string manually to avoid timezone issues
+    // If input.date is a string in YYYY-MM-DD format, parse it manually
+    if (typeof input.date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(input.date)) {
+      // Format: YYYY-MM-DD - create date at UTC midnight to avoid timezone issues
+      const parts = input.date.split('-').map(Number);
+      if (parts.length === 3 && parts.every(p => !isNaN(p))) {
+        const year = parts[0]!;
+        const month = parts[1]!;
+        const day = parts[2]!;
+        // Use Date.UTC to create date at UTC midnight
+        const dateObj = new Date(Date.UTC(year, month - 1, day));
+        updateData.date = dateObj;
+      } else {
+        // Fallback to standard parsing if format is unexpected
+        const dateObj = new Date(input.date);
+        dateObj.setUTCHours(0, 0, 0, 0);
+        updateData.date = dateObj;
+      }
+    } else {
+      // Already a Date object or different format
+      const dateObj = new Date(input.date);
+      dateObj.setUTCHours(0, 0, 0, 0);
+      updateData.date = dateObj;
+    }
+  }
+  if (input.recurringTransactionId !== undefined) {
+    updateData.recurringTransactionId = input.recurringTransactionId || null;
+  }
+  if (input.isOverride !== undefined) {
+    updateData.isOverride = input.isOverride;
   }
 
   if (Object.keys(updateData).length === 0) {

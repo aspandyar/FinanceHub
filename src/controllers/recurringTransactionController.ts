@@ -2,8 +2,19 @@ import type { Request, Response, NextFunction } from 'express';
 import { RecurringTransactionModel } from '../models/models.js';
 import { handleForeignKeyError } from '../utils/prismaErrors.js';
 import { isValidUUID, isValidDate } from '../validations/common.js';
-import { validateCreateRecurringTransaction, validateUpdateRecurringTransaction } from '../validations/recurringTransaction.js';
+import { 
+  validateCreateRecurringTransaction, 
+  validateUpdateRecurringTransaction,
+  validateScope,
+  validateEffectiveDate,
+} from '../validations/recurringTransaction.js';
 import type { TransactionType, FrequencyType } from '../models/recurringTransaction.js';
+import { 
+  editRecurringTransaction, 
+  deleteRecurringTransaction as deleteRecurringTransactionService,
+  generateTransactionsFromRecurring,
+  getEffectiveTransactions,
+} from '../services/recurringTransactionService.js';
 
 
 // Create a recurring transaction
@@ -273,8 +284,91 @@ export const updateRecurringTransaction = async (
       endDate,
       nextOccurrence,
       isActive,
+      scope, // 'single' | 'future' | 'all'
+      effectiveDate, // Date from which the edit applies (YYYY-MM-DD)
     } = req.body;
 
+    // If scope is provided, use the new service-based approach
+    if (scope !== undefined) {
+      // Validate scope
+      if (!validateScope(scope, res)) {
+        return;
+      }
+
+      // Validate effectiveDate
+      if (!validateEffectiveDate(effectiveDate, res)) {
+        return;
+      }
+
+      // Validate update fields
+      if (!(await validateUpdateRecurringTransaction(
+        {
+          categoryId,
+          amount,
+          type,
+          frequency,
+          startDate,
+          endDate,
+          nextOccurrence,
+          description,
+          isActive,
+        },
+        existingRecurringTransaction.categoryId,
+        existingRecurringTransaction.type,
+        res
+      ))) {
+        return;
+      }
+
+      // Use the service to handle scope-based editing
+      const result = await editRecurringTransaction(
+        id,
+        effectiveDate,
+        scope,
+        {
+          categoryId,
+          amount,
+          type,
+          description,
+          frequency,
+          endDate,
+          isActive,
+        }
+      );
+
+      // Return appropriate response based on scope
+      if (scope === 'single') {
+        // For single scope, an override transaction was created/updated
+        // Return the recurring transaction (unchanged) with a message
+        return res.json({
+          message: 'Override transaction created/updated for this occurrence. Recurring transaction unchanged.',
+          recurringTransaction: result.recurringTransaction,
+          effectiveDate: effectiveDate,
+        });
+      }
+
+      if (scope === 'future' && result.newRecurringTransaction) {
+        // For future scope, the series was split into two
+        return res.json({
+          message: 'Recurring transaction updated. Series split into two.',
+          original: result.recurringTransaction,
+          new: result.newRecurringTransaction,
+        });
+      }
+
+      if (scope === 'all') {
+        // For all scope, the entire series was updated
+        return res.json({
+          message: 'Entire recurring transaction series updated.',
+          recurringTransaction: result.recurringTransaction,
+        });
+      }
+
+      // Fallback (shouldn't reach here, but just in case)
+      return res.json(result.recurringTransaction);
+    }
+
+    // Legacy behavior: update entire series (backward compatibility)
     // Validate all fields
     if (!(await validateUpdateRecurringTransaction(
       {
@@ -351,6 +445,12 @@ export const updateRecurringTransaction = async (
     if (handleForeignKeyError(error, res)) {
       return;
     }
+    
+    // Handle service errors
+    if (error.message) {
+      return res.status(400).json({ error: error.message });
+    }
+    
     next(error);
   }
 };
@@ -367,6 +467,7 @@ export const deleteRecurringTransaction = async (
     }
 
     const { id } = req.params;
+    const { scope, effectiveDate } = req.body; // Query params or body
 
     if (!id || !isValidUUID(id)) {
       return res
@@ -393,6 +494,40 @@ export const deleteRecurringTransaction = async (
       }
     }
 
+    // If scope is provided, use the new service-based approach
+    if (scope !== undefined) {
+      // Validate scope
+      if (!validateScope(scope, res)) {
+        return;
+      }
+
+      // Validate effectiveDate
+      if (!validateEffectiveDate(effectiveDate, res)) {
+        return;
+      }
+
+      console.log('scope', scope);
+      console.log('effectiveDate', effectiveDate);
+
+      // Use the service to handle scope-based deletion
+      const result = await deleteRecurringTransactionService(id, effectiveDate, scope);
+      console.log('result', result);
+
+      if (result.deleted) {
+        return res.status(204).send();
+      } else {
+        // For 'single' and 'future' scopes, the recurring transaction still exists
+        const updated = await RecurringTransactionModel.getRecurringTransactionById(id);
+        return res.json({
+          message: scope === 'single' 
+            ? 'Occurrence deleted. Recurring transaction still active.'
+            : 'Future occurrences deleted. Recurring transaction ended.',
+          recurringTransaction: updated,
+        });
+      }
+    }
+
+    // Legacy behavior: delete entire series (backward compatibility)
     const deleted =
       await RecurringTransactionModel.deleteRecurringTransaction(id);
     if (!deleted) {
@@ -402,6 +537,110 @@ export const deleteRecurringTransaction = async (
     }
 
     res.status(204).send();
+  } catch (error: any) {
+    // Handle service errors
+    if (error.message) {
+      return res.status(400).json({ error: error.message });
+    }
+    
+    next(error);
+  }
+};
+
+/**
+ * Generate transactions from recurring transactions for a specific date
+ * This endpoint is intended to be called by a cron job or scheduler
+ */
+export const generateTransactions = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { date } = req.query;
+
+    let targetDate: string | undefined = undefined;
+    if (date !== undefined) {
+      if (typeof date === 'string' && isValidDate(date)) {
+        targetDate = date;
+      } else {
+        return res
+          .status(400)
+          .json({ error: 'Invalid date format (expected: YYYY-MM-DD)' });
+      }
+    }
+
+    const result = await generateTransactionsFromRecurring(targetDate);
+
+    res.json({
+      message: 'Transaction generation completed',
+      date: targetDate || new Date().toISOString().split('T')[0],
+      created: result.created,
+      skipped: result.skipped,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Get effective transactions for a user (real transactions + recurring instances, respecting overrides)
+ */
+export const getEffectiveTransactionsForUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
+
+    const { startDate, endDate } = req.query;
+
+    let parsedStartDate: string | undefined = undefined;
+    if (startDate !== undefined) {
+      if (typeof startDate === 'string' && isValidDate(startDate)) {
+        parsedStartDate = startDate;
+      } else {
+        return res
+          .status(400)
+          .json({ error: 'Invalid startDate format (expected: YYYY-MM-DD)' });
+      }
+    }
+
+    let parsedEndDate: string | undefined = undefined;
+    if (endDate !== undefined) {
+      if (typeof endDate === 'string' && isValidDate(endDate)) {
+        parsedEndDate = endDate;
+      } else {
+        return res
+          .status(400)
+          .json({ error: 'Invalid endDate format (expected: YYYY-MM-DD)' });
+      }
+    }
+
+    // Regular users can only see their own transactions
+    // Admin and manager can see any user's transactions
+    let userId: string = req.user.id;
+    if (req.user.role === 'admin' || req.user.role === 'manager') {
+      const { userId: queryUserId } = req.query;
+      if (queryUserId !== undefined) {
+        if (typeof queryUserId === 'string' && isValidUUID(queryUserId)) {
+          userId = queryUserId;
+        } else {
+          return res.status(400).json({ error: 'Invalid user ID format' });
+        }
+      }
+    }
+
+    const effectiveTransactions = await getEffectiveTransactions(
+      userId,
+      parsedStartDate,
+      parsedEndDate
+    );
+
+    res.json(effectiveTransactions);
   } catch (error) {
     next(error);
   }
