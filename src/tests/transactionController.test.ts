@@ -83,6 +83,8 @@ describe('Transaction Controller', () => {
         type: transactionData.type,
         description: transactionData.description,
         date: new Date(transactionData.date),
+        recurringTransactionId: null,
+        isOverride: false,
         createdAt: new Date(),
         updatedAt: new Date(),
       };
@@ -284,6 +286,8 @@ describe('Transaction Controller', () => {
           type: 'expense' as const,
           description: null,
           date: new Date('2024-01-15'),
+          recurringTransactionId: null,
+          isOverride: false,
           createdAt: new Date(),
           updatedAt: new Date(),
         },
@@ -369,6 +373,8 @@ describe('Transaction Controller', () => {
         type: 'expense' as const,
         description: null,
         date: new Date('2024-01-15'),
+        recurringTransactionId: null,
+        isOverride: false,
         createdAt: new Date(),
         updatedAt: new Date(),
       };
@@ -412,6 +418,8 @@ describe('Transaction Controller', () => {
           type: 'expense' as const,
           description: null,
           date: new Date('2024-01-15'),
+          recurringTransactionId: null,
+          isOverride: false,
           createdAt: new Date(),
           updatedAt: new Date(),
         },
@@ -454,6 +462,8 @@ describe('Transaction Controller', () => {
         type: 'expense' as const,
         description: null,
         date: new Date('2024-01-15'),
+        recurringTransactionId: null,
+        isOverride: false,
         createdAt: new Date(),
         updatedAt: new Date(),
       };
@@ -492,6 +502,8 @@ describe('Transaction Controller', () => {
         type: 'expense' as const,
         description: null,
         date: new Date('2024-01-15'),
+        recurringTransactionId: null,
+        isOverride: false,
         createdAt: new Date(),
         updatedAt: new Date(),
       };
@@ -547,6 +559,8 @@ describe('Transaction Controller', () => {
         type: 'expense' as const,
         description: null,
         date: new Date('2024-01-15'),
+        recurringTransactionId: null,
+        isOverride: false,
         createdAt: new Date(),
         updatedAt: new Date(),
       };
@@ -579,6 +593,8 @@ describe('Transaction Controller', () => {
         type: 'expense' as const,
         description: null,
         date: new Date('2024-01-15'),
+        recurringTransactionId: null,
+        isOverride: false,
         createdAt: new Date(),
         updatedAt: new Date(),
       };
