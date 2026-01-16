@@ -31,13 +31,13 @@ export const initializeAdmin = async (): Promise<void> => {
     }
 
     // Hash the password
-    const password_hash = await hashPassword(adminPassword);
+    const passwordHash = await hashPassword(adminPassword);
 
     // Create admin user
     const adminUser = await UserModel.createUser({
       email: adminEmail.toLowerCase().trim(),
-      password_hash,
-      full_name: 'Admin User',
+      passwordHash,
+      fullName: 'Admin User',
       currency: 'USD',
       role: 'admin',
     });

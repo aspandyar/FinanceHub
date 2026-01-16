@@ -267,3 +267,38 @@ export const validateUpdateRecurringTransaction = async (
   return true;
 };
 
+/**
+ * Validate edit/delete scope
+ */
+export const validateScope = (scope: any, res?: Response): boolean => {
+  if (!scope || typeof scope !== 'string') {
+    if (res) {
+      res.status(400).json({ error: 'Scope is required' });
+    }
+    return false;
+  }
+  
+  if (scope !== 'single' && scope !== 'future' && scope !== 'all') {
+    if (res) {
+      res.status(400).json({
+        error: "Scope must be 'single', 'future', or 'all'",
+      });
+    }
+    return false;
+  }
+  
+  return true;
+};
+
+/**
+ * Validate effective date (for edit/delete operations)
+ */
+export const validateEffectiveDate = (effectiveDate: any, res?: Response): boolean => {
+  if (!effectiveDate || typeof effectiveDate !== 'string' || !isValidDate(effectiveDate)) {
+    if (res) {
+      res.status(400).json({ error: 'Valid effective date is required (format: YYYY-MM-DD)' });
+    }
+    return false;
+  }
+  return true;
+};

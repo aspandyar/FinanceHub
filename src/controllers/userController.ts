@@ -1,5 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
 import { UserModel } from '../models/models.js';
+import type { UserRole } from '../models/user.js';
 import { validateUserId, validateCreateUser, validateUpdateUser } from '../validations/user.js';
 import { handleUniqueConstraintError } from '../utils/prismaErrors.js';
 
@@ -163,7 +164,7 @@ export const updateUser = async (
       passwordHash?: string;
       fullName?: string;
       currency?: string;
-      role?: string;
+      role?: UserRole;
     } = {};
     if (email !== undefined) {
       updateData.email = email.trim().toLowerCase();
@@ -178,7 +179,7 @@ export const updateUser = async (
       updateData.currency = currency.trim().toUpperCase();
     }
     if (role !== undefined) {
-      updateData.role = role;
+      updateData.role = role as UserRole;
     }
 
     const user = await UserModel.updateUser(userId, updateData);
