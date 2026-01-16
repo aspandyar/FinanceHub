@@ -12,7 +12,7 @@ CREATE TYPE "FrequencyType" AS ENUM ('daily', 'weekly', 'monthly', 'yearly');
 
 -- CreateTable
 CREATE TABLE "users" (
-    "id" TEXT NOT NULL,
+    "id" UUID NOT NULL,
     "email" TEXT NOT NULL,
     "password_hash" TEXT NOT NULL,
     "full_name" TEXT NOT NULL,
@@ -26,8 +26,8 @@ CREATE TABLE "users" (
 
 -- CreateTable
 CREATE TABLE "categories" (
-    "id" TEXT NOT NULL,
-    "user_id" TEXT NOT NULL,
+    "id" UUID NOT NULL,
+    "user_id" UUID NOT NULL,
     "name" TEXT NOT NULL,
     "type" "CategoryType" NOT NULL,
     "color" TEXT NOT NULL DEFAULT '#6B7280',
@@ -40,13 +40,15 @@ CREATE TABLE "categories" (
 
 -- CreateTable
 CREATE TABLE "transactions" (
-    "id" TEXT NOT NULL,
-    "user_id" TEXT NOT NULL,
-    "category_id" TEXT NOT NULL,
+    "id" UUID NOT NULL,
+    "user_id" UUID NOT NULL,
+    "category_id" UUID NOT NULL,
     "amount" DECIMAL(12,2) NOT NULL,
     "type" "TransactionType" NOT NULL,
     "description" TEXT,
     "date" DATE NOT NULL,
+    "recurring_transaction_id" UUID,
+    "is_override" BOOLEAN NOT NULL DEFAULT false,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
@@ -55,9 +57,9 @@ CREATE TABLE "transactions" (
 
 -- CreateTable
 CREATE TABLE "budgets" (
-    "id" TEXT NOT NULL,
-    "user_id" TEXT NOT NULL,
-    "category_id" TEXT NOT NULL,
+    "id" UUID NOT NULL,
+    "user_id" UUID NOT NULL,
+    "category_id" UUID NOT NULL,
     "amount" DECIMAL(12,2) NOT NULL,
     "month" DATE NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -68,9 +70,9 @@ CREATE TABLE "budgets" (
 
 -- CreateTable
 CREATE TABLE "recurring_transactions" (
-    "id" TEXT NOT NULL,
-    "user_id" TEXT NOT NULL,
-    "category_id" TEXT NOT NULL,
+    "id" UUID NOT NULL,
+    "user_id" UUID NOT NULL,
+    "category_id" UUID NOT NULL,
     "amount" DECIMAL(12,2) NOT NULL,
     "type" "TransactionType" NOT NULL,
     "description" TEXT,
@@ -106,6 +108,9 @@ CREATE INDEX "transactions_user_id_category_id_idx" ON "transactions"("user_id",
 CREATE INDEX "transactions_user_id_type_idx" ON "transactions"("user_id", "type");
 
 -- CreateIndex
+CREATE INDEX "transactions_recurring_transaction_id_date_idx" ON "transactions"("recurring_transaction_id", "date");
+
+-- CreateIndex
 CREATE INDEX "budgets_user_id_month_idx" ON "budgets"("user_id", "month");
 
 -- CreateIndex
@@ -125,6 +130,9 @@ ALTER TABLE "transactions" ADD CONSTRAINT "transactions_user_id_fkey" FOREIGN KE
 
 -- AddForeignKey
 ALTER TABLE "transactions" ADD CONSTRAINT "transactions_category_id_fkey" FOREIGN KEY ("category_id") REFERENCES "categories"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "transactions" ADD CONSTRAINT "transactions_recurring_transaction_id_fkey" FOREIGN KEY ("recurring_transaction_id") REFERENCES "recurring_transactions"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "budgets" ADD CONSTRAINT "budgets_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;

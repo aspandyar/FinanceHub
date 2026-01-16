@@ -34,7 +34,7 @@ enum FrequencyType {
 }
 
 model User {
-  id           String    @id @default(uuid())
+  id           String    @id @default(uuid()) @db.Uuid
   email        String    @unique
   passwordHash String    @map("password_hash")
   fullName     String    @map("full_name")
@@ -53,8 +53,8 @@ model User {
 }
 
 model Category {
-  id        String       @id @default(uuid())
-  userId    String      @map("user_id")
+  id        String       @id @default(uuid()) @db.Uuid
+  userId    String      @map("user_id") @db.Uuid
   name      String
   type      CategoryType
   color     String       @default("#6B7280")
@@ -73,14 +73,14 @@ model Category {
 }
 
 model Transaction {
-  id                   String                @id @default(uuid())
-  userId               String                 @map("user_id")
-  categoryId           String                 @map("category_id")
+  id                   String                @id @default(uuid()) @db.Uuid
+  userId               String                 @map("user_id") @db.Uuid
+  categoryId           String                 @map("category_id") @db.Uuid
   amount               Decimal                @db.Decimal(12, 2)
   type                 TransactionType
   description          String?
   date                 DateTime               @db.Date
-  recurringTransactionId String?              @map("recurring_transaction_id")
+  recurringTransactionId String?              @map("recurring_transaction_id") @db.Uuid
   isOverride           Boolean                @default(false) @map("is_override")
   createdAt            DateTime               @default(now()) @map("created_at")
   updatedAt            DateTime               @updatedAt @map("updated_at")
@@ -97,9 +97,9 @@ model Transaction {
 }
 
 model Budget {
-  id         String   @id @default(uuid())
-  userId     String   @map("user_id")
-  categoryId String   @map("category_id")
+  id         String   @id @default(uuid()) @db.Uuid
+  userId     String   @map("user_id") @db.Uuid
+  categoryId String   @map("category_id") @db.Uuid
   amount     Decimal  @db.Decimal(12, 2)
   month      DateTime @db.Date
   createdAt  DateTime @default(now()) @map("created_at")
@@ -114,9 +114,9 @@ model Budget {
 }
 
 model RecurringTransaction {
-  id             String          @id @default(uuid())
-  userId         String          @map("user_id")
-  categoryId     String          @map("category_id")
+  id             String          @id @default(uuid()) @db.Uuid
+  userId         String          @map("user_id") @db.Uuid
+  categoryId     String          @map("category_id") @db.Uuid
   amount         Decimal         @db.Decimal(12, 2)
   type           TransactionType
   description    String?
