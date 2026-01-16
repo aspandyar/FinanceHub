@@ -1,4 +1,5 @@
 import express from 'express';
+import cors from 'cors';
 import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec } from './config/swagger.js';
 import authRoutes from './routes/authRoutes.js';
@@ -10,6 +11,39 @@ import recurringTransactionRoutes from './routes/recurringTransactionRoutes.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 
 const app = express();
+
+// CORS configuration
+app.use(cors({
+  origin: function (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) {
+    // Allow requests with no origin (like mobile apps, curl, Postman)
+    if (!origin) return callback(null, true);
+    
+    // Allow localhost for development
+    if (origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:')) {
+      return callback(null, true);
+    }
+    
+    // Allow all GitHub Pages origins
+    if (origin.includes('.github.io') || origin.includes('github.io')) {
+      return callback(null, true);
+    }
+    
+    // Allow the specific Heroku app (for testing)
+    if (origin.includes('herokuapp.com')) {
+      return callback(null, true);
+    }
+
+    // Allow the specific domain
+    if (origin.includes('aspandyar.me')) {
+      return callback(null, true);
+    }
+    
+    callback(new Error('Not allowed by CORS'));
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
 
 app.use(express.json());
 
